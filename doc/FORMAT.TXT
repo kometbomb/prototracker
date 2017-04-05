@@ -1,0 +1,60 @@
+SONG FILE FORMAT
+
+A song file consists of sections. A section is four-character identifier followed by
+the size of the section as one 32-bit integer (big-endian). A section can (and will)
+contain more sections.
+
+	byte		8-bit integer
+	interleaved	interleaved byte data (see below)
+	stringz		zero-limited string
+	
+Macros and patterns consist of rows which are just four bytes (effect/note, param/note 
+number, effect, param). Patterns are interleaved, first come all the bytes in the first
+column, then second etc. Same applies to the sequence, first comes the whole first 
+track sequence, then the second and so on.
+
+section SONG
+{
+	byte version
+	stringz name
+	byte numPatternRows
+	byte numSequenceRows
+	
+	SEQU
+	byte numRows
+	{
+		interleaved row
+	}
+
+	PATT
+	byte numPatterns
+	{
+		numPatternRows
+		{
+			interleaved row
+		}
+	}
+
+	MACR
+	byte numMacros
+	{
+		stringz name
+		byte numRows
+		{
+			interleaved row
+		}
+	}
+}
+
+
+
+MACRO FILE FORMAT
+
+MACR
+{
+	stringz name
+	numRows
+	{
+		row
+	}
+}

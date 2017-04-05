@@ -1,0 +1,69 @@
+Font "font.png" 8 8
+GUI "gui.png" 320 240
+
+# this is a comment
+# element		x 	y	w	h 	track
+Oscilloscope	2 	2 	55 	61 	0
+Oscilloscope 	59 	2 	55 	61 	1
+Oscilloscope 	116 2 	55 	61 	2
+Oscilloscope 	173 2 	55 	61 	3
+
+# element     	x 	y  	w	h  	m1	m2
+PatternEditor	3 	78	232	160	4	4
+MacroEditor		241	78 	76 	160	4 	4
+SequenceEditor	234	3 	82 	40	2 	0
+
+# element     	x 	y  	w	h
+SongName		4	67 	128	8
+MacroName		258	67 	56 	8
+MacroNumber		241	67	16	8
+SequencePosition	235	54	16	8
+SequenceLength	256	54 16	8
+PatternLength	277	54	16	8
+OctaveNumber	298	54	16	8
+
+# Keyboard!
+
+# Lower octave
+
+# Black keys
+TouchRegion 	23 264 45 40 "S"
+TouchRegion 	68 264 45 40 "D"
+TouchRegion 	158 264 45 40 "G"
+TouchRegion 	203 264 45 40 "H"
+TouchRegion 	248 264 45 40 "J"
+
+# White keys
+TouchRegion 	0 264 45 89 "Z"
+TouchRegion 	45 264 45 89 "X"
+TouchRegion 	90 264 45 89 "C"
+TouchRegion 	135 264 45 89 "V"
+TouchRegion 	180 264 45 89 "B"
+TouchRegion 	225 264 45 89 "N"
+TouchRegion 	270 264 45 89 "M"
+
+# Play/stop
+TouchRegion 	329 18 44 29 "Right Ctrl"
+TouchRegion 	329 55 49 30 "Space"
+
+#Numpad
+
+TouchRegion 	328 112 32 32 "0"
+TouchRegion 	360 112 32 32 "1"
+TouchRegion 	392 112 32 32 "2"
+TouchRegion 	424 112 32 32 "3"
+
+TouchRegion 	328 144 32 32 "4"
+TouchRegion 	360 144 32 32 "5"
+TouchRegion 	392 144 32 32 "6"
+TouchRegion 	424 144 32 32 "7"
+
+TouchRegion 	328 176 32 32 "8"
+TouchRegion 	360 176 32 32 "9"
+TouchRegion 	392 176 32 32 "A"
+TouchRegion 	424 176 32 32 "B"
+
+TouchRegion 	328 208 32 32 "C"
+TouchRegion 	360 208 32 32 "D"
+TouchRegion 	392 208 32 32 "E"
+TouchRegion 	424 208 32 32 "F"

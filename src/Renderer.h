@@ -1,0 +1,44 @@
+#pragma once
+
+#include "SDL.h"
+
+struct Color;
+struct Theme;
+
+#include <string>
+
+class Renderer
+{
+	SDL_Window *mWindow;
+	SDL_Renderer *mRenderer;
+	SDL_Texture *mFont, *mBackground, *mIntermediateTexture;
+	int mGuiWidth, mGuiHeight, mFontWidth, mFontHeight;
+	
+	void loadFont(const std::string& path, int charWidth, int charHeight);
+	void loadGui(const std::string& path, int width, int height);
+	
+	
+	
+public:
+	
+	Renderer();
+	~Renderer();
+	void setTheme(const Theme& theme);
+	void clearRect(const SDL_Rect& rect, const Color& color);
+	void drawRect(const SDL_Rect& rect, const Color& color);
+	void setClip(const SDL_Rect& area);
+	void setColor(const Color& color);
+	void renderRect(const SDL_Rect& rect, const Color& color, int index = 0);
+	void renderBackground(const SDL_Rect& rect);
+	void renderText(const SDL_Rect& position, const Color& color, const char * text);
+	void renderTextV(const SDL_Rect& position, const Color& color, const char * text, ...) __attribute__((format(printf, 4, 5)));
+	void renderChar(const SDL_Rect& position, const Color& color, int c);
+	void renderLine(int x1, int y1, int x2, int y2, const Color& color);
+	void renderPoints(const SDL_Point* points, int count, const Color& color);
+	void beginRendering();
+	void present();
+	int getFontWidth() const;
+	int getFontHeight() const;
+	SDL_Rect getWindowArea() const;
+	void scaleEventCoordinates(SDL_Event& event) const;
+};

@@ -1,0 +1,14 @@
+1xx		Portamento up by xx, track and macro pitches are separate
+2xx		Portamento down by xx
+3xx		Slide to note
+Axy		Slide volume up by x, down by y
+Bxx		Jump to sequence position xx (at the end of pattern row)
+Cxx		Set volume to xx ($00..$40), track and macro volumes are separate
+Dxx		Jump to next sequence position and start at pattern row xx (at the end of pattern row)
+Fxx		Set speed to xx ticks per row (when xx < $20), set play rate to xx Hz (when xx >= $20)
+Jxx		Jump to macro row xx (immediate)
+Kxx		Set volume to zero at tick xx (K00 = immediately)
+Mxx		Set macro to xx
+Sxx		Set macro speed to xx ticks per row
+Wxx		Set waveform to xx (including but not limited to: $00-$0f = square wave with varying PW, $7F = triangle, $FF = noise)
+Qxx		Queue waveform xx (switch waveform after currently playing waveform loops)

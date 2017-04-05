@@ -1,0 +1,40 @@
+CTRL + O		Load song
+CTRL + S		Save song
+CTRL + P 		Export song
+CTRL + N 		Erase song (new song)
+F7				Save editor state (song and pattern positions etc.)
+ESCAPE			Cycle focus
+Q2W3ER5T6Y7U	Upper octave
+ZSXDCVGBHNM		Lower octave
+SHIFT + KEY		Enter effect in note column (instead of note)
+CURSORS/PGUP/PGDOWN/HOME/END	Navigate in editor
+NUMPAD + / -	Change selected macro
+TAB				Jump to next channel
+SHIFT + TAB		Jump to prev channel
+SHIFT + LEFT/RIGHT	Change song position
+SHIFT + UP/DOWN	Change current track pattern at song position
+F1/F2			Select octaves
+F3/F4			Copy/paste whole track
+F9/F10			Change pattern length
+CTRL+B/E		Mark block start/end
+CTRL+C/V		Copy/paste block
+CTRL + K		Kill track (macro/pattern)
+CTRL + U		Get unused track (macro/pattern)
+RIGHT CTRL / F5		Play song
+RIGHT SHIFT / F6	Play and loop sequence position
+SPACE			Stop/switch to edit mode/disable edit mode
+ALT + 1 2 3 4	Mute/unmute channel
+CTRL + 0 1 2 3 4 5 6 7 8 9	Set edit skip (pattern editor and macro editor have their own skip)
+RETURN			Play current row and go forward
+BACKSPACE		Go backwards and play row
+SHIFT + RETURN	Insert track row and move the rest forward
+CTRL + RETURN	Insert track row and move the rest forward (only notes)
+ALT + RETURN	Insert track row and move the rest forward (only effects)
+SHIFT + BACKSPACE	Remove previous track row
+CTRL + BACKSPACE	Remove previous track row (only notes)
+SHIFT + BACKSPACE	Remove previous track row (only effects)
+DELETE			Empty track row
+CTRL + DELETE	Empty track note
+ALT + DELETE	Empty track effect
+CTRL + D		Duplicate row
+CAPS LOCK/SCROLL LOCK	Toggle follow song position
