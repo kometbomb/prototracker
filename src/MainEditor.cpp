@@ -687,6 +687,9 @@ void MainEditor::loadElements(const Theme& theme)
 				addChild(region, element.parameters[0], element.parameters[1], element.parameters[2], element.parameters[3]);
 			}
 			break; 
+			
+			case Theme::Unknown:
+				break;
 		}
 	}
 	
