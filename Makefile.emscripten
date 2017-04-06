@@ -1,3 +1,9 @@
+# Makefile for Emscripten
+
+# Take note of the compilation options. Only the PNG image format is enabled
+# and various C-callbacks (available to the host webpage) are listed on the
+# command line.
+
 OUTPUT=prototracker
 SRC=src/*.cpp
 
