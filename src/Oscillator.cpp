@@ -19,6 +19,24 @@ Oscillator::~Oscillator()
 }
 
 
+void Oscillator::handleTrackState(TrackState& trackState)
+{
+	IOscillator::handleTrackState(trackState);
+	
+	if (trackState.wave != -1)
+	{
+		this->setWave(trackState.wave);
+		trackState.wave = -1;
+	}
+			
+	if (trackState.queuedWave != -1)
+	{
+		this->queueWave(trackState.queuedWave);
+		trackState.queuedWave = -1;
+	}	
+}
+
+
 void Oscillator::setWaveStore(const WaveStore& waveStore)
 {
 	mWaveStore = &waveStore;

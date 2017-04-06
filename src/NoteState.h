@@ -21,8 +21,8 @@ struct NoteState
 	 */
 	
 	bool handleEffectZeroTick(const EffectParam& effect, TrackState& trackState, PlayerState& playerState);
-	
 	void handleEffectAnyTick(const EffectParam& effect, TrackState& trackState, PlayerState& playerState);
+	
 	void setFrequencyFromNote(int note);
 	void setSlideTargetFromNote(int note);
 };

@@ -1,13 +1,14 @@
 #pragma once
 
-struct Sample16;
+#include "IOscillator.h"
+
 struct WaveStore;
 
 #ifndef OVERSAMPLE
 #define OVERSAMPLE 4
 #endif
 
-class Oscillator
+class Oscillator: public IOscillator
 {
 	const WaveStore* mWaveStore;
 	
@@ -23,15 +24,15 @@ public:
 	static const int oscillatorOversample = OVERSAMPLE;
 
 	Oscillator();
-	~Oscillator();
+	virtual ~Oscillator();
 	
+	virtual void handleTrackState(TrackState& trackState);
 	void setWaveStore(const WaveStore& sampleStore);
-
 	void setPosition(int newPosition);
 	void setWave(int wave);
 	void queueWave(int wave);
-	void setFrequency(float frequency);
-	void setVolume(int volume);
-	void update(int numSamples);
-	void render(Sample16 *buffer, int numSamples, int offset = 0);
+	virtual void setFrequency(float frequency);
+	virtual void setVolume(int volume);
+	virtual void update(int numSamples);
+	virtual void render(Sample16 *buffer, int numSamples, int offset = 0);
 };
