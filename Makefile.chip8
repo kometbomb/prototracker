@@ -1,3 +1,8 @@
+# Makefile for the Chip8 architecture
+
+# The sample rate is 22 kHz and oversampling is disabled for performance, in addition
+# to other optimizations. Fullscreen mode is forced.
+
 OUTPUT=prototracker
 SRC=src/*.cpp
 
