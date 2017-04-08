@@ -11,7 +11,7 @@ struct PatternRow;
 
 IPlayer handles most of the player logic.
 
-Override IPlayer() to setup your own ITrackState.
+You need to override IPlayer() to setup your own ITrackStates for the tracks.
 
 */
 

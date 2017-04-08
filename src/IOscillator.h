@@ -15,7 +15,7 @@ public:
 	IOscillator needs to implement these.
 	*/
 	
-	// 
+	// Set oscillator frequency. 1.0 = 440 Hz.
 	virtual void setFrequency(float frequency) = 0;
 	
 	// Needs to be implemented since the player uses this to mute/solo channels
