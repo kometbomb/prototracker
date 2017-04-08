@@ -2,6 +2,18 @@
 
 #include "EffectParam.h"
 
+/*
+
+PatternRow is the most basic component of a song. Both Patterns and Macros
+are just a list of these.
+
+A PatternRow consists of two EffectParams. The first one has a special meaning
+in the editor, that is the note column. It still works internally exactly like
+the "normal" effect column, except for the first column being able to trigger
+new notes.
+
+*/
+
 struct PatternRow
 {
 	/* 
@@ -21,6 +33,7 @@ struct PatternRow
 		Octave = NoteParam2
 	};
 	
+	EffectParam note, effect;
 	
 	enum ColumnFlag 
 	{
@@ -36,9 +49,6 @@ struct PatternRow
 	PatternRow();
 	
 	static const char *getNoteName(int note);
-	
-	EffectParam note;
-	EffectParam effect;
 	
 	bool shouldSkipParam1() const;
 	int getNote() const;

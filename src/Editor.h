@@ -7,6 +7,12 @@ struct PlayerState;
 struct Renderer;
 struct EditorState;
 
+/*
+
+The Editor class is the base class for all GUI elements.
+
+*/
+
 class Editor: public Listener
 {
 public:
