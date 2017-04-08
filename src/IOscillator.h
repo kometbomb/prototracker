@@ -1,7 +1,7 @@
 #pragma once
 
 struct Sample16;
-struct TrackState;
+struct ITrackState;
 
 class IOscillator
 {
@@ -9,7 +9,7 @@ public:
 	virtual ~IOscillator() {}
 	
 	// The oscillator should update its own parameters from handleTrackState()
-	virtual void handleTrackState(TrackState& trackState);
+	virtual void handleTrackState(ITrackState& trackState);
 	
 	/*
 	IOscillator needs to implement these.

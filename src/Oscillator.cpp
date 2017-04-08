@@ -19,20 +19,22 @@ Oscillator::~Oscillator()
 }
 
 
-void Oscillator::handleTrackState(TrackState& trackState)
+void Oscillator::handleTrackState(ITrackState& trackState)
 {
 	IOscillator::handleTrackState(trackState);
 	
-	if (trackState.wave != -1)
+	TrackState& extTrackState = static_cast<TrackState&>(trackState);
+	
+	if (extTrackState.wave != -1)
 	{
-		this->setWave(trackState.wave);
-		trackState.wave = -1;
+		this->setWave(extTrackState.wave);
+		extTrackState.wave = -1;
 	}
 			
-	if (trackState.queuedWave != -1)
+	if (extTrackState.queuedWave != -1)
 	{
-		this->queueWave(trackState.queuedWave);
-		trackState.queuedWave = -1;
+		this->queueWave(extTrackState.queuedWave);
+		extTrackState.queuedWave = -1;
 	}	
 }
 

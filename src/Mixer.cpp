@@ -4,7 +4,7 @@
 #include "Sample.h"
 #include "Synth.h"
 #include "SequenceRow.h"
-#include "TrackState.h"
+#include "ITrackState.h"
 #include "IOscillator.h"
 #include <math.h>
 #include <cstdio>
@@ -142,7 +142,7 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 		
 		for (int track = 0 ; track < SequenceRow::maxTracks ; ++track)
 		{
-			TrackState& trackState = player.getTrackState(track);
+			ITrackState& trackState = player.getTrackState(track);
 			IOscillator& oscillator = mixer.getSynth().getOscillator(track);
 			
 			oscillator.handleTrackState(trackState);
@@ -150,7 +150,7 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 			oscillator.setFrequency(trackState.trackState.frequency * trackState.macroState.frequency * hzConversion);
 			
 			if (trackState.enabled)
-				oscillator.setVolume(trackState.trackState.volume * trackState.macroState.volume / TrackState::maxVolume);
+				oscillator.setVolume(trackState.trackState.volume * trackState.macroState.volume / ITrackState::maxVolume);
 			else
 				oscillator.setVolume(0);
 		}

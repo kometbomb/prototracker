@@ -26,7 +26,7 @@ public:
 	Oscillator();
 	virtual ~Oscillator();
 	
-	virtual void handleTrackState(TrackState& trackState);
+	virtual void handleTrackState(ITrackState& trackState);
 	void setWaveStore(const WaveStore& sampleStore);
 	void setPosition(int newPosition);
 	void setWave(int wave);

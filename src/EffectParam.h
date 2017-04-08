@@ -2,7 +2,8 @@
 
 struct EffectParam
 {
-	EffectParam();
+	EffectParam(int effect, int param1, int param2);
+	EffectParam(int effect = '0', int params = 0);
 	
 	int effect;
 	int param1, param2;

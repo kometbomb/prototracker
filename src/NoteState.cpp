@@ -1,6 +1,6 @@
 #include "NoteState.h"
 #include "EffectParam.h"
-#include "TrackState.h"
+#include "ITrackState.h"
 #include "PlayerState.h"
 #include "SDL.h"
 #include <math.h>
@@ -26,7 +26,7 @@ void NoteState::setSlideTargetFromNote(int note)
 }
 
 
-bool NoteState::handleEffectZeroTick(const EffectParam& effect, TrackState& trackState, PlayerState& playerState)
+bool NoteState::handleEffectZeroTick(const EffectParam& effect, ITrackState& trackState, PlayerState& playerState)
 {
 	int asByte = effect.getParamsAsByte();
 	
@@ -35,8 +35,8 @@ bool NoteState::handleEffectZeroTick(const EffectParam& effect, TrackState& trac
 		case 'c':
 			volume = asByte;
 			
-			if (volume > TrackState::maxVolume)
-				volume = TrackState::maxVolume;
+			if (volume > ITrackState::maxVolume)
+				volume = ITrackState::maxVolume;
 			break;
 			
 		case 'f':
@@ -46,34 +46,15 @@ bool NoteState::handleEffectZeroTick(const EffectParam& effect, TrackState& trac
 				playerState.songRate = asByte;
 			break;
 			
-		case 'j':
-			trackState.macroRow = asByte;
-			return true;
-			
-		case 'm':
-			trackState.macro = asByte;
-			trackState.macroRow = 0;
-			break;
-			
-		case 's':
-			trackState.macroSpeed = asByte;
-			break;
-			
-		case 'w':
-			trackState.wave = asByte;
-			trackState.queuedWave = asByte;
-			break;
-			
-		case 'q':
-			trackState.queuedWave = asByte;
-			break;
+		default:
+			return trackState.handleEffectZeroTick(effect, playerState);
 	}
 	
 	return false;
 }
 
 
-void NoteState::handleEffectAnyTick(const EffectParam& effect, TrackState& trackState, PlayerState& playerState)
+void NoteState::handleEffectAnyTick(const EffectParam& effect, ITrackState& trackState, PlayerState& playerState)
 {
 	int param1 = effect.param1;
 	int param2 = effect.param2;
@@ -84,7 +65,7 @@ void NoteState::handleEffectAnyTick(const EffectParam& effect, TrackState& track
 	else
 	{
 		asByte = effectMemory[effect.effect];
-		param1 = (asByte & 0xf) >> 4;
+		param1 = (asByte >> 4) & 0xf;
 		param2 = asByte & 0xf;
 	}
 	
@@ -98,8 +79,8 @@ void NoteState::handleEffectAnyTick(const EffectParam& effect, TrackState& track
 			
 			volume += param1;
 			
-			if (volume > TrackState::maxVolume)
-				volume = TrackState::maxVolume;
+			if (volume > ITrackState::maxVolume)
+				volume = ITrackState::maxVolume;
 			
 			break;
 			
@@ -144,5 +125,11 @@ void NoteState::handleEffectAnyTick(const EffectParam& effect, TrackState& track
 			
 		}	
 			break;
+			
+		default:
+			trackState.handleEffectAnyTick(EffectParam(effect.effect, param1, param2), playerState);
+			break;
 	}
+	
+	
 }

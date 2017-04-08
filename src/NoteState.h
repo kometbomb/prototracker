@@ -1,7 +1,7 @@
 #pragma once
 
 struct EffectParam;
-struct TrackState;
+struct ITrackState;
 struct PlayerState;
 
 struct NoteState
@@ -20,8 +20,8 @@ struct NoteState
 	 * Used by Jxx to process the target row effects
 	 */
 	
-	bool handleEffectZeroTick(const EffectParam& effect, TrackState& trackState, PlayerState& playerState);
-	void handleEffectAnyTick(const EffectParam& effect, TrackState& trackState, PlayerState& playerState);
+	bool handleEffectZeroTick(const EffectParam& effect, ITrackState& trackState, PlayerState& playerState);
+	void handleEffectAnyTick(const EffectParam& effect, ITrackState& trackState, PlayerState& playerState);
 	
 	void setFrequencyFromNote(int note);
 	void setSlideTargetFromNote(int note);

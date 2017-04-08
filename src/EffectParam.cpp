@@ -2,9 +2,16 @@
 #include "PatternRow.h"
 #include <algorithm>
 
-EffectParam::EffectParam()
-	: effect('0'), param1(0), param2(0)
+EffectParam::EffectParam(int _effect, int _param1, int _param2)
+	: effect(_effect), param1(_param1), param2(_param2)
 {
+}
+
+
+EffectParam::EffectParam(int _effect, int params)
+	: effect(_effect)
+{
+	setParamsFromByte(params);
 }
 
 

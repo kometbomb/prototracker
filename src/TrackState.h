@@ -1,22 +1,14 @@
 #pragma once
 
-#include "NoteState.h"
+#include "ITrackState.h"
 
-struct PatternRow;
-
-struct TrackState
+struct TrackState: public ITrackState
 {
-	NoteState trackState;
-	NoteState macroState;
-	
-	bool enabled;
 	int wave, queuedWave;
-	int tick;
-	int macro;
-	int macroSpeed;
-	int macroRow;
 	
 	TrackState();
 	
-	static const int maxVolume = 64;
+	virtual bool handleEffectZeroTick(const EffectParam& effect, PlayerState& playerState);
+	virtual void handleEffectAnyTick(const EffectParam& effect, PlayerState& playerState);
 };
+
