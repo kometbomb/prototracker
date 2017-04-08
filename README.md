@@ -14,6 +14,12 @@ Supported platforms:
  
 ## Building
 
-Simply do ```make mingw``` where "mingw" is your platform of choice. Do ```make``` to see the supported platforms.
+Simply do ```make mingw``` where "mingw" is your platform of choice. Do ```make``` to see the supported platforms. 
 
-The binary needs the files in the assets/ directory.
+The binary needs the files in the assets/ directory to work properly.
+
+## Prototracker as a synth testbed
+
+Prototracker was also created for testing audio/synth code (while having some minimal setup for a song structure), so it is quite easily extendable. Each of the channels runs an instance of ITrackState and IOscillator, and will simply extend IPlayer and ISynth to setup your own ITrackState (from IPlayer) and/or IOscillator (from ISynth). 
+
+The TrackState, Oscillator and Synth classes included (see src/) implement a minimal wavetable synth that has two extra track effects (W and Q). Since it's all per track, you can have each channel use a different set of effects and oscillators (think something like the audio capabilities of the NES). Just init the tracks in IPlayer::IPlayer() and ISynth::ISynth().
