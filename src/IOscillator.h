@@ -6,7 +6,7 @@ struct ITrackState;
 class IOscillator
 {
 public:
-	virtual ~IOscillator() {}
+	virtual ~IOscillator();
 	
 	// The oscillator should update its own parameters from handleTrackState()
 	virtual void handleTrackState(ITrackState& trackState);
