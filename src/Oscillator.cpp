@@ -9,7 +9,7 @@
 #include "TrackState.h"
 
 Oscillator::Oscillator()
-	: mWaveStore(NULL), mWave(0), mSpeed(0), mVolume(1.0), mPosition(0)
+	: IOscillator(), mWaveStore(NULL), mWave(0), mSpeed(0), mVolume(1.0), mPosition(0)
 {
 }
 

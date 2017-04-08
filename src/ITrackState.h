@@ -2,6 +2,15 @@
 
 #include "NoteState.h"
 
+/*
+
+ITrackState handles the common track state. That is, things like macro state and channel mute
+are handled here so the class extending ITrackState doesn't have to.
+
+Override handleEffectAnyTick() and handleEffectZeroTick() to add your own behavior.
+
+ */
+
 struct ITrackState
 {
 	NoteState trackState;

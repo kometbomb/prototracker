@@ -7,6 +7,14 @@ struct ITrackState;
 struct SDL_mutex;
 struct PatternRow;
 
+/*
+
+IPlayer handles most of the player logic.
+
+Override IPlayer() to setup your own ITrackState.
+
+*/
+
 class IPlayer
 {
 protected:

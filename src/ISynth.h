@@ -3,6 +3,15 @@
 struct IOscillator;
 struct Sample16;
 
+/*
+
+ISynth handles the IOscillators and some things needed by the GUI
+(namely, data for visualization).
+
+Override ISynth() to initialize your own IOscillators.
+
+*/
+
 class ISynth
 {
 protected:
