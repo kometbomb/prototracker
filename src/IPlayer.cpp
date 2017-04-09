@@ -214,6 +214,7 @@ void IPlayer::triggerNoteWithReset(int track, int note, int macro)
 void IPlayer::triggerNote(int track, int note)
 {
 	ITrackState& trState = *trackState[track];
+	trState.triggered = true;
 	trState.trackState.setFrequencyFromNote(note);
 	trState.tick = 0;
 	trState.trackState.volume = ITrackState::maxVolume;

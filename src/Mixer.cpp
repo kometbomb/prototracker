@@ -145,8 +145,13 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 			ITrackState& trackState = player.getTrackState(track);
 			IOscillator& oscillator = mixer.getSynth().getOscillator(track);
 			
+			if (trackState.triggered)
+			{
+				trackState.triggered = false;
+				oscillator.triggerNote();
+			}
+				
 			oscillator.handleTrackState(trackState);
-			
 			oscillator.setFrequency(trackState.trackState.frequency * trackState.macroState.frequency * hzConversion);
 			
 			if (trackState.enabled)

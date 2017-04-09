@@ -16,7 +16,13 @@ struct ITrackState
 	NoteState trackState;
 	NoteState macroState;
 	
+	// Note was triggered during current tick
+	// Set to false after handled.
+	bool triggered;
+	
+	// Track is enabled (not muted)
 	bool enabled;
+	
 	int tick;
 	int macro;
 	int macroSpeed;

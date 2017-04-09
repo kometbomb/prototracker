@@ -42,6 +42,12 @@ void Oscillator::handleTrackState(ITrackState& trackState)
 }
 
 
+void Oscillator::triggerNote()
+{
+	// We do nothing here. Just let the wave run free.
+}
+
+
 void Oscillator::setWaveStore(const WaveStore& waveStore)
 {
 	mWaveStore = &waveStore;

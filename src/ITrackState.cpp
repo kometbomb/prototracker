@@ -2,7 +2,7 @@
 #include "EffectParam.h"
 
 ITrackState::ITrackState()
-	: enabled(true), tick(0), macro(0), macroSpeed(1), macroRow(0)
+	: triggered(false), enabled(true), tick(0), macro(0), macroSpeed(1), macroRow(0)
 {
 
 }

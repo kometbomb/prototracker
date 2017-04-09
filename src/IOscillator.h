@@ -15,6 +15,9 @@ public:
 	IOscillator needs to implement these.
 	*/
 	
+	// Note has been triggered
+	virtual void triggerNote() = 0;
+	
 	// Set oscillator frequency. 1.0 = 440 Hz.
 	virtual void setFrequency(float frequency) = 0;
 	
