@@ -23,6 +23,9 @@ void Oscillator::handleTrackState(ITrackState& trackState)
 {
 	IOscillator::handleTrackState(trackState);
 	
+	// Note: We assume the provided reference actually is a TrackState
+	//       We inited it in Player::Player() so we know it will be.
+	
 	TrackState& extTrackState = static_cast<TrackState&>(trackState);
 	
 	if (extTrackState.wave != -1)
@@ -72,6 +75,9 @@ void Oscillator::setFrequency(float frequency)
 
 void Oscillator::setVolume(int volume)
 {
+	// This sets to the volume to 1/SequenceRow::maxTracks (25 %)
+	// to avoid clipping if all tracks output at max signal.
+	
 	mVolume = volume * volumeResolution / TrackState::maxVolume / SequenceRow::maxTracks;
 }
 
