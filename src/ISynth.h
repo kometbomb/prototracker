@@ -28,8 +28,8 @@ public:
 	IOscillator& getOscillator(int i);
 	
 	// Update the synth state
-	void update(int numSamples);
+	virtual void update(int numSamples);
 	
 	// Get samples (does not change synth state)
-	void render(Sample16 *buffer, int numSamples);
+	virtual void render(Sample16 *buffer, int numSamples);
 };
