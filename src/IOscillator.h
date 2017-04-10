@@ -6,6 +6,8 @@ struct ITrackState;
 class IOscillator
 {
 public:
+	static const int oscillatorResolution = 4096;
+
 	virtual ~IOscillator();
 	
 	// The oscillator should update its own parameters from handleTrackState()

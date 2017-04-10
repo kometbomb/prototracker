@@ -20,7 +20,6 @@ class Oscillator: public IOscillator
 public:
 	static const int volumeResolution = 8192;
 	static const int oscillatorLength = 256;
-	static const int oscillatorResolution = 4096;
 	static const int oscillatorOversample = OVERSAMPLE;
 
 	Oscillator();
