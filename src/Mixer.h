@@ -1,15 +1,15 @@
 #pragma once
 
-struct Player;
-struct Synth;
+struct IPlayer;
+struct ISynth;
 struct SDL_Thread;
 struct SDL_AudioCVT;
 struct Sample16;
 
 class Mixer
 {
-	Player& mPlayer;
-	Synth& mSynth;
+	IPlayer& mPlayer;
+	ISynth& mSynth;
 	
 	int mSampleRate;
 	int mSamples;
@@ -27,11 +27,11 @@ protected:
 	void queueAudio();
 	//static int queueThread(void *userdata);
 	static void audioCallback(void* userdata, unsigned char* stream, int len);
-	Player& getPlayer();
-	Synth& getSynth();
+	IPlayer& getPlayer();
+	ISynth& getSynth();
 
 public:
-	Mixer(Player& player, Synth& synth);
+	Mixer(IPlayer& player, ISynth& synth);
 	~Mixer();
 	bool isThreadRunning() const;
 	void runThread();

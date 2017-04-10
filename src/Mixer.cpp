@@ -1,8 +1,8 @@
 #include "Mixer.h"
 #include "SDL.h"
-#include "Player.h"
+#include "IPlayer.h"
 #include "Sample.h"
-#include "Synth.h"
+#include "ISynth.h"
 #include "SequenceRow.h"
 #include "ITrackState.h"
 #include "IOscillator.h"
@@ -19,7 +19,7 @@
 #define SAMPLERATE 44100
 #endif
 
-Mixer::Mixer(Player& player, Synth& synth)
+Mixer::Mixer(IPlayer& player, ISynth& synth)
 	: mPlayer(player), mSynth(synth), mSampleRate(0), mThread(NULL), mAudioOpened(false), mBuffer(NULL)
 {
 	mConvert = static_cast<SDL_AudioCVT*>(SDL_malloc(sizeof(SDL_AudioCVT)));
@@ -106,7 +106,7 @@ void Mixer::deinitAudio()
 void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 {
 	Mixer& mixer = *static_cast<Mixer*>(userdata);
-	Player& player = mixer.getPlayer();
+	IPlayer& player = mixer.getPlayer();
 	
 	Sample16 *data = reinterpret_cast<Sample16*>(stream);
 	int length = mixer.mBufferSize; //len / sizeof(Sample16);
@@ -233,12 +233,12 @@ int Mixer::getSampleRate() const
 }
 
 
-Player& Mixer::getPlayer()
+IPlayer& Mixer::getPlayer()
 {
 	return mPlayer;
 }
 
-Synth& Mixer::getSynth()
+ISynth& Mixer::getSynth()
 {
 	return mSynth;
 }
