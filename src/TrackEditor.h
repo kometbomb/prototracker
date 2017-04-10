@@ -4,7 +4,7 @@
 
 struct PatternRow;
 struct Song;
-struct Player;
+struct IPlayer;
 struct Color;
 struct Pattern;
 struct TrackEditorState;
@@ -12,7 +12,7 @@ struct TrackEditorState;
 class TrackEditor: public ColumnEditor
 {
 protected:
-	Player& mPlayer;
+	IPlayer& mPlayer;
 	Song& mSong;
 	bool mTriggerNotes;
 	bool mAddMacroEffect;
@@ -43,7 +43,7 @@ protected:
 	void renderPatternRow(Renderer& renderer, const SDL_Rect& area, const PatternRow& row, const Color& color, int columnFlags = -1);
 	
 public:
-	TrackEditor(EditorState& editorState, TrackEditorState& trackEditorState, Player& player, Song& song, int tracks);
+	TrackEditor(EditorState& editorState, TrackEditorState& trackEditorState, IPlayer& player, Song& song, int tracks);
 	virtual ~TrackEditor();
 	
 	void setTriggerNotes(bool state);

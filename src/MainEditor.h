@@ -3,30 +3,28 @@
 #include "Editor.h"
 #include <string>
 
-struct Player;
+struct IPlayer;
 struct Song;
 struct PatternEditor;
 struct TextEditor;
 struct SequenceRowEditor;
 struct Oscilloscope;
-struct Synth;
-struct WaveView;
+struct ISynth;
 struct FileSelector;
 struct Listenable;
 struct Theme;
 
 class MainEditor: public Editor
 {
-	Player& mPlayer;
+	IPlayer& mPlayer;
 	PlayerState& mPlayerState;
 	Song& mSong;
-	Synth& mSynth;
+	ISynth& mSynth;
 	Listenable *mOscillatorsUpdated;
 	PatternEditor *patternEditor;
 	SequenceRowEditor *sequenceRowEditor;
 	TextEditor *songNameEditor;
 	TextEditor *macroNameEditor;
-	WaveView *waveView;
 	FileSelector *fileSelector;
 	int mDragStartX, mDragStartY;
 	bool mIsDragging;
@@ -49,7 +47,7 @@ class MainEditor: public Editor
 	void stopDragging();
 	
 public:
-	MainEditor(EditorState& editorState, Player& player, PlayerState& playerState, Song& song, Synth& synth);
+	MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth);
 	virtual ~MainEditor();
 	
 	virtual bool onEvent(SDL_Event& event);

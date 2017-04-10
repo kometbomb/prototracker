@@ -10,7 +10,7 @@
 #include "PlayerState.h"
 #include "SDL.h"
 
-PatternEditor::PatternEditor(EditorState& editorState, Player& player, Song& song)
+PatternEditor::PatternEditor(EditorState& editorState, IPlayer& player, Song& song)
 	: TrackEditor(editorState, editorState.patternEditor, player, song, SequenceRow::maxTracks)
 {
 	editorState.sequenceEditor.currentRow.addListener(this);

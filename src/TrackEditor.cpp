@@ -8,7 +8,7 @@
 #include <cstdio>
 
 
-TrackEditor::TrackEditor(EditorState& editorState, TrackEditorState& trackEditorState, Player& player, Song& song, int tracks)
+TrackEditor::TrackEditor(EditorState& editorState, TrackEditorState& trackEditorState, IPlayer& player, Song& song, int tracks)
 	: ColumnEditor(editorState, trackEditorState, tracks, PatternRow::NumColumns), mPlayer(player), mSong(song), mTriggerNotes(true), mAddMacroEffect(true)
 {
 	

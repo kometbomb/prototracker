@@ -1,5 +1,5 @@
 #include "MainEditor.h"
-#include "Player.h"
+#include "IPlayer.h"
 #include "PatternEditor.h"
 #include "Oscilloscope.h"
 #include "MacroEditor.h"
@@ -17,10 +17,9 @@
 #include "Song.h"
 #include "Renderer.h"
 #include "Label.h"
-#include "Synth.h"
+#include "ISynth.h"
 #include "SequenceRow.h"
-#include "TrackState.h"
-#include "WaveView.h"
+#include "ITrackState.h"
 #include "FileSection.h"
 #include "OctaveInfo.h"
 #include "TouchRegion.h"
@@ -44,16 +43,12 @@
 #define SCALE 2
 #endif
 
-MainEditor::MainEditor(EditorState& editorState, Player& player, PlayerState& playerState, Song& song, Synth& synth)
+MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth)
 	: Editor(editorState), mPlayer(player), mPlayerState(playerState), mSong(song), mSynth(synth), mIsDragging(false)
 {
 	mOscillatorsUpdated = new Listenable();
 	
-	
-	//waveView = new WaveView(editorState, synth.getWaveStore());
 	fileSelector = new FileSelector(editorState);
-	
-	//addChild(waveView, 0, 0, 256, 256);
 }
 
 
@@ -595,7 +590,7 @@ void MainEditor::loadElements(const Theme& theme)
 			case Theme::Oscilloscope:
 			{
 				Oscilloscope * oscilloscope = new Oscilloscope(mEditorState, mPlayer, element.parameters[4]);
-				oscilloscope->setBuffer(mSynth.getOscillatorProbe(element.parameters[4]), Synth::oscillatorProbeLength);
+				oscilloscope->setBuffer(mSynth.getOscillatorProbe(element.parameters[4]), ISynth::oscillatorProbeLength);
 				mOscillatorsUpdated->addListener(oscilloscope);
 				addChild(oscilloscope, element.parameters[0], element.parameters[1], element.parameters[2], element.parameters[3]);
 			}

@@ -2,17 +2,17 @@
 
 #include "Editor.h"
 
-class Player;
+class IPlayer;
 struct Sample16;
 
 class Oscilloscope: public Editor
 {
 	const Sample16 *mBuffer;
 	int mBufferLength, mChannel;
-	Player& mPlayer;
+	IPlayer& mPlayer;
 	
 public:
-	Oscilloscope(EditorState& editorState, Player& player, int channel);
+	Oscilloscope(EditorState& editorState, IPlayer& player, int channel);
 	
 	void setBuffer(const Sample16 *buffer, int length);
 	

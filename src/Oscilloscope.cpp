@@ -2,11 +2,11 @@
 #include "Renderer.h"
 #include "Color.h"
 #include "Sample.h"
-#include "Player.h"
+#include "IPlayer.h"
 #include "TrackState.h"
 #include "Oscillator.h"
 
-Oscilloscope::Oscilloscope(EditorState& editorState, Player& player, int channel)
+Oscilloscope::Oscilloscope(EditorState& editorState, IPlayer& player, int channel)
 	: Editor(editorState, false), mPlayer(player), mChannel(channel)
 {
 }

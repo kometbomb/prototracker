@@ -17,7 +17,7 @@ protected:
 	virtual void findUnusedTrack(int track);
 	
 public:
-	PatternEditor(EditorState& editorState, Player& player, Song& song);
+	PatternEditor(EditorState& editorState, IPlayer& player, Song& song);
 	virtual ~PatternEditor();
 	
 	void setPattern(int track, int pattern);

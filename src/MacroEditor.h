@@ -13,7 +13,7 @@ protected:
 	virtual void findUnusedTrack(int track);
 	
 public:
-	MacroEditor(EditorState& editorState, Player& player, Song& song);
+	MacroEditor(EditorState& editorState, IPlayer& player, Song& song);
 	virtual ~MacroEditor();
 	
 	virtual bool onEvent(SDL_Event& event);

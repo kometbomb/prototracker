@@ -7,7 +7,7 @@
 #include "EditorState.h"
 #include "Renderer.h"
 
-MacroEditor::MacroEditor(EditorState& editorState, Player& player, Song& song)
+MacroEditor::MacroEditor(EditorState& editorState, IPlayer& player, Song& song)
 	: TrackEditor(editorState, editorState.macroEditor, player, song, 1)
 {
 	editorState.macro.addListener(this);
