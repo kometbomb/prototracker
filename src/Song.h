@@ -9,6 +9,8 @@ class Song
 {
 public:
 	static const int songNameLength = 16;
+	static const int songVersion = 16;
+	
 private:
 	Sequence *sequence;
 	Pattern *patterns;

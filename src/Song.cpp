@@ -108,7 +108,9 @@ FileSection* Song::pack()
 	 * Basic song info
 	 */
 	
-	song->writeByte(0);
+	// File format version
+	song->writeByte(songVersion);
+	song->writeByte(SequenceRow::maxTracks);
 	song->writeString(name);
 	song->writeByte(patternLength - 1);
 	song->writeByte(sequenceLength - 1);
@@ -198,8 +200,25 @@ bool Song::unpack(const FileSection& section)
 	int offset = 0;
 	int version = section.readByte(offset);
 	
+	if (version > songVersion)
+	{
+		// TODO: display a proper error if the version is newer than we can handle
+		return false;
+	}
+	
+	// Default trackCount for version == 0
+	int trackCount = 4;
+	
 	if (version == FileSection::invalidRead)
 		return false;
+	
+	if (version >= 1)
+	{
+		trackCount = section.readByte(offset);
+		
+		if (trackCount == FileSection::invalidRead)
+			return false;
+	}
 	
 	const char *songName = section.readString(offset);
 	
@@ -259,7 +278,7 @@ bool Song::unpack(const FileSection& section)
 					}
 					else
 					{
-						for (int track = 0 ; track < SequenceRow::maxTracks && returnValue ; ++track)
+						for (int track = 0 ; track < trackCount && returnValue ; ++track)
 						{
 							for (int i = 0 ; i < count ; ++i)
 							{
@@ -271,7 +290,9 @@ bool Song::unpack(const FileSection& section)
 									break;
 								}
 								
-								sequence->getRow(i).pattern[track] = temp;
+								// Skip tracks that can't fit in our sequence
+								if (track < SequenceRow::maxTracks)
+									sequence->getRow(i).pattern[track] = temp;
 							}
 						}
 					}
