@@ -92,9 +92,9 @@ void FileSelector::accept(bool isFinal)
 		mParent->onFileSelectorEvent(*this, true);
 	else
 	{
-		if (getSelectedItem().isDirectory)
+		if (FileItem::checkDirectory(getSelectedPath()))
 		{
-			setPath(getSelectedItem().path.c_str());
+			setPath(getSelectedPath());
 			return;
 		}
 	
@@ -331,3 +331,17 @@ bool FileSelector::FileItem::directorySort(const FileSelector::FileItem& a, cons
 	
 	return false;
 }
+
+
+bool FileSelector::FileItem::checkDirectory(const char *name)
+{
+	struct stat statBuf;
+		
+	if (!stat(name, &statBuf))
+	{
+		return (statBuf.st_mode & S_IFDIR) == S_IFDIR;
+	}
+	
+	return false;
+}
+

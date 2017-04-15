@@ -42,6 +42,7 @@ class FileSelector: public Editor
 		
 		// For sorting the listing
 		static bool directorySort(const FileItem& a, const FileItem& b);
+		static bool checkDirectory(const char *name);
 	};
 	
 	std::vector<FileItem> mItems;
