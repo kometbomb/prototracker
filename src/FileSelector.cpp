@@ -9,6 +9,7 @@
 #include <cstring>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <algorithm>
 
 FileSelector::FileSelector(EditorState& editorState)
 	: Editor(editorState), mSelectedItem(0), mCheckOverwrite(false)
@@ -267,6 +268,8 @@ void FileSelector::populate()
 	
 	closedir(directory);
 	
+	std::sort(mItems.begin(), mItems.end(), FileItem::directorySort);
+	
 	selectItem(0);
 }
 
@@ -311,4 +314,20 @@ void FileSelector::setOverwriteCheck(bool state)
 FileSelector::FileItem::FileItem(bool _isDirectory, const char *_path, int _size)
 	: isDirectory(_isDirectory), path(_path), size(_size)
 {
+}
+
+
+bool FileSelector::FileItem::directorySort(const FileSelector::FileItem& a, const FileSelector::FileItem& b)
+{
+	// Directories first
+	
+	if (a.isDirectory && !b.isDirectory)
+		return true;
+	
+	// Then in alphabetical order
+	
+	if (strcmp(a.path.c_str(), b.path.c_str()) < 0)
+		return true;
+	
+	return false;
 }

@@ -39,6 +39,9 @@ class FileSelector: public Editor
 		int size;
 		
 		FileItem(bool isDirectory, const char *path, int size);
+		
+		// For sorting the listing
+		static bool directorySort(const FileItem& a, const FileItem& b);
 	};
 	
 	std::vector<FileItem> mItems;
