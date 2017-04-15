@@ -86,7 +86,7 @@ void Renderer::renderText(const SDL_Rect& position, const Color& color, const ch
 
 void Renderer::renderChar(const SDL_Rect& position, const Color& color, int c)
 {
-	static const char *charmap = "0123456789abcdefghijklmnopqrstuvwxyz-#/:._<>";
+	static const char *charmap = "0123456789abcdefghijklmnopqrstuvwxyz-#/:._<>,'\"";
 	
 	c = tolower(c);
 	SDL_SetTextureBlendMode(mFont, SDL_BLENDMODE_BLEND);
