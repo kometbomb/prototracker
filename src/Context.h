@@ -14,10 +14,11 @@ struct Context
 	bool done;
 	bool themeLoaded;
 	
+	Mixer mixer;
 	Song song;
 	Player player;
 	Synth synth;
-	Mixer mixer;
+	
 	EditorState editorState;
 	MainEditor mainEditor;
 	Renderer renderer;
