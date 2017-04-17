@@ -101,7 +101,7 @@ bool MainEditor::onEvent(SDL_Event& event)
 		
 		for (int index = 0 ; index < mNumChildren ; ++index)
 		{
-			if (SDL_PointInRect(&point, &mChildrenArea[index]))
+			if (pointInRect(point, mChildrenArea[index]))
 			{
 				target = mChildren[index];
 				break;

@@ -210,3 +210,18 @@ void Editor::invalidateParent()
 	if (mParent)
 		mParent->invalidateAll();
 }
+
+
+bool Editor::pointInRect(const SDL_Point& point, const SDL_Rect& rect)
+{
+#ifdef SDL_PointInRect
+	return SDL_PointInRect(&point, &rect);
+#else
+	// In case we are using SDL <2.0.4 (of whatever the version is
+	// where the rect built-in functions are introduced. E.g. my 
+	// PocketCHIP only goes up to 2.0.2 by default.
+	
+	return point.x >= rect.x && point.x < rect.x + rect.w &&
+		point.y >= rect.y && point.y < rect.y + rect.h;
+#endif
+}
