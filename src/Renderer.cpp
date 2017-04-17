@@ -21,12 +21,9 @@
 #endif
 
 Renderer::Renderer()
-	:mFont(NULL), mBackground(NULL), mIntermediateTexture(NULL)
+	: mWindow(NULL), mRenderer(NULL), mFont(NULL), mBackground(NULL), mIntermediateTexture(NULL)
 {
-	mWindow = SDL_CreateWindow(APP_NAME, SDL_WINDOWPOS_CENTERED,  SDL_WINDOWPOS_CENTERED, 320 * SCALE, 240 * SCALE, 0);
-	mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_TARGETTEXTURE|SDL_RENDERER_SOFTWARE);
 	
-	SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
 }
 
 
@@ -221,6 +218,15 @@ bool Renderer::loadFont(const std::string& path, int charWidth, int charHeight)
 	
 bool Renderer::loadGui(const std::string& path, int width, int height)
 {
+	if (!mWindow)
+		mWindow = SDL_CreateWindow(APP_NAME, SDL_WINDOWPOS_CENTERED,  SDL_WINDOWPOS_CENTERED, width * SCALE, height * SCALE, 0);
+	
+	if (!mRenderer)
+	{
+		mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_TARGETTEXTURE|SDL_RENDERER_SOFTWARE);
+		SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
+	}
+	
 	if (mBackground != NULL)
 		SDL_DestroyTexture(mBackground);
 	
@@ -245,10 +251,10 @@ bool Renderer::loadGui(const std::string& path, int width, int height)
 	SDL_SetWindowSize(mWindow, width * SCALE, height * SCALE);
 #endif
 	SDL_SetWindowPosition(mWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-
+	
 	mGuiWidth = width;
 	mGuiHeight = height;
-	
+
 	SDL_SetRenderTarget(mRenderer, NULL);
 	
 	if (mIntermediateTexture != NULL)

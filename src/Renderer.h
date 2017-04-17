@@ -21,6 +21,7 @@ public:
 	
 	Renderer();
 	~Renderer();
+	
 	bool setTheme(const Theme& theme);
 	void clearRect(const SDL_Rect& rect, const Color& color);
 	void drawRect(const SDL_Rect& rect, const Color& color);
