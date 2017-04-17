@@ -188,9 +188,6 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 	if (lastVisible >= mSong.getSequenceLength())
 		lastVisible = mSong.getSequenceLength() - 1;
 	
-	SDL_Rect editBar = {area.x, area.y + centerY, area.w, 8};
-	renderer.renderRect(editBar, Color());
-	
 	if (hasFocus())
 	{
 		int columnWidth = 8;
