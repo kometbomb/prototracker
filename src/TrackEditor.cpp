@@ -406,9 +406,6 @@ void TrackEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 	
 	int centerY = (area.h / 2) & ~7;
 	
-	SDL_Rect editBar = {area.x, area.y + centerY, area.w, rowHeight};
-	renderer.renderRect(editBar, Color());
-	
 	if (firstVisible < 0)
 		firstVisible = 0;
 	
