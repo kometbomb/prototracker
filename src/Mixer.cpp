@@ -35,9 +35,9 @@ Mixer::~Mixer()
 		SDL_WaitThread(mThread, NULL);
 	}
 	
-	free(mConvert);
-	
 	deinitAudio();
+	
+	free(mConvert);
 }
 
 
@@ -97,6 +97,8 @@ void Mixer::deinitAudio()
 {
 	if (mAudioOpened)
 		SDL_CloseAudio();
+	
+	mAudioOpened = false;
 	
 	if (mBuffer != NULL)
 		delete[] mBuffer;
