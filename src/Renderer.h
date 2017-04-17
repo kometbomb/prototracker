@@ -14,16 +14,14 @@ class Renderer
 	SDL_Texture *mFont, *mBackground, *mIntermediateTexture;
 	int mGuiWidth, mGuiHeight, mFontWidth, mFontHeight;
 	
-	void loadFont(const std::string& path, int charWidth, int charHeight);
-	void loadGui(const std::string& path, int width, int height);
-	
-	
+	bool loadFont(const std::string& path, int charWidth, int charHeight);
+	bool loadGui(const std::string& path, int width, int height);
 	
 public:
 	
 	Renderer();
 	~Renderer();
-	void setTheme(const Theme& theme);
+	bool setTheme(const Theme& theme);
 	void clearRect(const SDL_Rect& rect, const Color& color);
 	void drawRect(const SDL_Rect& rect, const Color& color);
 	void setClip(const SDL_Rect& area);

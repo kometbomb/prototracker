@@ -575,7 +575,7 @@ void MainEditor::saveState()
 }
 
 
-void MainEditor::loadElements(const Theme& theme)
+bool MainEditor::loadElements(const Theme& theme)
 {
 	deleteChildren();
 	
@@ -692,6 +692,8 @@ void MainEditor::loadElements(const Theme& theme)
 		setFocus(patternEditor);
 	
 	setMacro(0);
+	
+	return true;
 }
 
 

@@ -12,6 +12,8 @@ struct Context
 {
 	bool ready;
 	bool done;
+	bool themeLoaded;
+	
 	Song song;
 	Player player;
 	Synth synth;

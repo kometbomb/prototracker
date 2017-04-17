@@ -21,11 +21,26 @@ Context* _context;
 #endif
 
 Context::Context()
-	: ready(false), done(false), song(), player(song), synth(), mixer(player, synth), editorState(), mainEditor(editorState, player, player.getPlayerState(), song, synth)
+	: ready(false), done(false), themeLoaded(false), song(), player(song), synth(), mixer(player, synth), editorState(), mainEditor(editorState, player, player.getPlayerState(), song, synth)
 {
-	Theme theme("assets/elements");
-	renderer.setTheme(theme);
-	mainEditor.loadElements(theme);
+	Theme theme;
+	
+	if (!theme.load("assets/elements"))
+	{
+		return;
+	}
+		
+	if (!renderer.setTheme(theme))
+	{
+		return;
+	}
+	
+	if (!mainEditor.loadElements(theme))
+	{
+		return;
+	}
+	
+	themeLoaded = true;
 }
 
 
@@ -126,7 +141,14 @@ extern "C" int main(int argc, char **argv)
 	atexit(IMG_Quit);
 	
 	_context = new Context();
+	
 	Context& context = *_context;
+	
+	if (!context.themeLoaded)
+	{
+		// Theme was not loaded - exit
+		return 1;
+	}
 	
 #ifdef __EMSCRIPTEN__
 	emSyncFsAndStartup();

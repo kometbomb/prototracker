@@ -74,5 +74,5 @@ public:
 	bool loadState();
 	void saveState();
 	
-	void loadElements(const Theme& theme);
+	bool loadElements(const Theme& theme);
 };

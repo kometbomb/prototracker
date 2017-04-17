@@ -36,11 +36,14 @@ private:
 	int mWidth, mHeight, mFontWidth, mFontHeight;
 	std::vector<Element> mElement;
 	
-	void loadDefinition(const std::string& path);
+	bool loadDefinition(const std::string& path);
 	
 public:
 	
-	Theme(const std::string& path);
+	Theme();
+	
+	bool load(const std::string& path);
+	
 	const std::string& getName() const;
 	const std::string& getPath() const;
 	const std::string& getFontPath() const;

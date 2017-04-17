@@ -1,10 +1,10 @@
 #include "Theme.h"
 #include <cstdio>
 #include <cstring>
+#include "SDL.h"
 #include "SDL_rwops.h"
 
-Theme::Theme(const std::string& path)
-	: mPath(path)
+Theme::Theme()
 {
 	mFontWidth = 8;
 	mFontHeight = 8;
@@ -13,8 +13,20 @@ Theme::Theme(const std::string& path)
 	mBasePath = "assets/";
 	mBackgroundPath = mBasePath+"gui.png";
 	mFontPath = mBasePath+"font.png";
+}
+
+
+bool Theme::load(const std::string& path)
+{
+	mPath = path;
 	
-	loadDefinition(path);
+	if (!loadDefinition(path))
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load theme", ("Could not load "+path+". Perhaps you need to set the working directory?").c_str(), NULL);
+		return false;
+	}
+	
+	return true;
 }
 
 
@@ -105,12 +117,12 @@ static char *rwgets(char *buf, int count, SDL_RWops *rw)
 }
 
 
-void Theme::loadDefinition(const std::string& path)
+bool Theme::loadDefinition(const std::string& path)
 {
 	SDL_RWops *rw = SDL_RWFromFile(path.c_str(), "r"); 
 	
 	if (!rw)
-		return;
+		return false;
 	
 	int lineCounter = 0;
 	
@@ -194,4 +206,6 @@ void Theme::loadDefinition(const std::string& path)
 	}
 		
 	SDL_RWclose(rw);
+	
+	return true;
 }

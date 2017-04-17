@@ -196,28 +196,42 @@ int Renderer::getFontHeight() const
 }
 
 
-void Renderer::loadFont(const std::string& path, int charWidth, int charHeight)
+bool Renderer::loadFont(const std::string& path, int charWidth, int charHeight)
 {
 	if (mFont != NULL)
 		SDL_DestroyTexture(mFont);
 	
 	SDL_Surface *img = IMG_Load(path.c_str());
+	
+	if (!img)
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load font", ("Could not load "+path+". Perhaps you need to set the working directory?").c_str(), NULL);
+		return false;
+	}
+	
 	mFont = SDL_CreateTextureFromSurface(mRenderer, img);
 	SDL_FreeSurface(img);
 	
 	mFontWidth = charWidth;
 	mFontHeight = charHeight;
 	
-	
+	return true;
 }
 
 	
-void Renderer::loadGui(const std::string& path, int width, int height)
+bool Renderer::loadGui(const std::string& path, int width, int height)
 {
 	if (mBackground != NULL)
 		SDL_DestroyTexture(mBackground);
 	
 	SDL_Surface *img = IMG_Load(path.c_str());
+	
+	if (!img)
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load GUI", ("Could not load "+path+". Perhaps you need to set the working directory?").c_str(), NULL);
+		
+		return false;
+	}
 	
 	mBackground = SDL_CreateTextureFromSurface(mRenderer, img);
 	SDL_FreeSurface(img);
@@ -241,13 +255,20 @@ void Renderer::loadGui(const std::string& path, int width, int height)
 		SDL_DestroyTexture(mIntermediateTexture);
 		
 	mIntermediateTexture = SDL_CreateTexture(mRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, mGuiWidth, mGuiHeight);
+	
+	return true;
 }
 
 
-void Renderer::setTheme(const Theme& theme)
+bool Renderer::setTheme(const Theme& theme)
 {
-	loadGui(theme.getBackgroundPath(), theme.getWidth(), theme.getHeight());
-	loadFont(theme.getFontPath(), theme.getFontWidth(), theme.getFontHeight());
+	if (!loadGui(theme.getBackgroundPath(), theme.getWidth(), theme.getHeight()))
+		return false;
+	
+	if (!loadFont(theme.getFontPath(), theme.getFontWidth(), theme.getFontHeight()))
+		return false;
+	
+	return true;
 }
 
 
