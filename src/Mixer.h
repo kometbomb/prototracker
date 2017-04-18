@@ -35,6 +35,7 @@ public:
 	~Mixer();
 	bool isThreadRunning() const;
 	void runThread();
+	void stopThread();
 	void runQueueThread();
 	int& getSamples();
 	int getSampleRate() const;

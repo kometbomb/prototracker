@@ -14,7 +14,6 @@ struct Context
 	bool done;
 	bool themeLoaded;
 	
-	Mixer mixer;
 	Song song;
 	Player player;
 	Synth synth;
@@ -22,6 +21,7 @@ struct Context
 	EditorState editorState;
 	MainEditor mainEditor;
 	Renderer renderer;
+	Mixer mixer;
 	
 	Context();
 };

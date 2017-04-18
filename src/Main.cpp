@@ -172,6 +172,9 @@ extern "C" int main(int argc, char **argv)
 	{
 		infinityAndBeyond(&context);
 	}
+	
+	context.mixer.stopThread();
+	
 #endif
 
 	delete _context;
