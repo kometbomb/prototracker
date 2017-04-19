@@ -402,7 +402,7 @@ bool MainEditor::loadSong(const char *path)
 		delete section;
 		delete[] data;
 		
-		mEditorState = EditorState();
+		mEditorState.reset();
 		
 		syncPlayerState();
 		syncSongParameters(mSong);
@@ -760,6 +760,6 @@ const std::string& MainEditor::getSongBase64()
 void MainEditor::newSong()
 {
 	mSong.clear();
-	mEditorState = EditorState();
+	mEditorState.reset();
 	refreshAll();
 }

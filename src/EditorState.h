@@ -38,4 +38,8 @@ struct EditorState
 	
 	FileSection * pack();
 	bool unpack(const FileSection& section);
+
+	// Should use this to reset state instead of assigning
+	// to an empty EditorState() to avoid double frees in CopyBuffer
+	void reset();
 };

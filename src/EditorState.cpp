@@ -202,3 +202,19 @@ bool TrackEditorState::unpack(const FileSection& section)
 		
 	return true;
 }
+
+
+void EditorState::reset()
+{
+	sequenceEditor = TrackEditorState();
+	patternEditor = TrackEditorState();
+	macroEditor = TrackEditorState();
+
+	copyBuffer.clear();
+
+	followPlayPosition = false;
+
+	macro = 0;
+	octave = 0;
+	editMode = 0;
+}
