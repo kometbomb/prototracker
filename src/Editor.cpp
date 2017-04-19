@@ -132,6 +132,7 @@ void Editor::drawModal(Renderer& renderer, const SDL_Rect& area)
 	{
 		if (mModal->shouldRedrawBackground())
 		{
+			// Draw plain black background with white border
 			renderer.clearRect(area, Color(0, 0, 0));
 			renderer.drawRect(area, Color(255, 255, 255));
 		}

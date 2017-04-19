@@ -62,5 +62,9 @@ public:
 	bool hasFocus();
 	
 	void draw(Renderer& renderer, const SDL_Rect& area);
+
+	/* onEvent() should return false if the event was not consumed
+	 * so that the parent Editor knows to process it.
+	 */
 	virtual bool onEvent(SDL_Event& event);
 };

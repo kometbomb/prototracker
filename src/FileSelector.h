@@ -58,16 +58,39 @@ public:
 	FileSelector(EditorState& editorState);
 	virtual ~FileSelector();
 	
-	void populate();
+	/* Set dialog id (freely set and used by the Editor that creates the dialog)
+	 */
 	void setId(int id);
+	int getId() const;
+
+	/* Set dialog title
+	 */
 	void setTitle(const char *title);
+
+	/* Set path & populate list
+	 */
 	void setPath(const char *path);
+
+	/* Set file extension list (with leading period)
+	 */
 	void setFilter(const char *extension);
+
+	/* Read file list from the path set with setPath()
+	 * using the extension filter set by setFilter()
+	 */
+	void populate();
+
+	/* Whether the dialog should check if a file exists
+	 * with the selected filename (for save dialogs)
+	 */
 	void setOverwriteCheck(bool state);
+
+	/* After the dialog finishes this will return the path
+	 * and filename to selected (or new) file
+	 */
 	const char * getSelectedPath() const;
 	const FileItem& getSelectedItem() const;
-	int getId() const;
-	
+
 	virtual bool onEvent(SDL_Event& event);
 	virtual void onDraw(Renderer& renderer, const SDL_Rect& area);
 	virtual void onMessageBoxEvent(const Editor& messageBox, int code);
