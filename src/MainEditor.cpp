@@ -87,6 +87,9 @@ void MainEditor::stopDragging()
 	
 bool MainEditor::onEvent(SDL_Event& event)
 {
+	/* If a modal dialog (FileSelector etc.) is visible,
+	 * send events to that Editor instead.
+	 */
 	if (mModal != NULL)
 	{
 		return mModal->onEvent(event);
@@ -94,7 +97,9 @@ bool MainEditor::onEvent(SDL_Event& event)
 	
 	Editor* target = getFocus();
 
-	
+	/* Focus on GUI elements when user clicks on them.
+	 * Also, start drag (used by drag scroll below this)
+	 */
 	if (event.type == SDL_MOUSEBUTTONDOWN)
 	{
 		SDL_Point point = {event.button.x/SCALE, event.button.y/SCALE};
@@ -115,6 +120,10 @@ bool MainEditor::onEvent(SDL_Event& event)
 		stopDragging();
 	}
 #if MOUSEDRAG
+	/* Emulate dragging by mouse (or touch events) by sending cursor key
+	 * events per every 8 pixels (should be font width/height to be accurate)
+	 */
+
 	else if (event.type == SDL_MOUSEMOTION && mIsDragging)
 	{
 		if (abs(event.motion.y - mDragStartY) >= SCALE * 8)
@@ -148,6 +157,7 @@ bool MainEditor::onEvent(SDL_Event& event)
 
 	if (target->onEvent(event))
 	{
+		// Target Editor consumed the event, we don't need to process it here.
 		return true;
 	}
 	
@@ -191,6 +201,7 @@ bool MainEditor::onEvent(SDL_Event& event)
 				
 				break;
 				
+			/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
 			case SDLK_F5:
 			case SDLK_RCTRL:
 				mPlayer.play(mEditorState.sequenceEditor.currentRow);
@@ -198,6 +209,7 @@ bool MainEditor::onEvent(SDL_Event& event)
 				refreshAll();
 				return true;
 			
+			/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
 			case SDLK_F6:
 			case SDLK_RSHIFT:
 				mPlayer.play(mEditorState.sequenceEditor.currentRow, PlayerState::PlaySequenceRow);
@@ -224,7 +236,7 @@ bool MainEditor::onEvent(SDL_Event& event)
 					mEditorState.editMode = !mEditorState.editMode;
 					refreshAll();
 				}
-				
+
 				return true;
 				
 			case SDLK_F7:
@@ -402,6 +414,7 @@ bool MainEditor::loadSong(const char *path)
 		delete section;
 		delete[] data;
 		
+		// Use reset() instead of assigning to avoid CopyBuffer double free
 		mEditorState.reset();
 		
 		syncPlayerState();
