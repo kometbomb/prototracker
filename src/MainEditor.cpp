@@ -235,6 +235,12 @@ bool MainEditor::onEvent(SDL_Event& event)
 				{
 					mEditorState.editMode = !mEditorState.editMode;
 					refreshAll();
+					
+					// Should only mute tracks when stopped, i.e.
+					// the user has played a note and wants to stop it
+					// and not when editing while playing the song
+					if (mPlayerState.mode == PlayerState::Stop)
+						mPlayer.muteTracks();
 				}
 
 				return true;
