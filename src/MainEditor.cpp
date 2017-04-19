@@ -188,15 +188,26 @@ bool MainEditor::onEvent(SDL_Event& event)
 				refreshAll();
 				return true;
 			
+			/* Mute tracks */
 			case SDLK_1:
 			case SDLK_2:
 			case SDLK_3:
 			case SDLK_4:
+			case SDLK_5:
+			case SDLK_6:
+			case SDLK_7:
+			case SDLK_8:
+			case SDLK_9:
 			
 				if (event.key.keysym.mod & KMOD_ALT)
 				{
-					mPlayer.getTrackState(event.key.keysym.sym - SDLK_1).enabled ^= true;
-					return true;
+					int track = event.key.keysym.sym - SDLK_1;
+
+					if (track < SequenceRow::maxTracks)
+					{
+						mPlayer.getTrackState(track).enabled ^= true;
+						return true;
+					}
 				}
 				
 				break;
@@ -216,7 +227,7 @@ bool MainEditor::onEvent(SDL_Event& event)
 				mEditorState.editMode = false;
 				refreshAll();
 				return true;
-				
+					
 			case SDLK_SPACE:
 				if (mEditorState.followPlayPosition)
 				{
