@@ -278,7 +278,7 @@ Song::UnpackError Song::unpack(const FileSection& section)
 					}
 					else
 					{
-						for (int track = 0 ; track < trackCount && returnValue ; ++track)
+						for (int track = 0 ; track < trackCount && returnValue == Success ; ++track)
 						{
 							for (int i = 0 ; i < count ; ++i)
 							{
