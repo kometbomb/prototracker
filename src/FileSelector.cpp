@@ -324,9 +324,9 @@ bool FileSelector::FileItem::directorySort(const FileSelector::FileItem& a, cons
 	if (a.isDirectory && !b.isDirectory)
 		return true;
 	
-	// Then in alphabetical order
+	// Then in alphabetical order if BOTH a & b are either directories or files
 	
-	if (strcmp(a.path.c_str(), b.path.c_str()) < 0)
+	if (a.isDirectory == b.isDirectory && strcmp(a.path.c_str(), b.path.c_str()) < 0)
 		return true;
 	
 	return false;
