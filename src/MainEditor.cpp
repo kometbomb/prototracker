@@ -419,7 +419,7 @@ bool MainEditor::loadSong(const char *path)
 		mPlayer.stop();
 		mPlayer.reset();
 				
-		if (!mSong.unpack(*section))
+		if (mSong.unpack(*section) != Song::Success)
 		{
 			// popup here
 			printf("Error!\n");

@@ -11,6 +11,15 @@ public:
 	static const int songNameLength = 16;
 	static const int songVersion = 16;
 	
+	// Error codes returned by unpack()
+	
+	enum UnpackError {
+		Success,		// Song was unpacked successfully
+		NotASong,		// Data format unknown
+		ErrorVersion,	// Version number higher than our version
+		ErrorRead		// Something went wrong while reading data
+	};
+	
 private:
 	Sequence *sequence;
 	Pattern *patterns;
@@ -40,7 +49,7 @@ public:
 	
 	void clear();
 	FileSection* pack();
-	bool unpack(const FileSection& section);
+	UnpackError unpack(const FileSection& section);
 	
 	int getSize() const;
 

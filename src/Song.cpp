@@ -190,10 +190,10 @@ void Song::clear()
 }
 
 
-bool Song::unpack(const FileSection& section)
+Song::UnpackError Song::unpack(const FileSection& section)
 {
 	if (strcmp(section.getName(), "SONG") != 0)
-		return false;
+		return NotASong;
 	
 	clear();
 	
@@ -203,45 +203,45 @@ bool Song::unpack(const FileSection& section)
 	if (version > songVersion)
 	{
 		// TODO: display a proper error if the version is newer than we can handle
-		return false;
+		return ErrorVersion;
 	}
 	
 	// Default trackCount for version == 0
 	int trackCount = 4;
 	
 	if (version == FileSection::invalidRead)
-		return false;
+		return ErrorRead;
 	
 	if (version >= 1)
 	{
 		trackCount = section.readByte(offset);
 		
 		if (trackCount == FileSection::invalidRead)
-			return false;
+			return ErrorRead;
 	}
 	
 	const char *songName = section.readString(offset);
 	
 	if (songName == NULL)
-		return false;
+		return ErrorRead;
 	
 	strncpy(name, songName, songNameLength + 1);
 	
 	int temp = section.readByte(offset);
 	
 	if (temp == FileSection::invalidRead)
-		return false;
+		return ErrorRead;
 	
 	patternLength = temp + 1;
 	
 	temp = section.readByte(offset);
 	
 	if (temp == FileSection::invalidRead)
-		return false;
+		return ErrorRead;
 	
 	sequenceLength = temp + 1;
 	
-	bool returnValue = true;
+	UnpackError returnValue = Success;
 	
 	do
 	{
@@ -264,7 +264,7 @@ bool Song::unpack(const FileSection& section)
 				
 				if (temp == FileSection::invalidRead)
 				{
-					returnValue = false;
+					returnValue = ErrorRead;
 				}
 				else
 				{
@@ -274,7 +274,7 @@ bool Song::unpack(const FileSection& section)
 					
 					if (count > maxSequenceRows)
 					{
-						returnValue = false;
+						returnValue = ErrorRead;
 					}
 					else
 					{
@@ -286,7 +286,7 @@ bool Song::unpack(const FileSection& section)
 								
 								if (temp == FileSection::invalidRead)
 								{
-									returnValue = false;
+									returnValue = ErrorRead;
 									break;
 								}
 								
@@ -304,7 +304,7 @@ bool Song::unpack(const FileSection& section)
 				
 				if (temp == FileSection::invalidRead)
 				{
-					returnValue = false;
+					returnValue = ErrorRead;
 				}
 				else
 				{
@@ -316,7 +316,7 @@ bool Song::unpack(const FileSection& section)
 					{
 						if (!subSection->readPattern(patterns[i], subOffset))
 						{
-							returnValue = false;
+							returnValue = ErrorRead;
 							break;
 						}
 					}
@@ -328,7 +328,7 @@ bool Song::unpack(const FileSection& section)
 				
 				if (temp == FileSection::invalidRead)
 				{
-					returnValue = false;
+					returnValue = ErrorRead;
 				}
 				else
 				{
@@ -342,7 +342,7 @@ bool Song::unpack(const FileSection& section)
 						
 						if (macroName == NULL)
 						{
-							returnValue = false;
+							returnValue = ErrorRead;
 							break;
 						}
 						
@@ -350,7 +350,7 @@ bool Song::unpack(const FileSection& section)
 						
 						if (!subSection->readPattern(macros[i], subOffset))
 						{
-							returnValue = false;
+							returnValue = ErrorRead;
 							break;
 						}
 					}
@@ -359,19 +359,21 @@ bool Song::unpack(const FileSection& section)
 			else
 			{
 				printf("Unknown section %s\n", sectionName);
-				returnValue = false;
+				returnValue = NotASong;
+				
+				// TODO: Should probably skip unknown sections
 			}
 		}
 		else
 		{
-			returnValue = false;
+			returnValue = ErrorRead;
 		}
 		
 		//offset += subOffset;
 		
 		delete subSection;
 	}
-	while (returnValue);
+	while (returnValue == Success);
 	
 	return returnValue;
 }
