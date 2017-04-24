@@ -366,26 +366,90 @@ bool TrackEditor::onEvent(SDL_Event& event)
 				break;
 			}
 			
-			case SDL_CONTROLLERBUTTONDOWN:
+			case SDL_CONTROLLERBUTTONDOWN: 
+			{
+				bool aPressed = SDL_GameControllerGetButton(SDL_GameControllerFromInstanceID(event.cbutton.which), SDL_CONTROLLER_BUTTON_A);
+				PatternRow& patternRow = getCurrentPatternRow();
+			
 				switch (event.cbutton.button)
 				{
 					case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-						changeColumn(-1);
-						break;
-					
 					case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-						changeColumn(1);
+						if (!aPressed)
+						{
+							changeColumn(event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1);
+						}
+						else
+						{
+							switch (static_cast<int>(mTrackEditorState.currentColumn))
+							{
+								case PatternRow::Column::Note:
+								case PatternRow::Column::NoteParam1:
+								case PatternRow::Column::NoteParam2:
+									// A + LEFT/RIGHT = alter note
+									
+									if (patternRow.note.effect == 'n') 
+									{
+										patternRow.note.setNoteAndOctave(patternRow.note.getNoteWithOctave() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1));
+									}
+									break;
+							}
+						}
+						
 						break;
-					
-					case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-						scrollView(1);
-						return true;
 					
 					case SDL_CONTROLLER_BUTTON_DPAD_UP:
-						scrollView(-1);
-						return true;
+					case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+						if (!aPressed)
+						{
+							scrollView(event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP ? -1 : 1);
+						}
+						else
+						{
+							switch (static_cast<int>(mTrackEditorState.currentColumn))
+							{
+								case PatternRow::Column::Note:
+								case PatternRow::Column::NoteParam1:
+								case PatternRow::Column::NoteParam2:
+									// A + LEFT/RIGHT = alter note
+									
+									if (patternRow.note.effect == 'n') 
+									{
+										patternRow.note.setNoteAndOctave(patternRow.note.getNoteWithOctave() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN ? -12 : 12));
+									}
+									break;
+							}
+						}
+						
+						break;
+						
+					case SDL_CONTROLLER_BUTTON_A:
+						
+						switch (static_cast<int>(mTrackEditorState.currentColumn))
+						{
+							case PatternRow::Column::Note:
+							case PatternRow::Column::NoteParam1:
+							case PatternRow::Column::NoteParam2:
+								if (SDL_GameControllerGetButton(SDL_GameControllerFromInstanceID(event.cbutton.which), SDL_CONTROLLER_BUTTON_B))
+								{
+									// B+A = delete
+									
+									emptyRow(false, PatternRow::FlagNote);
+								}
+								else
+								{
+									if (patternRow.note.isEmpty())
+									{
+										patternRow.note.setNoteAndOctave(mEditorState.octave * 12);
+									}
+								}
+								break;
+						}
+					
+						break;
 				}
 				break;
+			}
 	}
 	
 	return false;
