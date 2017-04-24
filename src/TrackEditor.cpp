@@ -365,6 +365,27 @@ bool TrackEditor::onEvent(SDL_Event& event)
 				}
 				break;
 			}
+			
+			case SDL_CONTROLLERBUTTONDOWN:
+				switch (event.cbutton.button)
+				{
+					case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+						changeColumn(-1);
+						break;
+					
+					case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+						changeColumn(1);
+						break;
+					
+					case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+						scrollView(1);
+						return true;
+					
+					case SDL_CONTROLLER_BUTTON_DPAD_UP:
+						scrollView(-1);
+						return true;
+				}
+				break;
 	}
 	
 	return false;

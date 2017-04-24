@@ -166,156 +166,173 @@ bool MainEditor::onEvent(SDL_Event& event)
 		setFocus(target);
 	}
 	
-	if (event.type == SDL_KEYDOWN)
+	switch (event.type)
 	{
-		switch (event.key.keysym.sym)
-		{	
-			case SDLK_F1:
-				mEditorState.octave = std::max(0, mEditorState.octave - 1);
-				return true;
-				
-			case SDLK_F2:
-				mEditorState.octave = std::min(15, mEditorState.octave + 1);
-				return true;
-				
-			case SDLK_F9:
-				mSong.setPatternLength(std::max(1, mSong.getPatternLength() - 1));
-				refreshAll();
-				return true;
-				
-			case SDLK_F10:
-				mSong.setPatternLength(std::min(Pattern::maxRows, mSong.getPatternLength() + 1));
-				refreshAll();
-				return true;
-			
-			/* Mute tracks */
-			case SDLK_1:
-			case SDLK_2:
-			case SDLK_3:
-			case SDLK_4:
-			case SDLK_5:
-			case SDLK_6:
-			case SDLK_7:
-			case SDLK_8:
-			case SDLK_9:
-			
-				if (event.key.keysym.mod & KMOD_ALT)
-				{
-					int track = event.key.keysym.sym - SDLK_1;
-
-					if (track < SequenceRow::maxTracks)
-					{
-						mPlayer.getTrackState(track).enabled ^= true;
-						return true;
-					}
-				}
-				
-				break;
-				
-			/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
-			case SDLK_F5:
-			case SDLK_RCTRL:
-				mPlayer.play(mEditorState.sequenceEditor.currentRow);
-				mEditorState.editMode = false;
-				refreshAll();
-				return true;
-			
-			/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
-			case SDLK_F6:
-			case SDLK_RSHIFT:
-				mPlayer.play(mEditorState.sequenceEditor.currentRow, PlayerState::PlaySequenceRow);
-				mEditorState.editMode = false;
-				refreshAll();
-				return true;
+		case SDL_KEYDOWN:
+			switch (event.key.keysym.sym)
+			{	
+				case SDLK_F1:
+					mEditorState.octave = std::max(0, mEditorState.octave - 1);
+					return true;
 					
-			case SDLK_SPACE:
-				if (mEditorState.followPlayPosition)
-				{
-					if (mPlayerState.mode != PlayerState::Stop)
+				case SDLK_F2:
+					mEditorState.octave = std::min(15, mEditorState.octave + 1);
+					return true;
+					
+				case SDLK_F9:
+					mSong.setPatternLength(std::max(1, mSong.getPatternLength() - 1));
+					refreshAll();
+					return true;
+					
+				case SDLK_F10:
+					mSong.setPatternLength(std::min(Pattern::maxRows, mSong.getPatternLength() + 1));
+					refreshAll();
+					return true;
+				
+				/* Mute tracks */
+				case SDLK_1:
+				case SDLK_2:
+				case SDLK_3:
+				case SDLK_4:
+				case SDLK_5:
+				case SDLK_6:
+				case SDLK_7:
+				case SDLK_8:
+				case SDLK_9:
+				
+					if (event.key.keysym.mod & KMOD_ALT)
 					{
-						mPlayer.stop();
+						int track = event.key.keysym.sym - SDLK_1;
+
+						if (track < SequenceRow::maxTracks)
+						{
+							mPlayer.getTrackState(track).enabled ^= true;
+							return true;
+						}
+					}
+					
+					break;
+					
+				/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
+				case SDLK_F5:
+				case SDLK_RCTRL:
+					mPlayer.play(mEditorState.sequenceEditor.currentRow);
+					mEditorState.editMode = false;
+					refreshAll();
+					return true;
+				
+				/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
+				case SDLK_F6:
+				case SDLK_RSHIFT:
+					mPlayer.play(mEditorState.sequenceEditor.currentRow, PlayerState::PlaySequenceRow);
+					mEditorState.editMode = false;
+					refreshAll();
+					return true;
+						
+				case SDLK_SPACE:
+					if (mEditorState.followPlayPosition)
+					{
+						if (mPlayerState.mode != PlayerState::Stop)
+						{
+							mPlayer.stop();
+						}
+						else
+						{
+							mEditorState.editMode = !mEditorState.editMode;
+							refreshAll();
+						}
+						mPlayer.muteTracks();
 					}
 					else
 					{
 						mEditorState.editMode = !mEditorState.editMode;
 						refreshAll();
+						
+						// Should only mute tracks when stopped, i.e.
+						// the user has played a note and wants to stop it
+						// and not when editing while playing the song
+						if (mPlayerState.mode == PlayerState::Stop)
+							mPlayer.muteTracks();
 					}
-					mPlayer.muteTracks();
-				}
-				else
-				{
-					mEditorState.editMode = !mEditorState.editMode;
-					refreshAll();
-					
-					// Should only mute tracks when stopped, i.e.
-					// the user has played a note and wants to stop it
-					// and not when editing while playing the song
-					if (mPlayerState.mode == PlayerState::Stop)
-						mPlayer.muteTracks();
-				}
 
-				return true;
-				
-			case SDLK_F7:
-				saveState();
-				return true;
-		
-			case SDLK_ESCAPE:
-				cycleFocus();
-				return true;
+					return true;
+					
+				case SDLK_F7:
+					saveState();
+					return true;
 			
-			case SDLK_PERIOD:
-				if (!(event.key.keysym.mod & KMOD_SHIFT))
+				case SDLK_ESCAPE:
+					cycleFocus();
+					return true;
+				
+				case SDLK_PERIOD:
+					if (!(event.key.keysym.mod & KMOD_SHIFT))
+						break;
+				case SDLK_KP_PLUS:
+					if (mEditorState.macro < Song::maxMacros - 1)
+						++mEditorState.macro;
+					setMacro(mEditorState.macro);
+					return true;
+				
+				case SDLK_COMMA:
+					if (!(event.key.keysym.mod & KMOD_SHIFT))
+						break;			
+				case SDLK_KP_MINUS:
+					if (mEditorState.macro > 0)
+						--mEditorState.macro;
+					setMacro(mEditorState.macro);
+					return true;
+					
+				case SDLK_CAPSLOCK:
+				case SDLK_SCROLLLOCK:
+					mEditorState.followPlayPosition = !mEditorState.followPlayPosition;
 					break;
-			case SDLK_KP_PLUS:
-				if (mEditorState.macro < Song::maxMacros - 1)
-					++mEditorState.macro;
-				setMacro(mEditorState.macro);
-				return true;
-			
-			case SDLK_COMMA:
-				if (!(event.key.keysym.mod & KMOD_SHIFT))
-					break;			
-			case SDLK_KP_MINUS:
-				if (mEditorState.macro > 0)
-					--mEditorState.macro;
-				setMacro(mEditorState.macro);
-				return true;
-				
-			case SDLK_CAPSLOCK:
-			case SDLK_SCROLLLOCK:
-				mEditorState.followPlayPosition = !mEditorState.followPlayPosition;
-				break;
-				
-			default:
-				if (event.key.keysym.mod & (KMOD_CTRL|KMOD_ALT))
-				{
-					switch (event.key.keysym.sym)
+					
+				default:
+					if (event.key.keysym.mod & (KMOD_CTRL|KMOD_ALT))
 					{
-						case SDLK_s:
-							displaySaveDialog();
-							break;
-							
-						case SDLK_p:
-							exportSong();
-							break;
-							
-						case SDLK_o:
-							displayLoadDialog();
-							break;
-							
-						case SDLK_n:
-							newSong();
-							break;
+						switch (event.key.keysym.sym)
+						{
+							case SDLK_s:
+								displaySaveDialog();
+								break;
+								
+							case SDLK_p:
+								exportSong();
+								break;
+								
+							case SDLK_o:
+								displayLoadDialog();
+								break;
+								
+							case SDLK_n:
+								newSong();
+								break;
+						}
+						
+						return true;
 					}
 					
+					break;
+			}
+			
+			break;
+		
+		case SDL_CONTROLLERBUTTONDOWN:
+			switch (event.cbutton.button)
+			{
+				case SDL_CONTROLLER_BUTTON_START:
+					mPlayer.play(mEditorState.sequenceEditor.currentRow);
 					return true;
-				}
+					break;
 				
-				break;
-		}
+				case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+					cycleFocus();
+					return true;
+					break;
+			}
 		
-		
+			break;
 	}
 	
 	return false;

@@ -44,6 +44,11 @@ Context::Context()
 }
 
 
+Context::~Context()
+{
+}
+
+
 void infinityAndBeyond(void *ctx)
 {
 	Context& context = *static_cast<Context*>(ctx);
@@ -70,6 +75,9 @@ void infinityAndBeyond(void *ctx)
 		}
 		else if (event.type == EVERYTHING_READY)
 		{
+			context.gamepad.loadDefinitions("/assets/gamecontrollerdb.txt");
+			context.gamepad.initControllers();
+			
 			context.mainEditor.loadState();
 			context.ready = true;
 			context.mixer.runThread();
@@ -90,6 +98,19 @@ void infinityAndBeyond(void *ctx)
 		{
 			context.done = true;
 			context.mainEditor.saveState();
+		}
+		else if (event.type == SDL_CONTROLLERAXISMOTION)
+		{
+			context.gamepad.translateAxisToDPad(event);
+		}
+		else if (event.type == SDL_CONTROLLERDEVICEADDED || event.type == SDL_CONTROLLERDEVICEREMOVED || event.type == SDL_CONTROLLERDEVICEREMAPPED)
+		{
+			/* We just reinit all controllers instead of initializing a specific one */
+			
+			printf("Device added\n");
+			
+			context.gamepad.deinitControllers();
+			context.gamepad.initControllers();
 		}
 		else
 		{
@@ -160,7 +181,8 @@ extern "C" int main(int argc, char **argv)
 	emscripten_set_main_loop_arg(infinityAndBeyond, &context, -1, 1);
 	
 #else
-	
+	context.gamepad.loadDefinitions("assets/gamecontrollerdb.txt");
+	context.gamepad.initControllers();
 	context.ready = true;
 	
 	if (!context.mainEditor.loadState())

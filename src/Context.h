@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Synth.h"
 #include "EditorState.h"
+#include "Gamepad.h"
 
 struct Context
 {
@@ -22,6 +23,8 @@ struct Context
 	MainEditor mainEditor;
 	Renderer renderer;
 	Mixer mixer;
+	Gamepad gamepad;
 	
 	Context();
+	~Context();
 };
