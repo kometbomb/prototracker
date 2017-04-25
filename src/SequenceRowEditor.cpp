@@ -285,7 +285,7 @@ void SequenceRowEditor::duplicateRow()
 	SequenceRow& destination = mSong.getSequence().getRow(mTrackEditorState.currentRow);
 	SequenceRow& source = mSong.getSequence().getRow(mTrackEditorState.currentRow + 1);
 	
-	for (int track = 0 ; track <= SequenceRow::maxTracks ; ++track)
+	for (int track = 0 ; track < SequenceRow::maxTracks ; ++track)
 	{
 		destination.pattern[track] = source.pattern[track];
 	}
