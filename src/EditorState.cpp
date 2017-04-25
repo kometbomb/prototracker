@@ -215,6 +215,6 @@ void EditorState::reset()
 	followPlayPosition = false;
 
 	macro = 0;
-	octave = 0;
+	octave = 4;
 	editMode = 0;
 }
