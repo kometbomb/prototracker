@@ -13,6 +13,7 @@
 #include "Context.h"
 #include <cstdlib>
 #include <cstdio>
+#include <unistd.h>
 
 Context* _context;
 
