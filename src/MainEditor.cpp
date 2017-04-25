@@ -322,7 +322,10 @@ bool MainEditor::onEvent(SDL_Event& event)
 			switch (event.cbutton.button)
 			{
 				case SDL_CONTROLLER_BUTTON_START:
-					mPlayer.play(mEditorState.sequenceEditor.currentRow);
+					if (mPlayerState.mode != PlayerState::Play)
+						mPlayer.play(mEditorState.sequenceEditor.currentRow);
+					else
+						mPlayer.stop();
 					return true;
 					break;
 				
