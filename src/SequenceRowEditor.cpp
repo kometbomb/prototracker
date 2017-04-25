@@ -161,6 +161,54 @@ bool SequenceRowEditor::onEvent(SDL_Event& event)
 					
 			}
 			break;
+			
+			case SDL_CONTROLLERBUTTONDOWN: 
+			{
+				bool aPressed = SDL_GameControllerGetButton(SDL_GameControllerFromInstanceID(event.cbutton.which), SDL_CONTROLLER_BUTTON_A);
+				SequenceRow& sequenceRow = mSong.getSequence().getRow(mTrackEditorState.currentRow);
+				
+				switch (event.cbutton.button)
+				{
+					case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+					case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+						if (!aPressed)
+						{
+							changeColumn(event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1);
+						}
+						else
+						{
+							int& pattern = sequenceRow.pattern[mTrackEditorState.currentTrack];
+						
+							pattern = std::min(Song::maxPatterns - 1, std::max(0, pattern + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1)));
+							
+							// We need to signal the listeners that the sequence has changed (i.e. tell PatternEditor to redraw)
+							// Otherwise this is automatically caused by scrollView() when typing in numbers
+							mTrackEditorState.currentRow.notify();
+						}
+						
+						break;
+					
+					case SDL_CONTROLLER_BUTTON_DPAD_UP:
+					case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+						if (!aPressed)
+						{
+							scrollView(event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP ? -1 : 1);
+						}
+						else
+						{
+							int& pattern = sequenceRow.pattern[mTrackEditorState.currentTrack];
+						
+							pattern = std::min(Song::maxPatterns - 1, std::max(0, pattern + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN ? -16 : 16)));
+							
+							// We need to signal the listeners that the sequence has changed (i.e. tell PatternEditor to redraw)
+							// Otherwise this is automatically caused by scrollView() when typing in numbers
+							mTrackEditorState.currentRow.notify();
+						}
+						
+						break;
+				}
+				break;
+			}
 	}
 	return false;
 }
