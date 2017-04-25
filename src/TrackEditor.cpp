@@ -395,6 +395,24 @@ bool TrackEditor::onEvent(SDL_Event& event)
 									break;
 									
 								case PatternRow::Column::EffectType:
+									if (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)
+									{
+										if (patternRow.effect.effect == '0')
+											patternRow.effect.effect = 'z';
+										else if (patternRow.effect.effect == 'a')
+											patternRow.effect.effect = '9';
+										else 
+											patternRow.effect.effect--;
+									}
+									else
+									{
+										if (patternRow.effect.effect == '9')
+											patternRow.effect.effect = 'a';
+										else if (patternRow.effect.effect == 'z')
+											patternRow.effect.effect = '0';
+										else
+											patternRow.effect.effect++;
+									}
 									break;
 									
 								case PatternRow::Column::EffectParam1:
@@ -428,6 +446,9 @@ bool TrackEditor::onEvent(SDL_Event& event)
 										else 
 											patternRow.note.param2 = std::min(15, patternRow.note.param2 + 1);
 									}
+									break;
+									
+								case PatternRow::Column::EffectType:
 									break;
 									
 								case PatternRow::Column::EffectParam1:
