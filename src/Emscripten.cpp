@@ -118,7 +118,7 @@ extern "C" const char * emRequestSong()
 	
 extern "C" void emAppReady()
 {
-	emscripten_run_script("appReady();");
+	emscripten_run_script("if (typeof appReady === \"function\") appReady();");
 }
 
 #else
