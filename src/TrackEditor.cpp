@@ -390,8 +390,16 @@ bool TrackEditor::onEvent(SDL_Event& event)
 									
 									if (patternRow.note.effect == 'n') 
 									{
-										patternRow.note.setNoteAndOctave(patternRow.note.getNoteWithOctave() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1));
+										patternRow.note.setNoteAndOctave(std::max(0, std::min(0xbf, patternRow.note.getNoteWithOctave() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1))));
 									}
+									break;
+									
+								case PatternRow::Column::EffectType:
+									break;
+									
+								case PatternRow::Column::EffectParam1:
+								case PatternRow::Column::EffectParam2:
+									patternRow.effect.setParamsFromByte(patternRow.effect.getParamsAsByte() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1) & 255);
 									break;
 							}
 						}
@@ -415,8 +423,16 @@ bool TrackEditor::onEvent(SDL_Event& event)
 									
 									if (patternRow.note.effect == 'n') 
 									{
-										patternRow.note.setNoteAndOctave(patternRow.note.getNoteWithOctave() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN ? -12 : 12));
+										if (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)
+											patternRow.note.param2 = std::max(0, patternRow.note.param2 - 1);
+										else 
+											patternRow.note.param2 = std::min(15, patternRow.note.param2 + 1);
 									}
+									break;
+									
+								case PatternRow::Column::EffectParam1:
+								case PatternRow::Column::EffectParam2:
+									patternRow.effect.setParamsFromByte(patternRow.effect.getParamsAsByte() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN ? -16 : 16) & 255);
 									break;
 							}
 						}
@@ -424,13 +440,14 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						break;
 						
 					case SDL_CONTROLLER_BUTTON_A:
+						bool bPressed = SDL_GameControllerGetButton(SDL_GameControllerFromInstanceID(event.cbutton.which), SDL_CONTROLLER_BUTTON_B);
 						
 						switch (static_cast<int>(mTrackEditorState.currentColumn))
 						{
 							case PatternRow::Column::Note:
 							case PatternRow::Column::NoteParam1:
 							case PatternRow::Column::NoteParam2:
-								if (SDL_GameControllerGetButton(SDL_GameControllerFromInstanceID(event.cbutton.which), SDL_CONTROLLER_BUTTON_B))
+								if (bPressed)
 								{
 									// B+A = delete
 									
@@ -442,6 +459,17 @@ bool TrackEditor::onEvent(SDL_Event& event)
 									{
 										patternRow.note.setNoteAndOctave(mEditorState.octave * 12);
 									}
+								}
+								break;
+								
+							case PatternRow::Column::EffectType:
+							case PatternRow::Column::EffectParam1:
+							case PatternRow::Column::EffectParam2:
+								if (bPressed)
+								{
+									// B+A = delete
+									
+									emptyRow(false, PatternRow::FlagEffect);
 								}
 								break;
 						}
