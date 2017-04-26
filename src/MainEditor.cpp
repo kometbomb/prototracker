@@ -430,7 +430,8 @@ bool MainEditor::loadSong(const char *path)
 		
 		if (!section)
 		{
-			printf("Error!\n");
+			showMessage(MessageError, "Failed to read song data");
+			
 			delete section;
 			delete[] data;
 			return false;
@@ -438,11 +439,26 @@ bool MainEditor::loadSong(const char *path)
 		
 		mPlayer.stop();
 		mPlayer.reset();
+		
+		Song::UnpackError result = mSong.unpack(*section);
 				
-		if (mSong.unpack(*section) != Song::Success)
+		if (result != Song::Success)
 		{
-			// popup here
-			printf("Error!\n");
+			switch (result)
+			{
+				case Song::NotASong:
+					showMessage(MessageError, "File is not a song");
+					break;
+					
+				case Song::ErrorVersion:
+					showMessage(MessageError, "Song version is unsupported");
+					break;
+				
+				case Song::ErrorRead:
+					showMessage(MessageError, "Failed to read song data");
+					break;
+			}
+			
 			delete section;
 			delete[] data;
 			return false;
@@ -458,11 +474,13 @@ bool MainEditor::loadSong(const char *path)
 		syncSongParameters(mSong);
 		refreshAll();
 		
+		showMessage(MessageInfo, "Song loaded");
+		
 		return true;
 	}
 	else
 	{
-		printf("Error!\n");
+		showMessageV(MessageError, "Could not open %s", path);
 		return false;
 	}
 }
@@ -494,6 +512,8 @@ bool MainEditor::saveSong(const char *path)
 #endif
 	
 	delete section;
+	
+	showMessage(MessageInfo, "Song saved");
 	
 	return true;
 }
@@ -583,7 +603,7 @@ bool MainEditor::loadState()
 	
 	if (!section)
 	{
-		printf("Error!\n");
+		showMessage(MessageError, "Could not restore editor state");
 		
 		delete section;
 		delete[] data;
@@ -593,13 +613,16 @@ bool MainEditor::loadState()
 	
 	if (!mEditorState.unpack(*section))
 	{
-		printf("EditorState load failed\n");
+		showMessage(MessageError, "Could not restore editor state");
+	}
+	else 
+	{
+		showMessage(MessageInfo, "Editor state restored");
+		setMacro(mEditorState.macro);
 	}
 	
 	delete section;
 	delete[] data;
-	
-	setMacro(mEditorState.macro);
 	
 	return true;
 }

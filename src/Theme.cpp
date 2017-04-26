@@ -166,7 +166,6 @@ bool Theme::loadDefinition(const std::string& path)
 		}
 		else if (sscanf(line, "%19s \"%99[^\"]\" %d %d", elementName, path, &parameters[0], &parameters[1]) >= 4 && strcmp("GUI", elementName) == 0)
 		{
-			printf("%s %dx%d\n", path, parameters[0], parameters[1]);
 			mBackgroundPath = mBasePath + path;
 			mWidth = parameters[0];
 			mHeight = parameters[1];

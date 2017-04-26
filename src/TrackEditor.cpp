@@ -615,19 +615,16 @@ void TrackEditor::emptyRow(bool allTracks, int flags)
 
 void TrackEditor::copyTrack(int track)
 {
-	printf("copy----\n");
-	printf("opic %c\n", mEditorState.copyBuffer.getRow(0).effect.effect);
-	printf("opic %c\n", getCurrentPattern(track).getRow(0).effect.effect);
+	showMessageV(MessageInfo, "Copied track %d on clipboard", track);
+	
 	mEditorState.copyBuffer.copy(getCurrentPattern(track), 0, 255);
-	printf("opic %c\n", mEditorState.copyBuffer.getRow(0).effect.effect);
-	printf("opic %c\n", getCurrentPattern(track).getRow(0).effect.effect);
 }
 
 
 void TrackEditor::pasteTrack(int track)
 {
-	printf("opic %c\n", mEditorState.copyBuffer.getRow(0).effect.effect);
-	printf("opic %c\n", getCurrentPattern(track).getRow(0).effect.effect);
+	showMessageV(MessageInfo, "Pasted clipboard on track %d", track);
+	
 	mEditorState.copyBuffer.paste(getCurrentPattern(track), 0);
 	mTrackEditorState.currentRow.notify();
 }

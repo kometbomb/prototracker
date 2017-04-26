@@ -28,7 +28,6 @@ void CopyBuffer::setLength(int length)
 
 void CopyBuffer::copy(Pattern& source, int start, int end)
 {
-	printf("Copy %d-%d\n", start, end);
 	setLength(end - start + 1);
 	
 	for (int i = start, d = 0 ; i <= end ; ++i, ++d)
@@ -40,7 +39,6 @@ void CopyBuffer::copy(Pattern& source, int start, int end)
 
 void CopyBuffer::paste(Pattern& destination, int start)
 {
-	printf("Paste %d-%d\n", start, start + mLength - 1);
 	for (int i = 0, d = start ; i < mLength ; ++i, ++d)
 	{
 		if (d >= Pattern::maxRows)

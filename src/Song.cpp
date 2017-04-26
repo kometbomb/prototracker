@@ -154,7 +154,7 @@ FileSection* Song::pack()
 	
 	FileSection * macroData = FileSection::createSection("MACR");
 	int macroCount = getLastMacroUsed() + 1;
-	printf("Saving %d macros\n", macroCount);
+	//printf("Saving %d macros\n", macroCount);
 	macroData->writeByte(macroCount);
 	for (int i = 0 ; i < macroCount ; ++i)
 	{
@@ -245,7 +245,7 @@ Song::UnpackError Song::unpack(const FileSection& section)
 	
 	do
 	{
-		printf("offset = %d\n", offset);
+		//printf("offset = %d\n", offset);
 		FileSection *subSection = section.readSection(offset);
 		int subOffset = 0;
 		
@@ -256,7 +256,7 @@ Song::UnpackError Song::unpack(const FileSection& section)
 		
 		if (sectionName != NULL)
 		{
-			printf("Read section %s (%d bytes)\n", sectionName, subSection->getSize());
+			//printf("Read section %s (%d bytes)\n", sectionName, subSection->getSize());
 			
 			if (strcmp(sectionName, "SEQU") == 0)
 			{
@@ -270,7 +270,7 @@ Song::UnpackError Song::unpack(const FileSection& section)
 				{
 					int count = temp;
 					
-					printf("Reading %d sequences\n", count);
+					//printf("Reading %d sequences\n", count);
 					
 					if (count > maxSequenceRows)
 					{
@@ -310,7 +310,7 @@ Song::UnpackError Song::unpack(const FileSection& section)
 				{
 					int count = temp;
 					
-					printf("Reading %d patterns\n", count);
+					//printf("Reading %d patterns\n", count);
 					
 					for (int i = 0 ; i < count ; ++i)
 					{
@@ -334,7 +334,7 @@ Song::UnpackError Song::unpack(const FileSection& section)
 				{
 					int count = temp;
 					
-					printf("Reading %d macros\n", count);
+					//printf("Reading %d macros\n", count);
 					
 					for (int i = 0 ; i < count ; ++i)
 					{

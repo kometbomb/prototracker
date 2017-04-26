@@ -65,10 +65,6 @@ void WaveGen::generate(int seed, int *data, int length, int amplitude)
 {
 	memset(data, 0, sizeof(int) * length);
 	
-	/*for (int i = 0 ; i < 10 ; ++i)
-		printf("%.1f\n", step((float)i / 10, 10));*/
-
-	
 	Random rnd;
 		initSeed(seed);
 		

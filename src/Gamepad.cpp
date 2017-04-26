@@ -16,12 +16,7 @@ void Gamepad::initControllers()
 			
 			if (newController)
 			{
-				printf("Opening controller %s\n", SDL_GameControllerName(newController));
 				controller.push_back(newController);
-			}
-			else
-			{
-				printf("Opening controller failed\n");
 			}
 		}
 	}
