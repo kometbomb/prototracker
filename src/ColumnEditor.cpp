@@ -16,6 +16,12 @@ ColumnEditor::~ColumnEditor()
 }
 
 
+/* SDL has trouble with AZERTY number keys (they are accessed with the shift key).
+ * The following routines bypass this by determining the number by using scancodes
+ * (on 95 % of keyboard layouts the number keys are in the same order and at same
+ * location).
+ */
+
 int ColumnEditor::getCharFromKey(const SDL_Keysym& sym) const
 {
 	if (sym.sym >= SDLK_a && sym.sym <= SDLK_z)
