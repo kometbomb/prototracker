@@ -1,6 +1,7 @@
 #include "Editor.h"
 #include "Renderer.h"
 #include "Color.h"
+#include <cstdio>
 
 
 Editor::Editor(EditorState& editorState, bool wantsFocus)
@@ -225,4 +226,25 @@ bool Editor::pointInRect(const SDL_Point& point, const SDL_Rect& rect)
 	return point.x >= rect.x && point.x < rect.x + rect.w &&
 		point.y >= rect.y && point.y < rect.y + rect.h;
 #endif
+}
+
+
+void Editor::showMessageV(MessageClass messageClass, const char* message, ...)
+{
+	char dest[1024];
+    va_list argptr;
+    va_start(argptr, message);
+    vsnprintf(dest, sizeof(dest), message, argptr);
+    va_end(argptr);
+	
+	showMessage(messageClass, dest);
+}
+
+
+void Editor::showMessage(MessageClass messageClass, const char* message)
+{
+	/* Placeholder, just print to stdout
+	 */
+	 
+	printf("[%s] %s\n", messageClass == MessageInfo ? "INFO" : "ERROR", message);
 }
