@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Editor.h"
+#include "SDL.h"
 
 struct TrackEditorState;
 
@@ -11,9 +12,9 @@ protected:
 	int maxTracks, maxRows, mColumns;
 	int mRowNumberMargin, mTrackMargin;
 	
-	int getNoteFromKey(int sym) const;
-	int getHexFromKey(int sym) const;
-	int getCharFromKey(int sym) const;
+	int getNoteFromKey(const SDL_Keysym& sym) const;
+	int getHexFromKey(const SDL_Keysym& sym) const;
+	int getCharFromKey(const SDL_Keysym& sym) const;
 	void changeTrack(int d);
 	
 	virtual void changeColumn(int d);

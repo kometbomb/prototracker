@@ -1,5 +1,6 @@
 #include "ColumnEditor.h"
 #include "EditorState.h"
+#include <cstdio>
 
 ColumnEditor::ColumnEditor(EditorState& editorState, TrackEditorState& trackEditorState, int tracks, int columns)
 	:Editor(editorState), mTrackEditorState(trackEditorState), maxTracks(tracks), maxRows(256), mColumns(columns), mRowNumberMargin(0), mTrackMargin(0)
@@ -15,31 +16,41 @@ ColumnEditor::~ColumnEditor()
 }
 
 
-int ColumnEditor::getCharFromKey(int sym) const
+int ColumnEditor::getCharFromKey(const SDL_Keysym& sym) const
 {
-	if (sym >= SDLK_a && sym <= SDLK_z)
-		return sym - SDLK_a + 'a';
+	if (sym.sym >= SDLK_a && sym.sym <= SDLK_z)
+		return sym.sym - SDLK_a + 'a';
 	
-	if (sym >= SDLK_0 && sym <= SDLK_9)
-		return sym - SDLK_0 + '0';
+	// Scancodes are ordered 1-9 and then 0 (as on the keyboard)
+	
+	if (sym.scancode == SDL_SCANCODE_0)
+		return '0';
+	
+	if (sym.scancode >= SDL_SCANCODE_1 && sym.scancode <= SDL_SCANCODE_9)
+		return sym.scancode - SDL_SCANCODE_1 + '1';
 	
 	return -1;
 }
 
 
-int ColumnEditor::getHexFromKey(int sym) const
+int ColumnEditor::getHexFromKey(const SDL_Keysym& sym) const
 {
-	if (sym >= SDLK_a && sym <= SDLK_f)
-		return sym - SDLK_a + 0xa;
+	if (sym.sym >= SDLK_a && sym.sym <= SDLK_f)
+		return sym.sym - SDLK_a + 0xa;
 	
-	if (sym >= SDLK_0 && sym <= SDLK_9)
-		return sym - SDLK_0;
+	// Scancodes are ordered 1-9 and then 0 (as on the keyboard)
+	
+	if (sym.scancode == SDL_SCANCODE_0)
+		return 0;
+	
+	if (sym.scancode >= SDL_SCANCODE_1 && sym.scancode <= SDL_SCANCODE_9)
+		return sym.scancode - SDL_SCANCODE_1;
 	
 	return -1;
 }
 
 
-int ColumnEditor::getNoteFromKey(int scancode) const
+int ColumnEditor::getNoteFromKey(const SDL_Keysym& sym) const
 {
 	static const struct { SDL_Scancode scancode; int note; } syms[] = 
 	{
@@ -80,7 +91,7 @@ int ColumnEditor::getNoteFromKey(int scancode) const
 	};
 		
 	for (int i = 0 ; syms[i].note != -1 ; ++i)
-		if (syms[i].scancode == scancode)
+		if (syms[i].scancode == sym.scancode)
 			return syms[i].note;
 			
 	return -1;

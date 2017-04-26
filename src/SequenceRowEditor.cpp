@@ -138,7 +138,7 @@ bool SequenceRowEditor::onEvent(SDL_Event& event)
 					
 					SequenceRow& sequenceRow = mSong.getSequence().getRow(mTrackEditorState.currentRow);
 					
-					int hex = getHexFromKey(event.key.keysym.sym);
+					int hex = getHexFromKey(event.key.keysym);
 					if (hex != -1)
 					{
 						int& pattern = sequenceRow.pattern[mTrackEditorState.currentTrack];
