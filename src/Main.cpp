@@ -194,7 +194,8 @@ extern "C" int main(int argc, char **argv)
 	if (!context.mainEditor.loadState())
 		context.mainEditor.loadSong("assets/dub.song");
 	
-	context.mixer.runThread();
+	if (!context.mixer.runThread())
+		context.mainEditor.showMessage(Editor::MessageError, "Could not open audio device");
 	
 	while (!context.done)
 	{

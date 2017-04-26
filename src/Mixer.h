@@ -20,7 +20,7 @@ class Mixer
 	Sample16 *mBuffer;
 	int mBufferSize;
 	
-	void initAudio();
+	bool initAudio();
 	void deinitAudio();
 	
 protected:
@@ -34,7 +34,7 @@ public:
 	Mixer(IPlayer& player, ISynth& synth);
 	~Mixer();
 	bool isThreadRunning() const;
-	void runThread();
+	bool runThread();
 	void stopThread();
 	void runQueueThread();
 	int& getSamples();

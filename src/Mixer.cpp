@@ -34,10 +34,14 @@ Mixer::~Mixer()
 }
 
 
-void Mixer::runThread()
+bool Mixer::runThread()
 {
-	initAudio();
+	if (!initAudio())
+		return false;
+	
 	SDL_PauseAudio(0);
+	
+	return true;
 }
 
 
@@ -53,7 +57,7 @@ void Mixer::stopThread()
 }*/
 
 
-void Mixer::initAudio()
+bool Mixer::initAudio()
 {
 	SDL_AudioSpec want, have;
 
@@ -75,7 +79,7 @@ void Mixer::initAudio()
 	{
 		/*fprintf(stderr, "Failed to open audio: %s\n", SDL_GetError());
 		exit(1);*/
-		return;
+		return false;
 	} 
 	
 	mAudioOpened = true;
@@ -92,6 +96,8 @@ void Mixer::initAudio()
 	SDL_BuildAudioCVT(mConvert, want.format, want.channels, have.freq, have.format, have.channels, have.freq);
 	
 	//printf("Got %d Hz format=%d (wanted %d Hz/%d) buffer = %d\n", have.freq, have.format, want.freq, want.format, want.samples);
+	
+	return true;
 }
 
 
