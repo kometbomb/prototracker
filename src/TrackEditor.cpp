@@ -372,6 +372,7 @@ bool TrackEditor::onEvent(SDL_Event& event)
 				break;
 			}
 			
+#ifdef SDL_GameControllerFromInstanceID
 			case SDL_CONTROLLERBUTTONDOWN: 
 			{
 				bool aPressed = SDL_GameControllerGetButton(SDL_GameControllerFromInstanceID(event.cbutton.which), SDL_CONTROLLER_BUTTON_A);
@@ -505,6 +506,7 @@ bool TrackEditor::onEvent(SDL_Event& event)
 				}
 				break;
 			}
+#endif
 	}
 	
 	return false;
