@@ -18,7 +18,9 @@
 #endif
 
 #ifdef __EMSCRIPTEN__
-#define FLIP_CLIP_Y 1
+/* Emscripten 1.37.9 seems to have fixed this, no need to flip Y coord anymore
+ */
+//#define FLIP_CLIP_Y 1
 #endif
 
 Renderer::Renderer()
