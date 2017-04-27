@@ -213,6 +213,9 @@ bool MainEditor::onEvent(SDL_Event& event)
 						if (track < SequenceRow::maxTracks)
 						{
 							mPlayer.getTrackState(track).enabled ^= true;
+							
+							showMessageV(MessageInfo, "%s track %d", mPlayer.getTrackState(track).enabled ? "Unmuted" : "Muted", track);
+							
 							return true;
 						}
 					}
@@ -292,6 +295,9 @@ bool MainEditor::onEvent(SDL_Event& event)
 				case SDLK_CAPSLOCK:
 				case SDLK_SCROLLLOCK:
 					mEditorState.followPlayPosition = !mEditorState.followPlayPosition;
+					
+					showMessage(MessageInfo, mEditorState.followPlayPosition ? "Cursor now follows play position" : "Disabled play position following");
+					
 					break;
 					
 				default:
@@ -480,8 +486,6 @@ bool MainEditor::loadSong(const char *path)
 		syncSongParameters(mSong);
 		refreshAll();
 		
-		showMessage(MessageInfo, "Song loaded");
-		
 		return true;
 	}
 	else
@@ -519,8 +523,6 @@ bool MainEditor::saveSong(const char *path)
 	
 	delete section;
 	
-	showMessage(MessageInfo, "Song saved");
-	
 	return true;
 }
 
@@ -542,11 +544,15 @@ void MainEditor::onFileSelectorEvent(const Editor& fileSelector, bool accept)
 		switch (id)
 		{
 			case FileSelectionLoad:
-				loadSong(reinterpret_cast<const FileSelector&>(fileSelector).getSelectedPath());
+				if (loadSong(reinterpret_cast<const FileSelector&>(fileSelector).getSelectedPath()))
+					showMessage(MessageInfo, "Song loaded");
 				break;
 				
 			case FileSelectionSave:
-				saveSong(reinterpret_cast<const FileSelector&>(fileSelector).getSelectedPath());
+				if (saveSong(reinterpret_cast<const FileSelector&>(fileSelector).getSelectedPath()))
+					showMessage(MessageInfo, "Song saved");
+				else
+					showMessage(MessageError, "Song was not saved");
 				break;
 		}
 	}
@@ -643,6 +649,8 @@ void MainEditor::saveState()
 	FILE *f = fopen(getUserFile("editorstate").c_str(), "wb");
 	fwrite(section->getPackedData(), section->getPackedSize(), 1, f);
 	fclose(f);	
+	
+	showMessage(MessageInfo, "Editor state saved");
 	
 	//printf("%s\n", section->getBase64());
 	

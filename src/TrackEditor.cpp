@@ -198,10 +198,12 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						else if (event.key.keysym.sym == SDLK_c)
 						{
 							copyBlock(mTrackEditorState.currentTrack);
+							showMessage(MessageInfo, "Copied block");
 						}
 						else if (event.key.keysym.sym == SDLK_v)
 						{
 							pasteBlock(mTrackEditorState.currentTrack);
+							showMessage(MessageInfo, "Block pasted");
 						}
 						else if (event.key.keysym.sym == SDLK_b)
 						{
@@ -214,10 +216,14 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						else if (event.key.keysym.sym == SDLK_k)
 						{
 							killTrack(mTrackEditorState.currentTrack);
+							// TODO: These shoyld say "macro" in the macro editor!
+							showMessage(MessageInfo, "Killed pattern");
 						}
 						else if (event.key.keysym.sym == SDLK_u)
 						{
 							findUnusedTrack(mTrackEditorState.currentTrack);
+							// TODO: These shoyld say "macro" in the macro editor!
+							showMessage(MessageInfo, "Found an unused pattern");
 						}
 						else
 							return false;

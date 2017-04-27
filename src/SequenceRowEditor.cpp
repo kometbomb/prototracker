@@ -293,4 +293,6 @@ void SequenceRowEditor::duplicateRow()
 	mSong.setSequenceLength(mSong.getSequenceLength() + 1);
 	
 	mTrackEditorState.currentRow.notify();
+	
+	showMessage(MessageInfo, "Duplicated sequence row");
 }
