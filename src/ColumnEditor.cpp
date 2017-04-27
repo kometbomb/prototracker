@@ -50,7 +50,7 @@ int ColumnEditor::getHexFromKey(const SDL_Keysym& sym) const
 		return 0;
 	
 	if (sym.scancode >= SDL_SCANCODE_1 && sym.scancode <= SDL_SCANCODE_9)
-		return sym.scancode - SDL_SCANCODE_1;
+		return sym.scancode - SDL_SCANCODE_1 + 1;
 	
 	return -1;
 }
