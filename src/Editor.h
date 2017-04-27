@@ -22,8 +22,7 @@ public:
 	{
 		MessageInfo,
 		MessageError
-	};
-	
+	};	
 private:
 	Editor *mFocus;
 	
@@ -43,6 +42,8 @@ protected:
 	
 	void removeFocus();
 	void setModal(Editor *modal);
+	
+	void drawCoveredChildren(Renderer& renderer, const SDL_Rect& area, const SDL_Rect& childArea, int maxIndex);
 	
 	void invalidateAll();
 	void invalidateParent();
@@ -68,9 +69,11 @@ public:
 	Editor * getFocus();
 	bool hasFocus();
 	
-	void showMessage(MessageClass messageClass, const char* message);
+	virtual void showMessage(MessageClass messageClass, const char* message);
 	void showMessageV(MessageClass messageClass, const char* message, ...) __attribute__((format(printf, 3, 4)));
 	void draw(Renderer& renderer, const SDL_Rect& area);
+	virtual void onUpdate(int ms);
+	void update(int ms);
 
 	/* onEvent() should return false if the event was not consumed
 	 * so that the parent Editor knows to process it.

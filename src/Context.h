@@ -14,6 +14,7 @@ struct Context
 	bool ready;
 	bool done;
 	bool themeLoaded;
+	Uint32 previousTick;
 	
 	Song song;
 	Player player;

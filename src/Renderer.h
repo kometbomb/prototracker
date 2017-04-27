@@ -30,6 +30,7 @@ public:
 	void renderRect(const SDL_Rect& rect, const Color& color, int index = 0);
 	void renderBackground(const SDL_Rect& rect);
 	void renderText(const SDL_Rect& position, const Color& color, const char * text);
+	SDL_Rect getTextRect(const char * text);
 	void renderTextV(const SDL_Rect& position, const Color& color, const char * text, ...) __attribute__((format(printf, 4, 5)));
 	void renderChar(const SDL_Rect& position, const Color& color, int c);
 	void renderLine(int x1, int y1, int x2, int y2, const Color& color);

@@ -42,6 +42,7 @@ Context::Context()
 	}
 	
 	themeLoaded = true;
+	previousTick = SDL_GetTicks();
 }
 
 
@@ -131,6 +132,14 @@ void infinityAndBeyond(void *ctx)
 		context.player.lock();
 		context.mainEditor.syncPlayerState();
 		context.mainEditor.syncSongParameters(context.song);
+		
+		Uint32 ticks = SDL_GetTicks() - context.previousTick;
+		
+		if (ticks > 0)
+		{
+			context.mainEditor.update(ticks);
+			context.previousTick += ticks;
+		}
 		
 		if (context.mainEditor.isDirty())
 		{

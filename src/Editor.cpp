@@ -110,6 +110,27 @@ void Editor::onListenableChange(Listenable *listenable)
 }
 
 
+void Editor::drawCoveredChildren(Renderer& renderer, const SDL_Rect& area, const SDL_Rect& childArea, int maxIndex)
+{
+	renderer.renderBackground(childArea);
+	
+	for (int index = 0 ; index <= maxIndex && index < mNumChildren ; ++index)
+	{
+		SDL_Rect thisChildArea = mChildrenArea[index];
+		thisChildArea.x += area.x;
+		thisChildArea.y += area.y;
+		
+		SDL_Rect intersection;
+			
+		if (SDL_IntersectRect(&childArea, &thisChildArea, &intersection))
+		{
+			renderer.setClip(intersection);
+			mChildren[index]->draw(renderer, thisChildArea);
+		}
+	}
+}
+
+
 void Editor::drawChildren(Renderer& renderer, const SDL_Rect& area)
 {
 	for (int index = 0 ; index < mNumChildren ; ++index)
@@ -120,7 +141,10 @@ void Editor::drawChildren(Renderer& renderer, const SDL_Rect& area)
 			childArea.x += area.x;
 			childArea.y += area.y;
 			
+			drawCoveredChildren(renderer, area, childArea, index - 1);
+			
 			renderer.setClip(childArea);
+			
 			mChildren[index]->draw(renderer, childArea);
 		}
 	}
@@ -243,8 +267,25 @@ void Editor::showMessageV(MessageClass messageClass, const char* message, ...)
 
 void Editor::showMessage(MessageClass messageClass, const char* message)
 {
-	/* Placeholder, just print to stdout
-	 */
-	 
-	printf("[%s] %s\n", messageClass == MessageInfo ? "INFO" : "ERROR", message);
+	if (mParent != NULL)
+		mParent->showMessage(messageClass, message);
+	else 
+		printf("[%s] %s\n", messageClass == MessageInfo ? "INFO" : "ERROR", message);
+}
+
+
+void Editor::onUpdate(int ms)
+{
+	
+}
+
+
+void Editor::update(int ms)
+{
+	onUpdate(ms);
+	
+	for (int index = 0 ; index < mNumChildren ; ++index)
+	{
+		mChildren[index]->update(ms);
+	}
 }

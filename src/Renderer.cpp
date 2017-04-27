@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <cstdarg>
 #include <cstdio>
+#include <cstring>
 #include "Theme.h"
 #include "App.h"
 
@@ -141,7 +142,7 @@ void Renderer::setClip(const SDL_Rect& area)
 #ifdef FLIP_CLIP_Y
 	rect.y = mGuiHeight - rect.y + rect.h;
 #endif
-	//SDL_RenderSetClipRect(mRenderer, &rect);
+	SDL_RenderSetClipRect(mRenderer, &rect);
 }
 
 
@@ -281,4 +282,12 @@ bool Renderer::setTheme(const Theme& theme)
 void Renderer::scaleEventCoordinates(SDL_Event& event) const
 {
 	
+}
+
+
+SDL_Rect Renderer::getTextRect(const char * text)
+{
+	SDL_Rect rect = {0, 0, mFontWidth * static_cast<int>(strlen(text)), mFontHeight};
+	
+	return rect;
 }

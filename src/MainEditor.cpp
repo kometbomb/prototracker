@@ -25,6 +25,8 @@
 #include "TouchRegion.h"
 #include "FileSelector.h"
 #include "Emscripten.h"
+#include "MessageManager.h"
+#include "MessageDisplayer.h"
 #include "App.h"
 #include "SDL.h"
 #include "Theme.h"
@@ -49,6 +51,8 @@ MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& p
 	mOscillatorsUpdated = new Listenable();
 	
 	fileSelector = new FileSelector(editorState);
+	
+	mMessageManager = new MessageManager();
 }
 
 
@@ -58,6 +62,8 @@ MainEditor::~MainEditor()
 	delete fileSelector;
 	
 	deleteChildren();
+	
+	delete mMessageManager;
 }
 
 
@@ -766,6 +772,9 @@ bool MainEditor::loadElements(const Theme& theme)
 	
 	setMacro(0);
 	
+	mMessageDisplayer = new MessageDisplayer(mEditorState, *mMessageManager);
+	addChild(mMessageDisplayer, 0, theme.getHeight() - 16, theme.getWidth(), 16);
+	
 	return true;
 }
 
@@ -835,4 +844,16 @@ void MainEditor::newSong()
 	mSong.clear();
 	mEditorState.reset();
 	refreshAll();
+}
+
+
+void MainEditor::showMessage(MessageClass messageClass, const char* message)
+{
+	mMessageManager->pushMessage(messageClass, message);
+}
+
+
+void MainEditor::onUpdate(int ms)
+{
+	mMessageManager->update(ms);
 }

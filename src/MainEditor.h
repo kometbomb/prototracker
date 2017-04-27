@@ -13,6 +13,8 @@ struct ISynth;
 struct FileSelector;
 struct Listenable;
 struct Theme;
+struct MessageManager;
+struct MessageDisplayer;
 
 class MainEditor: public Editor
 {
@@ -26,6 +28,9 @@ class MainEditor: public Editor
 	TextEditor *songNameEditor;
 	TextEditor *macroNameEditor;
 	FileSelector *fileSelector;
+	MessageManager *mMessageManager;
+	MessageDisplayer *mMessageDisplayer;
+	
 	int mDragStartX, mDragStartY;
 	bool mIsDragging;
 	
@@ -53,9 +58,12 @@ public:
 	virtual bool onEvent(SDL_Event& event);
 	virtual void onDraw(Renderer& renderer, const SDL_Rect& area);
 	virtual void onFileSelectorEvent(const Editor& fileSelector, bool accept);
+	virtual void showMessage(MessageClass messageClass, const char* message);
 	
 	void cycleFocus();
 	void syncPlayerState();
+	
+	virtual void onUpdate(int ms);
 	
 	void setMacro(int index);
 	void syncSongParameters(const Song& song);
