@@ -319,6 +319,7 @@ bool MainEditor::onEvent(SDL_Event& event)
 								
 							case SDLK_n:
 								newSong();
+								showMessage(MessageInfo, "Song reset");
 								break;
 						}
 						
