@@ -458,6 +458,9 @@ bool MainEditor::loadSong(const char *path)
 		{
 			switch (result)
 			{
+				default:
+					break;
+					
 				case Song::NotASong:
 					showMessage(MessageError, "File is not a song");
 					break;
