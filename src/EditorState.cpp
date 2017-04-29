@@ -212,7 +212,7 @@ void EditorState::reset()
 
 	copyBuffer.clear();
 
-	followPlayPosition = false;
+	followPlayPosition = true;
 
 	macro = 0;
 	octave = 4;
