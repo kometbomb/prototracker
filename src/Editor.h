@@ -50,7 +50,8 @@ protected:
 	
 	bool shouldRedrawBackground() const;
 	
-	bool pointInRect(const SDL_Point& point, const SDL_Rect& rect);
+	static bool pointInRect(const SDL_Point& point, const SDL_Rect& rect);
+	static bool intersectRect(const SDL_Rect& a, const SDL_Rect& b, SDL_Rect& result);
 	
 public:
 	Editor(EditorState& editorState, bool wantFocus = true);

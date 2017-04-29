@@ -122,7 +122,7 @@ void Editor::drawCoveredChildren(Renderer& renderer, const SDL_Rect& area, const
 		
 		SDL_Rect intersection;
 			
-		if (SDL_IntersectRect(&childArea, &thisChildArea, &intersection))
+		if (intersectRect(childArea, thisChildArea, intersection))
 		{
 			renderer.setClip(intersection);
 			mChildren[index]->draw(renderer, thisChildArea);
@@ -249,6 +249,33 @@ bool Editor::pointInRect(const SDL_Point& point, const SDL_Rect& rect)
 	
 	return point.x >= rect.x && point.x < rect.x + rect.w &&
 		point.y >= rect.y && point.y < rect.y + rect.h;
+#endif
+}
+
+
+bool Editor::intersectRect(const SDL_Rect& a, const SDL_Rect& b, SDL_Rect& result)
+{
+#ifdef SDL_IntersectRect
+	return SDL_IntersectRect(&point, &rect, &result);
+#else
+	// In case we are using SDL <2.0.4 (of whatever the version is
+	// where the rect built-in functions are introduced. E.g. my 
+	// PocketCHIP only goes up to 2.0.2 by default.
+	
+	int aRight = a.x + a.w;
+	int aBottom = a.y + a.h;
+	int bRight = b.x + b.w;
+	int bBottom = b.y + b.h;
+	
+	if (!(a.x < bRight && aRight > b.x && a.y < bBottom && aBottom > b.y))
+		return false;
+	
+	result.x = std::max(a.x, b.x);
+	result.y = std::max(a.y, b.y);
+	result.w = std::min(aRight, bRight) - result.x;
+	result.h = std::min(aBottom, bBottom) - result.y;
+	
+	return true;
 #endif
 }
 
