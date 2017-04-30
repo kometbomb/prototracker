@@ -32,11 +32,14 @@ void MessageDisplayer::onDraw(Renderer& renderer, const SDL_Rect& area)
 		frameArea.w = (finalArea.w + 4) * scale;
 		frameArea.h = (finalArea.h + 4) * scale;
 		
-		renderer.setClip(frameArea);
-		renderer.clearRect(frameArea, Color(0,0,0));
-		renderer.drawRect(frameArea, Color());
+		if (frameArea.w > 0 && frameArea.h > 0)
+		{
+			renderer.setClip(frameArea);
+			renderer.clearRect(frameArea, Color(0,0,0));
+			renderer.drawRect(frameArea, Color());
 		
-		renderer.renderText(finalArea, Color(), message->text.c_str());
+			renderer.renderText(finalArea, Color(), message->text.c_str());
+		}
 	}
 }
 
