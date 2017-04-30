@@ -222,9 +222,9 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 	
 	renderer.renderBackground(area);
 	
-	int rowNumberWidth = 2 * 8 + 2;
-	int trackWidth = 8 * 2;
-	int rowHeight = 8;
+	int rowNumberWidth = 2 * renderer.getFontWidth() + mRowNumberMargin;
+	int trackWidth = 2 * renderer.getFontWidth() + mTrackMargin;
+	int rowHeight = renderer.getFontHeight();
 	
 	int countVisible = area.h / 8;
 	int firstVisible = mTrackEditorState.currentRow - countVisible / 2;
