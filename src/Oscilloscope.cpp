@@ -4,7 +4,7 @@
 #include "Sample.h"
 #include "IPlayer.h"
 #include "TrackState.h"
-#include "Oscillator.h"
+#include "IOscillator.h"
 
 Oscilloscope::Oscilloscope(EditorState& editorState, IPlayer& player, int channel)
 	: Editor(editorState, false), mPlayer(player), mChannel(channel)
@@ -35,7 +35,7 @@ void Oscilloscope::onDraw(Renderer& renderer, const SDL_Rect& area)
 	for (int x = 0 ; x < area.w ; ++x)
 	{
 		int bufferPos = mBufferLength * x / area.w;
-		int y = mBuffer[bufferPos].left * area.h / Oscillator::oscillatorResolution / 2 + area.h / 2;
+		int y = mBuffer[bufferPos].left * area.h / IOscillator::oscillatorResolution / 2 + area.h / 2;
 		
 		if (y >= area.h)
 			y = area.h - 1;
