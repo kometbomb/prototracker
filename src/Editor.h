@@ -37,6 +37,7 @@ protected:
 	Editor *mParent;
 	Editor *mChildren[maxChildren];
 	SDL_Rect mChildrenArea[maxChildren];
+	SDL_Rect mThisArea;
 	int mNumChildren;
 	bool mWantsFocus;
 	
@@ -52,6 +53,9 @@ protected:
 	
 	static bool pointInRect(const SDL_Point& point, const SDL_Rect& rect);
 	static bool intersectRect(const SDL_Rect& a, const SDL_Rect& b, SDL_Rect& result);
+	
+	// Tell Editor its own top-left corner (absolute)
+	void setArea(const SDL_Rect& area);
 	
 public:
 	Editor(EditorState& editorState, bool wantFocus = true);

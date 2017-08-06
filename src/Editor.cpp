@@ -7,6 +7,8 @@
 Editor::Editor(EditorState& editorState, bool wantsFocus)
 	: mEditorState(editorState), mFocus(NULL), mModal(NULL), mIsDirty(true), mRedraw(true), mParent(NULL), mNumChildren(0), mWantsFocus(wantsFocus)
 {
+	mThisArea.x = 0;
+	mThisArea.y = 0;
 }
 
 
@@ -78,8 +80,20 @@ void Editor::addChild(Editor *child, int x, int y, int w, int h)
 	area.h = h;
 	mChildren[mNumChildren++] = child;
 	
+	SDL_Rect absArea = {area.x + mThisArea.x, area.y + mThisArea.y, area.w, area.h};
+	
+	child->setArea(absArea);
 }
 	
+	
+void Editor::setArea(const SDL_Rect& area)
+{
+	mThisArea.x = area.x;
+	mThisArea.y = area.y;
+	mThisArea.w = area.w;
+	mThisArea.h = area.h;
+}
+
 
 bool Editor::hasDirty() const
 {
