@@ -14,7 +14,7 @@
 #include <algorithm>
 
 Song::Song()
-	: patternLength(64), sequenceLength(1)
+	: patternLength(64), sequenceLength(1), mNumListeners(0)
 {
 	sequence = new Sequence();
 	patterns = new Pattern[maxPatterns];
