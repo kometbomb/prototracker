@@ -16,6 +16,6 @@ public:
 
 	/* Return false if failed
 	 */
-	virtual bool onFileSectionLoad(const FileSection& section);
+	virtual bool onFileSectionLoad(const FileSection& section, int& offset);
 	virtual void onFileSectionSave(FileSection& section);
 };

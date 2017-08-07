@@ -376,7 +376,7 @@ Song::UnpackError Song::unpack(const FileSection& section)
 				{
 					if ((mListeners[i].flags & SectionListener::Load) && strcmp(mListeners[i].sectionId, sectionName) == 0)
 					{
-						if (!mListeners[i].listener->onFileSectionLoad(*subSection))
+						if (!mListeners[i].listener->onFileSectionLoad(*subSection, subOffset))
 						{
 							returnValue = ErrorRead;
 							break;
