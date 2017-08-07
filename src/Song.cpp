@@ -6,6 +6,7 @@
 #include "Macro.h"
 #include "PatternRow.h"
 #include "FileSection.h"
+#include "SectionListener.h"
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -164,6 +165,19 @@ FileSection* Song::pack()
 	}
 	song->writeSection(*macroData);
 	delete macroData;
+	
+	// Call SectionListeners for save
+	
+	for (int i = 0 ; i < mNumListeners ; ++i)
+	{
+		if (mListeners[i].flags & SectionListener::Load)
+		{
+			FileSection *listenerSection = FileSection::createSection(mListeners[i].sectionId);
+			mListeners[i].listener->onFileSectionSave(*listenerSection);
+			song->writeSection(*listenerSection);
+			delete listenerSection;
+		}
+	}
 	
 	return song;
 }
@@ -358,10 +372,17 @@ Song::UnpackError Song::unpack(const FileSection& section)
 			}
 			else
 			{
-				printf("Unknown section %s\n", sectionName);
-				returnValue = NotASong;
-				
-				// TODO: Should probably skip unknown sections
+				for (int i = 0 ; i < mNumListeners ; ++i)
+				{
+					if ((mListeners[i].flags & SectionListener::Load) && strcmp(mListeners[i].sectionId, sectionName) == 0)
+					{
+						if (!mListeners[i].listener->onFileSectionLoad(*subSection))
+						{
+							returnValue = ErrorRead;
+							break;
+						}
+					}
+				}
 			}
 		}
 		else
@@ -388,4 +409,20 @@ char *Song::getSongName()
 int Song::getSize() const
 {
 	return 0;
+}
+
+
+bool Song::addSectionListener(const char *sectionId, SectionListener *sectionListener, int flags)
+{
+	if (mNumListeners >= maxListeners)
+		return false;
+	
+	SectionListenerInfo& info = mListeners[mNumListeners];
+	info.flags = flags;
+	info.sectionId = sectionId;
+	info.listener = sectionListener;
+	
+	mNumListeners++;
+		
+	return true;
 }

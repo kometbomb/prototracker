@@ -4,6 +4,7 @@ struct Pattern;
 struct Sequence;
 struct Macro;
 struct FileSection;
+struct SectionListener;
 
 class Song
 {
@@ -17,7 +18,8 @@ public:
 		Success,		// Song was unpacked successfully
 		NotASong,		// Data format unknown
 		ErrorVersion,	// Version number higher than our version
-		ErrorRead		// Something went wrong while reading data
+		ErrorRead,		// Something went wrong while reading data
+		SectionUnhandled	// Nobody handled a file section
 	};
 	
 private:
@@ -30,9 +32,21 @@ private:
 	
 	char name[songNameLength + 1];
 	
+	struct SectionListenerInfo {
+		int flags;
+		const char *sectionId;
+		SectionListener *listener;
+	};
+	
+	static const int maxListeners = 32;
+	SectionListenerInfo mListeners[maxListeners];
+	int mNumListeners;
+	
 public:
 	Song();
 	~Song();
+	
+	bool addSectionListener(const char *sectionId, SectionListener *sectionListener, int flags);
 	
 	int getPatternLength() const;
 	int getSequenceLength() const;
