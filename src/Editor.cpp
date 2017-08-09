@@ -230,6 +230,11 @@ void Editor::onMessageBoxEvent(const Editor& messageBox, int code)
 
 void Editor::draw(Renderer& renderer, const SDL_Rect& area)
 {
+	// This should fix problems with modal backgrounds not being updated
+	// and perhaps also other child Editors.
+	
+	invalidateAll();
+	
 	if (mModal == NULL)
 	{
 		this->onDraw(renderer, area);
