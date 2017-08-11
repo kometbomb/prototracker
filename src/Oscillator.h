@@ -31,6 +31,7 @@ public:
 	void setPosition(int newPosition);
 	void setWave(int wave);
 	void queueWave(int wave);
+	
 	virtual void setFrequency(float frequency);
 	virtual void setVolume(int volume);
 	virtual void update(int numSamples);

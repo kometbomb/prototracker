@@ -18,6 +18,7 @@
 #include "Renderer.h"
 #include "Label.h"
 #include "ISynth.h"
+#include "Value.h"
 #include "SequenceRow.h"
 #include "ITrackState.h"
 #include "FileSection.h"
@@ -48,7 +49,7 @@
 MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth)
 	: Editor(editorState), mPlayer(player), mPlayerState(playerState), mSong(song), mSynth(synth), mIsDragging(false)
 {
-	mOscillatorsUpdated = new Listenable();
+	mOscillatorsProbePos = new Listenable();
 	
 	fileSelector = new FileSelector(editorState);
 	
@@ -58,7 +59,7 @@ MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& p
 
 MainEditor::~MainEditor()
 {
-	delete mOscillatorsUpdated;
+	delete mOscillatorsProbePos;
 	delete fileSelector;
 	
 	deleteChildren();
@@ -410,7 +411,7 @@ void MainEditor::syncPlayerState()
 	
 	if (mPlayerState.getUpdated() & PlayerState::Updated::OscillatorProbe)
 	{
-		mOscillatorsUpdated->notify();
+		*static_cast<Value*>(mOscillatorsProbePos) = mSynth.getProbePosition();
 	}
 	
 	mPlayerState.ackUpdated(PlayerState::Updated::SequenceRow | PlayerState::Updated::PatternRow | PlayerState::Updated::OscillatorProbe);
@@ -682,7 +683,7 @@ bool MainEditor::loadElements(const Theme& theme)
 			{
 				Oscilloscope * oscilloscope = new Oscilloscope(mEditorState, mPlayer, element.parameters[4]);
 				oscilloscope->setBuffer(mSynth.getOscillatorProbe(element.parameters[4]), ISynth::oscillatorProbeLength);
-				mOscillatorsUpdated->addListener(oscilloscope);
+				mOscillatorsProbePos->addListener(oscilloscope);
 				addChild(oscilloscope, element.parameters[0], element.parameters[1], element.parameters[2], element.parameters[3]);
 			}
 			break;

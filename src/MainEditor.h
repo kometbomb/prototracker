@@ -22,7 +22,7 @@ class MainEditor: public Editor
 	PlayerState& mPlayerState;
 	Song& mSong;
 	ISynth& mSynth;
-	Listenable *mOscillatorsUpdated;
+	Listenable *mOscillatorsProbePos;
 	PatternEditor *patternEditor;
 	SequenceRowEditor *sequenceRowEditor;
 	TextEditor *songNameEditor;
