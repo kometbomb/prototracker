@@ -16,7 +16,8 @@ class ISynth
 {
 protected:
 	IOscillator **mOscillator;
-	Sample16 *mPreviousOscillatorOutput;
+	Sample16 *mPreviousOscillatorOutput, *mTempBuffer;
+	int mProbePosition;
 	
 public:
 	ISynth();
@@ -26,6 +27,7 @@ public:
 
 	const Sample16* getOscillatorProbe(int oscillator) const;
 	IOscillator& getOscillator(int i);
+	int getProbePosition() const;
 	
 	// Update the synth state
 	virtual void update(int numSamples);

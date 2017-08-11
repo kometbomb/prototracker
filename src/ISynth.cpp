@@ -3,12 +3,15 @@
 #include "SequenceRow.h"
 #include "Sample.h"
 #include "SDL.h"
+#include <algorithm>
 
 
 ISynth::ISynth()
+	: mProbePosition(0)
 {
 	mOscillator = new IOscillator*[SequenceRow::maxTracks];
 	mPreviousOscillatorOutput = new Sample16[oscillatorProbeLength * SequenceRow::maxTracks];
+	mTempBuffer = new Sample16[2048];
 	
 	SDL_memset(mPreviousOscillatorOutput, 0, sizeof(Sample16) * oscillatorProbeLength * SequenceRow::maxTracks);
 }
@@ -46,23 +49,37 @@ void ISynth::update(int numSamples)
 void ISynth::render(Sample16 *buffer, int numSamples)
 {
 	SDL_memset(buffer, 0, sizeof(Sample16) * numSamples);
-	SDL_memset(mPreviousOscillatorOutput, 0, sizeof(Sample16) * oscillatorProbeLength * SequenceRow::maxTracks);
+	
+	int probeCount = std::min(numSamples, oscillatorProbeLength);
 	
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
-		mOscillator[i]->render(mPreviousOscillatorOutput + oscillatorProbeLength * i, oscillatorProbeLength);
+		SDL_memset(mTempBuffer, 0, sizeof(Sample16) * numSamples);
+		mOscillator[i]->render(mTempBuffer, numSamples);
 		
-		Sample16* src = mPreviousOscillatorOutput + oscillatorProbeLength * i;
-		Sample16* dest = buffer;
-		
-		for (int p = 0 ; p < oscillatorProbeLength && p < numSamples ; ++p)
+		for (int p = 0 ; p < numSamples ; ++p)
 		{
-			dest->left += src->left;
-			dest->right += src->right;
-			dest++;
-			src++;
+			buffer[p].left += mTempBuffer[p].left;
+			buffer[p].right += mTempBuffer[p].right;
 		}
 		
-		mOscillator[i]->render(buffer + oscillatorProbeLength, numSamples - oscillatorProbeLength, oscillatorProbeLength);
+		Sample16 *src = mTempBuffer + std::max(0, numSamples - oscillatorProbeLength);
+		Sample16 *dest = mPreviousOscillatorOutput + oscillatorProbeLength * i;
+		
+		for (int p = 0 ; p < probeCount ; ++p)
+		{
+			Sample16& sample = dest[(p + mProbePosition) % oscillatorProbeLength];
+			sample.left = src->left;
+			sample.right = src->right;
+			src++;
+		}
 	}
+	
+	mProbePosition += probeCount;
+}
+
+
+int ISynth::getProbePosition() const
+{
+	return mProbePosition;
 }
