@@ -4,7 +4,7 @@
 #include "Sample.h"
 #include "Value.h"
 #include "IPlayer.h"
-#include "TrackState.h"
+#include "ITrackState.h"
 #include "IOscillator.h"
 
 Oscilloscope::Oscilloscope(EditorState& editorState, IPlayer& player, int channel)
