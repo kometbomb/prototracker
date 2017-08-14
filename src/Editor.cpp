@@ -335,3 +335,12 @@ void Editor::update(int ms)
 		mChildren[index]->update(ms);
 	}
 }
+
+
+void Editor::onLoaded()
+{
+	for (int index = 0 ; index < mNumChildren ; ++index)
+	{
+		mChildren[index]->onLoaded();
+	}
+}

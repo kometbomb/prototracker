@@ -490,6 +490,7 @@ bool MainEditor::loadSong(const char *path)
 		syncPlayerState();
 		syncSongParameters(mSong);
 		refreshAll();
+		onLoaded();
 		
 		return true;
 	}

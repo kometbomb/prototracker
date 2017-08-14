@@ -67,6 +67,7 @@ public:
 	virtual void onFileSelectorEvent(const Editor& fileSelector, bool accept);
 	virtual void onMessageBoxEvent(const Editor& messageBox, int code);
 	virtual void onListenableChange(Listenable *listenable);
+	virtual void onLoaded();
 	virtual bool isDirty() const;
 	bool isFocusable() const;
 	bool hasDirty() const;
