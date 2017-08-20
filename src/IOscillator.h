@@ -5,10 +5,13 @@ struct ITrackState;
 
 class IOscillator
 {
+protected:
+	int mSampleRate;
 public:
 	static const int oscillatorResolution = 4096;
 
 	virtual ~IOscillator();
+	virtual void setSampleRate(int rate);
 	
 	// The oscillator should update its own parameters from handleTrackState()
 	virtual void handleTrackState(ITrackState& trackState);

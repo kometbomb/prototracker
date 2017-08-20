@@ -97,6 +97,8 @@ bool Mixer::initAudio()
 	
 	//printf("Got %d Hz format=%d (wanted %d Hz/%d) buffer = %d\n", have.freq, have.format, want.freq, want.format, want.samples);
 	
+	mSynth.setSampleRate(mSampleRate);
+	
 	return true;
 }
 

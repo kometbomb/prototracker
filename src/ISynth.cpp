@@ -83,3 +83,10 @@ int ISynth::getProbePosition() const
 {
 	return mProbePosition;
 }
+
+
+void ISynth::setSampleRate(int rate)
+{
+	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
+		mOscillator[i]->setSampleRate(rate);
+}

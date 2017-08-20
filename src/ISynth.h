@@ -28,6 +28,7 @@ public:
 	const Sample16* getOscillatorProbe(int oscillator) const;
 	IOscillator& getOscillator(int i);
 	int getProbePosition() const;
+	void setSampleRate(int rate);
 	
 	// Update the synth state
 	virtual void update(int numSamples);
