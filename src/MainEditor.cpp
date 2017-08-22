@@ -49,7 +49,7 @@
 MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth)
 	: Editor(editorState), mPlayer(player), mPlayerState(playerState), mSong(song), mSynth(synth), mIsDragging(false)
 {
-	mOscillatorsProbePos = new Listenable();
+	mOscillatorsProbePos = new Value();
 	
 	fileSelector = new FileSelector(editorState);
 	
