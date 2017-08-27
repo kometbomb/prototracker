@@ -158,19 +158,22 @@ void ColumnEditor::changeColumn(int d)
 
 void ColumnEditor::changeTrack(int d)
 {
-	mTrackEditorState.currentTrack += d;
+	int currentTrack = mTrackEditorState.currentTrack;
+	currentTrack += d;
 	
-	if (mTrackEditorState.currentTrack < 0)
+	if (currentTrack < 0)
 	{
-		mTrackEditorState.currentTrack = 0;
+		currentTrack = 0;
 		mTrackEditorState.currentColumn = 0;
 	}
 	
-	if (mTrackEditorState.currentTrack > maxTracks - 1)
+	if (currentTrack > maxTracks - 1)
 	{
-		mTrackEditorState.currentTrack = maxTracks - 1;
+		currentTrack = maxTracks - 1;
 		mTrackEditorState.currentColumn = mColumns - 1;
 	}
+	
+	mTrackEditorState.currentTrack = currentTrack;
 }
 
 
