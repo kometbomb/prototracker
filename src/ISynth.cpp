@@ -90,3 +90,8 @@ void ISynth::setSampleRate(int rate)
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 		mOscillator[i]->setSampleRate(rate);
 }
+
+
+void ISynth::reset()
+{
+}

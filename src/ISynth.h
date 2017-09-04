@@ -23,6 +23,8 @@ public:
 	ISynth();
 	virtual ~ISynth();
 	
+	virtual void reset();
+	
 	static const int oscillatorProbeLength = 128;
 
 	const Sample16* getOscillatorProbe(int oscillator) const;
