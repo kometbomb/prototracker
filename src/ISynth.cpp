@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include <algorithm>
 
+const int ISynth::oscillatorProbeLength;
 
 ISynth::ISynth()
 	: mProbePosition(0)

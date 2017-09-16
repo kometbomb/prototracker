@@ -2,6 +2,8 @@
 #include "PatternRow.h"
 #include <cstring>
 
+const int Pattern::maxRows;
+
 Pattern::Pattern()
 {
 	rows = new PatternRow[maxRows];
