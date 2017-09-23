@@ -124,6 +124,7 @@ void infinityAndBeyond(void *ctx)
 		else
 		{
 			context.player.lock();
+			context.renderer.scaleEventCoordinates(event);
 			context.mainEditor.onEvent(event);
 			context.player.unlock();
 		}

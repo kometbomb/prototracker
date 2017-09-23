@@ -283,7 +283,20 @@ bool Renderer::setTheme(const Theme& theme)
 
 void Renderer::scaleEventCoordinates(SDL_Event& event) const
 {
+#if FULLSCREEN
+	SDL_DisplayMode displayMode;
+	SDL_GetDesktopDisplayMode(0, &displayMode);
 	
+	switch (event.type)
+	{
+		case SDL_MOUSEBUTTONUP:
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEMOTION:
+			event.button.x -= (displayMode.w - mGuiWidth * SCALE) / 2;
+			event.button.y -= (displayMode.h - mGuiHeight * SCALE) / 2;
+			break;
+	}
+#endif	
 }
 
 
