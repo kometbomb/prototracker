@@ -23,6 +23,7 @@ public:
 		MessageInfo,
 		MessageError
 	};	
+
 private:
 	Editor *mFocus;
 	
@@ -51,9 +52,6 @@ protected:
 	
 	bool shouldRedrawBackground() const;
 	
-	static bool pointInRect(const SDL_Point& point, const SDL_Rect& rect);
-	static bool intersectRect(const SDL_Rect& a, const SDL_Rect& b, SDL_Rect& result);
-	
 	// Tell Editor its own top-left corner (absolute)
 	void setArea(const SDL_Rect& area);
 	
@@ -75,8 +73,23 @@ public:
 	Editor * getFocus();
 	bool hasFocus();
 	
+	/**
+	 * Messages 
+	 */
+
+ 	/**
+	 * Tooltip - set in SDL_MOUSEMOTION
+	 */
+	virtual void showTooltip(const SDL_Rect& area, const char* message);
+	void showTooltipV(const SDL_Rect& area, const char* message, ...) __attribute__((format(printf, 3, 4)));
+
+	/**
+	 * Status popup
+	 */
 	virtual void showMessage(MessageClass messageClass, const char* message);
 	void showMessageV(MessageClass messageClass, const char* message, ...) __attribute__((format(printf, 3, 4)));
+
+
 	void draw(Renderer& renderer, const SDL_Rect& area);
 	virtual void onUpdate(int ms);
 	void update(int ms);
@@ -85,4 +98,10 @@ public:
 	 * so that the parent Editor knows to process it.
 	 */
 	virtual bool onEvent(SDL_Event& event);
+
+	/**
+	 * Helper members
+	 */
+	static bool pointInRect(const SDL_Point& point, const SDL_Rect& rect);
+	static bool intersectRect(const SDL_Rect& a, const SDL_Rect& b, SDL_Rect& result);
 };

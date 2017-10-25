@@ -299,6 +299,25 @@ bool Editor::intersectRect(const SDL_Rect& a, const SDL_Rect& b, SDL_Rect& resul
 }
 
 
+void Editor::showTooltipV(const SDL_Rect& area, const char* message, ...)
+{
+	char dest[1024];
+    va_list argptr;
+    va_start(argptr, message);
+    vsnprintf(dest, sizeof(dest), message, argptr);
+    va_end(argptr);
+	
+	showTooltip(area, dest);
+}
+
+
+void Editor::showTooltip(const SDL_Rect& area, const char* message)
+{
+	if (mParent != NULL)
+		mParent->showTooltip(area, message);
+}
+
+
 void Editor::showMessageV(MessageClass messageClass, const char* message, ...)
 {
 	char dest[1024];

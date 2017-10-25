@@ -15,6 +15,8 @@ struct Listenable;
 struct Theme;
 struct MessageManager;
 struct MessageDisplayer;
+struct TooltipManager;
+struct TooltipDisplayer;
 
 class MainEditor: public Editor
 {
@@ -30,7 +32,9 @@ class MainEditor: public Editor
 	FileSelector *fileSelector;
 	MessageManager *mMessageManager;
 	MessageDisplayer *mMessageDisplayer;
-	
+	TooltipManager *mTooltipManager;
+	TooltipDisplayer *mTooltipDisplayer;
+
 	int mDragStartX, mDragStartY;
 	bool mIsDragging;
 	
@@ -59,6 +63,7 @@ public:
 	virtual void onDraw(Renderer& renderer, const SDL_Rect& area);
 	virtual void onFileSelectorEvent(const Editor& fileSelector, bool accept);
 	virtual void showMessage(MessageClass messageClass, const char* message);
+	virtual void showTooltip(const SDL_Rect& area, const char* message);
 	
 	void cycleFocus();
 	void syncPlayerState();
