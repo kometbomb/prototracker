@@ -10,7 +10,7 @@
 #include <cstdio>
 
 IPlayer::IPlayer(Song& song)
-	: mSong(song), state()
+	: mSong(song), mLockCounter(0), state()
 {
 	mMutex = SDL_CreateMutex();
 	trackState = new ITrackState*[SequenceRow::maxTracks];
@@ -20,10 +20,10 @@ IPlayer::IPlayer(Song& song)
 IPlayer::~IPlayer()
 {
 	SDL_DestroyMutex(mMutex);
-	
+
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 		delete trackState[i];
-	
+
 	delete[] trackState;
 }
 
@@ -38,17 +38,17 @@ void IPlayer::reset()
 void IPlayer::handleMacroTick(int track)
 {
 	handleMacroNote(track);
-		
+
 	ITrackState& trState = *trackState[track];
-		
+
 	if (trState.tick == 0)
 	{
 		int tries = 0;
-		
+
 		/*
 		If the effect forces reprocessing, do this max. 2 times to prevent infinite loops with Jxx etc.
 		*/
-		
+
 		while ((trState.macroState.handleEffectZeroTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).note, trState, state) ||
 			trState.macroState.handleEffectZeroTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).effect, trState, state)) && tries < 2)
 		{
@@ -56,7 +56,7 @@ void IPlayer::handleMacroTick(int track)
 			tries++;
 		}
 	}
-	
+
 	trState.macroState.handleEffectAnyTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).note, trState, state);
 	trState.macroState.handleEffectAnyTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).effect, trState, state);
 }
@@ -66,10 +66,10 @@ void IPlayer::advanceSequenceRow()
 {
 	state.patternRow = 0;
 	state.setUpdated(PlayerState::Updated::SequenceRow|PlayerState::Updated::PatternRow);
-	
+
 	if (state.shouldAdvanceSequenceRow())
 	{
-		state.sequenceRow++;	
+		state.sequenceRow++;
 		if (state.sequenceRow >= mSong.getSequenceLength())
 			state.sequenceRow = 0;
 	}
@@ -79,7 +79,7 @@ void IPlayer::advancePatternRow()
 {
 	++state.patternRow;
 	state.setUpdated(PlayerState::Updated::PatternRow);
-			
+
 	if (state.patternRow >= mSong.getPatternLength())
 	{
 		advanceSequenceRow();
@@ -90,18 +90,18 @@ void IPlayer::advancePatternRow()
 void IPlayer::advanceTrackTick(int track)
 {
 	ITrackState& trState = *trackState[track];
-	
+
 	++trState.tick;
-	
+
 	if (trState.tick >= trState.macroSpeed)
 	{
 		trState.macroRow++;
-		
+
 		if (trState.macroRow >= Macro::maxMacroLength)
 		{
 			trState.macroRow = 0;
 		}
-		
+
 		trState.tick = 0;
 	}
 }
@@ -110,14 +110,14 @@ void IPlayer::advanceTrackTick(int track)
 void IPlayer::advanceSequenceTick()
 {
 	++state.tick;
-	
+
 	if (state.tick >= state.songSpeed)
 	{
 		if (processLastTick())
 		{
 			advancePatternRow();
 		}
-		
+
 		state.tick = 0;
 	}
 }
@@ -129,17 +129,17 @@ void IPlayer::runTick()
 	{
 		handleNoteOn();
 	}
-	
+
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
 		handleMacroTick(i);
 	}
-	
+
 	if (state.isPlaying())
 	{
 		if (state.tick == 0)
 			processZeroTick();
-		
+
 		processAnyTick();
 	}
 }
@@ -149,7 +149,7 @@ void IPlayer::advanceTick()
 {
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 		advanceTrackTick(i);
-	
+
 	if (state.isPlaying())
 		advanceSequenceTick();
 }
@@ -158,21 +158,21 @@ void IPlayer::advanceTick()
 void IPlayer::handleNoteOn()
 {
 	const SequenceRow& seqRow = mSong.getSequence().getRow(state.sequenceRow);
-	
+
 	if (state.tick == 0)
 	{
 		for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 		{
 			PatternRow& patternRow = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow);
 			int note = patternRow.getNoteWithOctave();
-			
+
 			if (note != PatternRow::NoNote)
 			{
 				if (patternRow.effect.effect != '3')
 				{
 					if (patternRow.effect.effect == 'm')
 						trackState[i]->macro = patternRow.effect.getParamsAsByte();
-					
+
 					triggerNote(i, note);
 				}
 				else
@@ -188,11 +188,11 @@ void IPlayer::handleNoteOn()
 void IPlayer::handleMacroNote(int track)
 {
 	ITrackState& trState = *trackState[track];
-	
+
 	if (trState.tick == 0)
 	{
 		int note = mSong.getMacro(trState.macro).getRow(trState.macroRow).getNoteWithOctave();
-			
+
 		if (note != PatternRow::NoNote)
 		{
 			trState.macroState.setFrequencyFromNote(note - 3);
@@ -205,7 +205,7 @@ void IPlayer::triggerNoteWithReset(int track, int note, int macro)
 {
 	if (macro != -1)
 		trackState[track]->macro = macro;
-	
+
 	triggerNote(track, note);
 	state.tick = 0;
 }
@@ -229,7 +229,7 @@ void IPlayer::triggerNote(int track, int note)
 void IPlayer::triggerNote(int track, const PatternRow& row)
 {
 	int note = row.getNoteWithOctave();
-	
+
 	if (note != PatternRow::NoNote)
 	{
 		triggerNote(track, note);
@@ -242,8 +242,8 @@ void IPlayer::triggerNote(int track, const PatternRow& row)
 
 void IPlayer::processZeroTick(int track, const PatternRow& row)
 {
-	ITrackState& trState = *trackState[track]; 
-	
+	ITrackState& trState = *trackState[track];
+
 	trState.trackState.handleEffectZeroTick(row.note, trState, state);
 	trState.trackState.handleEffectZeroTick(row.effect, trState, state);
 }
@@ -252,11 +252,11 @@ void IPlayer::processZeroTick(int track, const PatternRow& row)
 void IPlayer::processZeroTick()
 {
 	const SequenceRow& seqRow = mSong.getSequence().getRow(state.sequenceRow);
-	
+
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
 		PatternRow&	row = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow);
-		
+
 		processZeroTick(i, row);
 	}
 }
@@ -265,10 +265,10 @@ void IPlayer::processZeroTick()
 void IPlayer::processAnyTick()
 {
 	const SequenceRow& seqRow = mSong.getSequence().getRow(state.sequenceRow);
-	
+
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
-		ITrackState& trState = *trackState[i]; 
+		ITrackState& trState = *trackState[i];
 		PatternRow&	row = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow);
 		trState.trackState.handleEffectAnyTick(row.note, trState, state);
 		trState.trackState.handleEffectAnyTick(row.effect, trState, state);
@@ -279,7 +279,7 @@ void IPlayer::processAnyTick()
 bool IPlayer::processLastTick()
 {
 	const SequenceRow& seqRow = mSong.getSequence().getRow(state.sequenceRow);
-	
+
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
 		const EffectParam& effect = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow).effect;
@@ -289,19 +289,19 @@ bool IPlayer::processLastTick()
 				advanceSequenceRow();
 				state.sequenceRow = effect.getParamsAsByte();
 				return false;
-			
+
 			case 'd':
 				advanceSequenceRow();
 				state.patternRow = effect.getParamsAsByte();
 				return false;
-				
+
 		}
 	}
-	
+
 	return true;
-}	
-	
-	
+}
+
+
 void IPlayer::setSequenceRow(int row)
 {
 	state.sequenceRow = row;
@@ -314,7 +314,7 @@ void IPlayer::setPatternRow(int row)
 	state.patternRow = row;
 	state.setUpdated(PlayerState::Updated::PatternRow);
 }
-	
+
 
 PlayerState& IPlayer::getPlayerState()
 {
@@ -324,13 +324,19 @@ PlayerState& IPlayer::getPlayerState()
 
 void IPlayer::lock()
 {
-	SDL_LockMutex(mMutex);
+	if (++mLockCounter > 0)
+	{
+		SDL_LockMutex(mMutex);
+	}
 }
 
 
 void IPlayer::unlock()
 {
-	SDL_UnlockMutex(mMutex);
+	if (mLockCounter-- > 0)
+	{
+		SDL_UnlockMutex(mMutex);
+	}
 }
 
 
