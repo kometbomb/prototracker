@@ -1,5 +1,7 @@
 # Prototracker
 
+Note: Prototracker is not the same thing as Prototracker-modular or Prototracker-OPLL. They have their own forks.
+
 Prototracker is a multiplatform fakebit chiptune tracker. [Try the online version.](http://kometbomb.net/prototracker/)
 
 The editor is a fairly normal tracker. The synth is an absolutely minimal single-oscillator synth (with 256 preset waveforms). Macros are used to create "instruments" and also some normal channel effects. Most keyboard shortcuts are the same as in Protracker. See the docs/ directory for help.
