@@ -26,15 +26,15 @@ int ColumnEditor::getCharFromKey(const SDL_Keysym& sym) const
 {
 	if (sym.sym >= SDLK_a && sym.sym <= SDLK_z)
 		return sym.sym - SDLK_a + 'a';
-	
+
 	// Scancodes are ordered 1-9 and then 0 (as on the keyboard)
-	
+
 	if (sym.scancode == SDL_SCANCODE_0)
 		return '0';
-	
+
 	if (sym.scancode >= SDL_SCANCODE_1 && sym.scancode <= SDL_SCANCODE_9)
 		return sym.scancode - SDL_SCANCODE_1 + '1';
-	
+
 	return -1;
 }
 
@@ -43,22 +43,22 @@ int ColumnEditor::getHexFromKey(const SDL_Keysym& sym) const
 {
 	if (sym.sym >= SDLK_a && sym.sym <= SDLK_f)
 		return sym.sym - SDLK_a + 0xa;
-	
+
 	// Scancodes are ordered 1-9 and then 0 (as on the keyboard)
-	
+
 	if (sym.scancode == SDL_SCANCODE_0)
 		return 0;
-	
+
 	if (sym.scancode >= SDL_SCANCODE_1 && sym.scancode <= SDL_SCANCODE_9)
 		return sym.scancode - SDL_SCANCODE_1 + 1;
-	
+
 	return -1;
 }
 
 
 int ColumnEditor::getNoteFromKey(const SDL_Keysym& sym) const
 {
-	static const struct { SDL_Scancode scancode; int note; } syms[] = 
+	static const struct { SDL_Scancode scancode; int note; } syms[] =
 	{
 		{SDL_SCANCODE_Z, 0},
 		{SDL_SCANCODE_S, 1},
@@ -75,7 +75,7 @@ int ColumnEditor::getNoteFromKey(const SDL_Keysym& sym) const
 		{SDL_SCANCODE_COMMA, 12},
 		{SDL_SCANCODE_L, 13},
 		{SDL_SCANCODE_PERIOD, 14},
-		
+
 		{SDL_SCANCODE_Q, 12},
 		{SDL_SCANCODE_2, 13},
 		{SDL_SCANCODE_W, 14},
@@ -95,11 +95,11 @@ int ColumnEditor::getNoteFromKey(const SDL_Keysym& sym) const
 		{SDL_SCANCODE_P, 28},
 		{SDL_SCANCODE_P, -1}
 	};
-		
+
 	for (int i = 0 ; syms[i].note != -1 ; ++i)
 		if (syms[i].scancode == sym.scancode)
 			return syms[i].note;
-			
+
 	return -1;
 }
 
@@ -107,7 +107,7 @@ int ColumnEditor::getNoteFromKey(const SDL_Keysym& sym) const
 void ColumnEditor::setMaxRows(int rows)
 {
 	maxRows = rows;
-	
+
 	if (mTrackEditorState.currentRow >= rows)
 		mTrackEditorState.currentRow = rows - 1;
 }
@@ -116,7 +116,7 @@ void ColumnEditor::setMaxRows(int rows)
 void ColumnEditor::scrollView(int d, bool wrap)
 {
 	mTrackEditorState.currentRow += d;
-	
+
 	if (wrap)
 	{
 		mTrackEditorState.currentRow = (mTrackEditorState.currentRow + maxRows) % maxRows;
@@ -136,17 +136,17 @@ void ColumnEditor::changeColumn(int d)
 	if (d < 0)
 	{
 		--mTrackEditorState.currentColumn;
-		
+
 		if (mTrackEditorState.currentColumn < 0)
 		{
 			mTrackEditorState.currentColumn = mColumns - 1;
 			changeTrack(-1);
 		}
 	}
-	else 
+	else
 	{
 		++mTrackEditorState.currentColumn;
-		
+
 		if (mTrackEditorState.currentColumn >= mColumns)
 		{
 			mTrackEditorState.currentColumn = 0;
@@ -160,19 +160,19 @@ void ColumnEditor::changeTrack(int d)
 {
 	int currentTrack = mTrackEditorState.currentTrack;
 	currentTrack += d;
-	
+
 	if (currentTrack < 0)
 	{
 		currentTrack = 0;
 		mTrackEditorState.currentColumn = 0;
 	}
-	
+
 	if (currentTrack > maxTracks - 1)
 	{
 		currentTrack = maxTracks - 1;
 		mTrackEditorState.currentColumn = mColumns - 1;
 	}
-	
+
 	mTrackEditorState.currentTrack = currentTrack;
 }
 
@@ -186,4 +186,10 @@ void ColumnEditor::setRowNumberMargin(int margin)
 void ColumnEditor::setTrackMargin(int margin)
 {
 	mTrackMargin = margin;
+}
+
+
+bool ColumnEditor::isRowActive(int track, int row) const
+{
+	return false;
 }
