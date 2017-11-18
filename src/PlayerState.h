@@ -8,19 +8,20 @@ struct PlayerState
 		Play,
 		PlaySequenceRow
 	};
-	
+
 	Mode mode;
-	
+
 	int tick;
 	int songSpeed;
 	int songRate;
 	int sequenceRow;
 	int patternRow;
-	
+	float cpuUse;
+
 	int updateMask;
-		
+
 	PlayerState();
-	
+
 	enum Updated {
 		SequenceRow = 1,
 		PatternRow = 2,
@@ -29,11 +30,11 @@ struct PlayerState
 		PatternRelevant = SequenceRow|PatternRow,
 		Any = -1
 	};
-	
+
 	int getUpdated();
 	void ackUpdated(int mask);
 	void setUpdated(int mask);
-	
+
 	bool isPlaying() const;
 	bool shouldAdvanceSequenceRow() const;
 };
