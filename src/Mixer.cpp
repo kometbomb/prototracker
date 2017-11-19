@@ -1,3 +1,4 @@
+#include "Debug.h"
 #include "Mixer.h"
 #include "SDL.h"
 #include "IPlayer.h"
@@ -77,8 +78,7 @@ bool Mixer::initAudio()
 
 	if (SDL_OpenAudio(&want, &have) < 0)
 	{
-		/*fprintf(stderr, "Failed to open audio: %s\n", SDL_GetError());
-		exit(1);*/
+		debug("Failed to open audio: %s", SDL_GetError());
 		return false;
 	}
 

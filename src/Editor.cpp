@@ -1,3 +1,4 @@
+#include "Debug.h"
 #include "Editor.h"
 #include "Renderer.h"
 #include "Color.h"
@@ -19,7 +20,7 @@ Editor * Editor::getFocus()
 {
 	if (mParent)
 		return mParent->getFocus();
-	
+
 	return mFocus;
 }
 
@@ -33,7 +34,7 @@ void Editor::setFocus(Editor *editor)
 		if (mFocus)
 			mFocus->setDirty(true);
 		mFocus = editor;
-		
+
 		if (editor)
 			editor->setDirty(true);
 	}
@@ -49,15 +50,15 @@ bool Editor::onEvent(SDL_Event& event)
 void Editor::setDirty(bool dirty)
 {
 	mIsDirty =  dirty;
-	
+
 	if (!dirty)
 		mRedraw = false;
-	
+
 	if (dirty && mParent != NULL)
 		mParent->setDirty(true);
 }
-	
-	
+
+
 bool Editor::shouldRedrawBackground() const
 {
 	return mRedraw;
@@ -68,7 +69,7 @@ bool Editor::isDirty() const
 {
 	return mIsDirty || hasDirty();
 }
-	
+
 
 void Editor::addChild(Editor *child, int x, int y, int w, int h)
 {
@@ -79,13 +80,13 @@ void Editor::addChild(Editor *child, int x, int y, int w, int h)
 	area.w = w;
 	area.h = h;
 	mChildren[mNumChildren++] = child;
-	
+
 	SDL_Rect absArea = {area.x + mThisArea.x, area.y + mThisArea.y, area.w, area.h};
-	
+
 	child->setArea(absArea);
 }
-	
-	
+
+
 void Editor::setArea(const SDL_Rect& area)
 {
 	mThisArea.x = area.x;
@@ -100,7 +101,7 @@ bool Editor::hasDirty() const
 	for (int i = 0 ; i < mNumChildren ; ++i)
 		if (mChildren[i]->isDirty())
 			return true;
-			
+
 	return false;
 }
 
@@ -127,15 +128,15 @@ void Editor::onListenableChange(Listenable *listenable)
 void Editor::drawCoveredChildren(Renderer& renderer, const SDL_Rect& area, const SDL_Rect& childArea, int maxIndex)
 {
 	renderer.renderBackground(childArea);
-	
+
 	for (int index = 0 ; index <= maxIndex && index < mNumChildren ; ++index)
 	{
 		SDL_Rect thisChildArea = mChildrenArea[index];
 		thisChildArea.x += area.x;
 		thisChildArea.y += area.y;
-		
+
 		SDL_Rect intersection;
-			
+
 		if (intersectRect(childArea, thisChildArea, intersection))
 		{
 			renderer.setClip(intersection);
@@ -154,11 +155,11 @@ void Editor::drawChildren(Renderer& renderer, const SDL_Rect& area)
 			SDL_Rect childArea = mChildrenArea[index];
 			childArea.x += area.x;
 			childArea.y += area.y;
-			
+
 			drawCoveredChildren(renderer, area, childArea, index - 1);
-			
+
 			renderer.setClip(childArea);
-			
+
 			mChildren[index]->draw(renderer, childArea);
 		}
 	}
@@ -175,13 +176,13 @@ void Editor::drawModal(Renderer& renderer, const SDL_Rect& area)
 			renderer.clearRect(area, Color(0, 0, 0));
 			renderer.drawRect(area, Color(255, 255, 255));
 		}
-		
+
 		SDL_Rect modalContent = area;
 		modalContent.x += 2;
 		modalContent.y += 2;
 		modalContent.w -= 4;
 		modalContent.h -= 4;
-		
+
 		mModal->draw(renderer, modalContent);
 	}
 }
@@ -191,14 +192,14 @@ void Editor::setModal(Editor *modal)
 {
 	if (mModal != NULL)
 		mModal->mParent = NULL;
-	
+
 	mModal = modal;
-	
+
 	if (mModal != NULL)
 	{
 		mModal->mParent = this;
 	}
-	
+
 	invalidateAll();
 }
 
@@ -212,12 +213,12 @@ void Editor::invalidateAll()
 {
 	setDirty(true);
 	mRedraw = true;
-	
+
 	for (int index = 0 ; index < mNumChildren ; ++index)
 	{
 		mChildren[index]->invalidateAll();
 	}
-	
+
 	if (mModal)
 		mModal->invalidateAll();
 }
@@ -232,9 +233,9 @@ void Editor::draw(Renderer& renderer, const SDL_Rect& area)
 {
 	// This should fix problems with modal backgrounds not being updated
 	// and perhaps also other child Editors.
-	
+
 	invalidateAll();
-	
+
 	if (mModal == NULL)
 	{
 		this->onDraw(renderer, area);
@@ -245,7 +246,7 @@ void Editor::draw(Renderer& renderer, const SDL_Rect& area)
 		SDL_Rect modalArea = { area.x + 16, area.y + 16, area.w - 32, area.h - 32 };
 		drawModal(renderer, modalArea);
 	}
-	
+
 	setDirty(false);
 }
 
@@ -263,9 +264,9 @@ bool Editor::pointInRect(const SDL_Point& point, const SDL_Rect& rect)
 	return SDL_PointInRect(&point, &rect);
 #else
 	// In case we are using SDL <2.0.4 (of whatever the version is
-	// where the rect built-in functions are introduced. E.g. my 
+	// where the rect built-in functions are introduced. E.g. my
 	// PocketCHIP only goes up to 2.0.2 by default.
-	
+
 	return point.x >= rect.x && point.x < rect.x + rect.w &&
 		point.y >= rect.y && point.y < rect.y + rect.h;
 #endif
@@ -278,22 +279,22 @@ bool Editor::intersectRect(const SDL_Rect& a, const SDL_Rect& b, SDL_Rect& resul
 	return SDL_IntersectRect(&point, &rect, &result);
 #else
 	// In case we are using SDL <2.0.4 (of whatever the version is
-	// where the rect built-in functions are introduced. E.g. my 
+	// where the rect built-in functions are introduced. E.g. my
 	// PocketCHIP only goes up to 2.0.2 by default.
-	
+
 	int aRight = a.x + a.w;
 	int aBottom = a.y + a.h;
 	int bRight = b.x + b.w;
 	int bBottom = b.y + b.h;
-	
+
 	if (!(a.x < bRight && aRight > b.x && a.y < bBottom && aBottom > b.y))
 		return false;
-	
+
 	result.x = std::max(a.x, b.x);
 	result.y = std::max(a.y, b.y);
 	result.w = std::min(aRight, bRight) - result.x;
 	result.h = std::min(aBottom, bBottom) - result.y;
-	
+
 	return true;
 #endif
 }
@@ -306,7 +307,7 @@ void Editor::showTooltipV(const SDL_Rect& area, const char* message, ...)
     va_start(argptr, message);
     vsnprintf(dest, sizeof(dest), message, argptr);
     va_end(argptr);
-	
+
 	showTooltip(area, dest);
 }
 
@@ -325,7 +326,7 @@ void Editor::showMessageV(MessageClass messageClass, const char* message, ...)
     va_start(argptr, message);
     vsnprintf(dest, sizeof(dest), message, argptr);
     va_end(argptr);
-	
+
 	showMessage(messageClass, dest);
 }
 
@@ -334,21 +335,21 @@ void Editor::showMessage(MessageClass messageClass, const char* message)
 {
 	if (mParent != NULL)
 		mParent->showMessage(messageClass, message);
-	else 
-		printf("[%s] %s\n", messageClass == MessageInfo ? "INFO" : "ERROR", message);
+	else
+		debug("[%s] %s", messageClass == MessageInfo ? "INFO" : "ERROR", message);
 }
 
 
 void Editor::onUpdate(int ms)
 {
-	
+
 }
 
 
 void Editor::update(int ms)
 {
 	onUpdate(ms);
-	
+
 	for (int index = 0 ; index < mNumChildren ; ++index)
 	{
 		mChildren[index]->update(ms);

@@ -1,3 +1,4 @@
+#include "Debug.h"
 #include "Theme.h"
 #include <cstdio>
 #include <cstring>
@@ -19,13 +20,13 @@ Theme::Theme()
 bool Theme::load(const std::string& path)
 {
 	mPath = path;
-	
+
 	if (!loadDefinition(path))
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load theme", ("Could not load "+path+". Perhaps you need to set the working directory?").c_str(), NULL);
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -101,7 +102,7 @@ static char *rwgets(char *buf, int count, SDL_RWops *rw)
             {
                 return NULL;
             }
-            
+
             break;
         }
 
@@ -110,22 +111,22 @@ static char *rwgets(char *buf, int count, SDL_RWops *rw)
             break;
         }
     }
-    
+
     buf[i] = '\0';
-    
+
     return buf;
 }
 
 
 bool Theme::loadDefinition(const std::string& path)
 {
-	SDL_RWops *rw = SDL_RWFromFile(path.c_str(), "r"); 
-	
+	SDL_RWops *rw = SDL_RWFromFile(path.c_str(), "r");
+
 	if (!rw)
 		return false;
-	
+
 	int lineCounter = 0;
-	
+
 	static const char *names[] = {
 		"PatternEditor",
 		"SequenceEditor",
@@ -141,23 +142,23 @@ bool Theme::loadDefinition(const std::string& path)
 		"TouchRegion",
 		NULL
 	};
-	
+
 	while (true)
 	{
 		++lineCounter;
-		
+
 		char line[500];
 		if (rwgets(line, sizeof(line), rw) == NULL)
 			break;
-		
+
 		// Check if comment
-		
+
 		if (line[0] == '#')
 			continue;
-		
+
 		char elementName[20], path[100], strParameters[10][50] = {0};
 		int parameters[10] = {0};
-		
+
 		if (sscanf(line, "%19s \"%99[^\"]\" %d %d", elementName, path, &parameters[0], &parameters[1]) >= 4 && strcmp("Font", elementName) == 0)
 		{
 			mFontPath = mBasePath + path;
@@ -176,7 +177,7 @@ bool Theme::loadDefinition(const std::string& path)
 		{
 			Element element;
 			element.type = Theme::Unknown;
-			
+
 			for (int index = 0 ; names[index] ; ++index)
 			{
 				if (strcmp(names[index], elementName) == 0)
@@ -184,27 +185,27 @@ bool Theme::loadDefinition(const std::string& path)
 					element.type = static_cast<Theme::ElementType>(index);
 					break;
 				}
-				
+
 			}
-			
+
 			if (element.type != Theme::Unknown)
 			{
 				memcpy(element.parameters, parameters, sizeof(element.parameters));
 				memcpy(element.strParameters, strParameters, sizeof(element.strParameters));
 				mElement.push_back(element);
 			}
-			else 
+			else
 			{
-				printf("Unknown element %s on line %d\n", elementName, lineCounter);
+				debug("Unknown element %s on line %d", elementName, lineCounter);
 			}
 		}
 		else
 		{
-			printf("Weirdness on line %d\n", lineCounter);
-		}	
+			debug("Weirdness on line %d", lineCounter);
+		}
 	}
-		
+
 	SDL_RWclose(rw);
-	
+
 	return true;
 }

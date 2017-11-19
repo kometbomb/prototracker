@@ -1,3 +1,4 @@
+#include "Debug.h"
 #include "Renderer.h"
 #include "SDL.h"
 #include "SDL_image.h"
@@ -26,7 +27,7 @@
 Renderer::Renderer()
 	: mWindow(NULL), mRenderer(NULL), mFont(NULL), mBackground(NULL), mIntermediateTexture(NULL)
 {
-	
+
 }
 
 
@@ -61,7 +62,7 @@ void Renderer::drawRect(const SDL_Rect& rect, const Color& color)
 
 
 void Renderer::renderTextV(const SDL_Rect& position, const Color& color, const char * text, ...)
-{ 
+{
 	char dest[1024];
     va_list argptr;
     va_start(argptr, text);
@@ -74,11 +75,11 @@ void Renderer::renderTextV(const SDL_Rect& position, const Color& color, const c
 void Renderer::renderText(const SDL_Rect& position, const Color& color, const char * text)
 {
 	SDL_Rect charArea = { position.x, position.y, getFontWidth(), getFontHeight() };
-	
+
 	for (const char *c = text ; *c ; ++c)
 	{
 		renderChar(charArea, color, *c);
-		
+
 		charArea.x += charArea.w;
 	}
 }
@@ -87,23 +88,23 @@ void Renderer::renderText(const SDL_Rect& position, const Color& color, const ch
 void Renderer::renderChar(const SDL_Rect& position, const Color& color, int c)
 {
 	static const char *charmap = "0123456789abcdefghijklmnopqrstuvwxyz-#/:._<>,'\"!";
-	
+
 	c = tolower(c);
 	SDL_SetTextureBlendMode(mFont, SDL_BLENDMODE_BLEND);
-	
+
 	Color tmp = color;
-	
+
 	if (tmp.r >= 255)
 		tmp.r = 254;
-	
+
 	if (tmp.g >= 255)
 		tmp.g = 254;
-	
+
 	if (tmp.b >= 255)
 		tmp.b = 254;
-	
+
 	SDL_SetTextureColorMod(mFont, tmp.r, tmp.g, tmp.b);
-	
+
 	for (int i = 0 ; charmap[i] ; ++i)
 	{
 		if (charmap[i] == c)
@@ -111,7 +112,7 @@ void Renderer::renderChar(const SDL_Rect& position, const Color& color, int c)
 			SDL_Rect charPos = { i * getFontWidth(), 0, getFontWidth(), getFontHeight() };
 			if (SDL_RenderCopy(mRenderer, mFont, &charPos, &position) != 0)
 			{
-				printf("%s\n", SDL_GetError());
+				debug("SDL_GetError: %s", SDL_GetError());
 			}
 		}
 	}
@@ -125,7 +126,7 @@ void Renderer::present()
 	SDL_Rect fullscreen = {(windowW - getWindowArea().w * SCALE) / 2, (windowH - getWindowArea().h * SCALE) / 2, getWindowArea().w * SCALE, getWindowArea().h * SCALE};
 	SDL_SetRenderTarget(mRenderer, NULL);
 	SDL_Rect src = {0,0,mGuiWidth,mGuiHeight};
-	
+
 	//SDL_RenderSetClipRect(mRenderer, &fullscreen);
 	SDL_RenderCopy(mRenderer, mIntermediateTexture, &src, &fullscreen);
 	SDL_RenderPresent(mRenderer);
@@ -200,71 +201,71 @@ bool Renderer::loadFont(const std::string& path, int charWidth, int charHeight)
 {
 	if (mFont != NULL)
 		SDL_DestroyTexture(mFont);
-	
+
 	SDL_Surface *img = IMG_Load(path.c_str());
-	
+
 	if (!img)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load font", ("Could not load "+path+". Perhaps you need to set the working directory?").c_str(), NULL);
 		return false;
 	}
-	
+
 	mFont = SDL_CreateTextureFromSurface(mRenderer, img);
 	SDL_FreeSurface(img);
-	
+
 	mFontWidth = charWidth;
 	mFontHeight = charHeight;
-	
+
 	return true;
 }
 
-	
+
 bool Renderer::loadGui(const std::string& path, int width, int height)
 {
 	if (!mWindow)
 		mWindow = SDL_CreateWindow(APP_NAME, SDL_WINDOWPOS_CENTERED,  SDL_WINDOWPOS_CENTERED, width * SCALE, height * SCALE, 0);
-	
+
 	if (!mRenderer)
 	{
 		mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_TARGETTEXTURE|SDL_RENDERER_SOFTWARE);
 		SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
 	}
-	
+
 	if (mBackground != NULL)
 		SDL_DestroyTexture(mBackground);
-	
+
 	SDL_Surface *img = IMG_Load(path.c_str());
-	
+
 	if (!img)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Could not load GUI", ("Could not load "+path+". Perhaps you need to set the working directory?").c_str(), NULL);
-		
+
 		return false;
 	}
-	
+
 	mBackground = SDL_CreateTextureFromSurface(mRenderer, img);
 	SDL_FreeSurface(img);
-	
+
 #if FULLSCREEN
 	SDL_DisplayMode displayMode;
 	SDL_GetDesktopDisplayMode(0, &displayMode);
 	SDL_SetWindowSize(mWindow, displayMode.w, displayMode.h);
 	SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-#else	
+#else
 	SDL_SetWindowSize(mWindow, width * SCALE, height * SCALE);
 #endif
 	SDL_SetWindowPosition(mWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-	
+
 	mGuiWidth = width;
 	mGuiHeight = height;
 
 	SDL_SetRenderTarget(mRenderer, NULL);
-	
+
 	if (mIntermediateTexture != NULL)
 		SDL_DestroyTexture(mIntermediateTexture);
-		
+
 	mIntermediateTexture = SDL_CreateTexture(mRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, mGuiWidth, mGuiHeight);
-	
+
 	return true;
 }
 
@@ -273,10 +274,10 @@ bool Renderer::setTheme(const Theme& theme)
 {
 	if (!loadGui(theme.getBackgroundPath(), theme.getWidth(), theme.getHeight()))
 		return false;
-	
+
 	if (!loadFont(theme.getFontPath(), theme.getFontWidth(), theme.getFontHeight()))
 		return false;
-	
+
 	return true;
 }
 
@@ -286,7 +287,7 @@ void Renderer::scaleEventCoordinates(SDL_Event& event) const
 #if FULLSCREEN
 	SDL_DisplayMode displayMode;
 	SDL_GetDesktopDisplayMode(0, &displayMode);
-	
+
 	switch (event.type)
 	{
 		case SDL_MOUSEBUTTONUP:
@@ -296,13 +297,13 @@ void Renderer::scaleEventCoordinates(SDL_Event& event) const
 			event.button.y -= (displayMode.h - mGuiHeight * SCALE) / 2;
 			break;
 	}
-#endif	
+#endif
 }
 
 
 SDL_Rect Renderer::getTextRect(const char * text)
 {
 	SDL_Rect rect = {0, 0, mFontWidth * static_cast<int>(strlen(text)), mFontHeight};
-	
+
 	return rect;
 }
