@@ -10,7 +10,7 @@
 #include <cstdio>
 
 IPlayer::IPlayer(Song& song)
-	: mSong(song), mLockCounter(0), state()
+	: mSong(song), mLockCounter(0), state(), mSpinlock(0)
 {
 	mMutex = SDL_CreateMutex();
 	trackState = new ITrackState*[SequenceRow::maxTracks];
@@ -324,18 +324,30 @@ PlayerState& IPlayer::getPlayerState()
 
 void IPlayer::lock()
 {
+	SDL_AtomicLock(&mSpinlock);
 	if (++mLockCounter > 0)
 	{
+		SDL_AtomicUnlock(&mSpinlock);
 		SDL_LockMutex(mMutex);
+	}
+	else
+	{
+		SDL_AtomicUnlock(&mSpinlock);
 	}
 }
 
 
 void IPlayer::unlock()
 {
+	SDL_AtomicLock(&mSpinlock);
 	if (mLockCounter-- > 0)
 	{
+		SDL_AtomicUnlock(&mSpinlock);
 		SDL_UnlockMutex(mMutex);
+	}
+	else
+	{
+		SDL_AtomicUnlock(&mSpinlock);
 	}
 }
 

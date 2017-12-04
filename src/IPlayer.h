@@ -1,10 +1,10 @@
 #pragma once
 
 #include "PlayerState.h"
+#include "SDL.h"
 
 struct Song;
 struct ITrackState;
-struct SDL_mutex;
 struct PatternRow;
 
 /*
@@ -19,6 +19,7 @@ class IPlayer
 {
 protected:
 	SDL_mutex *mMutex;
+	SDL_SpinLock mSpinlock;
 	int mLockCounter;
 	Song& mSong;
 	PlayerState state;
