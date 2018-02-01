@@ -188,8 +188,11 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 
 		int toBeWritten = std::min(length - i, chunk);
 
-		mixer.getSynth().render(data + i, toBeWritten);
-		mixer.getSynth().update(toBeWritten);
+		ISynth& synth = mixer.getSynth();
+		synth.lock();
+		synth.render(data + i, toBeWritten);
+		synth.update(toBeWritten);
+		synth.unlock();
 		mixer.getSamples() += toBeWritten;
 
 		player.lock();
