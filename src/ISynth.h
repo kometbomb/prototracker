@@ -12,9 +12,7 @@ Override ISynth() to initialize your own IOscillators.
 
 */
 
-#include "Lockable.h"
-
-class ISynth: public Lockable
+class ISynth
 {
 protected:
 	IOscillator **mOscillator;
