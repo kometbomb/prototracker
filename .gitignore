@@ -28,3 +28,7 @@
 *.out
 *.app
 assets/Thumbs.db
+
+# Project stuff
+.vscode/*
+node_modules/*
