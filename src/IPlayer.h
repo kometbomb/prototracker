@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PlayerState.h"
-#include "SDL.h"
+#include "Lockable.h"
 
 struct Song;
 struct ITrackState;
@@ -15,12 +15,9 @@ You need to override IPlayer() to setup your own ITrackStates for the tracks.
 
 */
 
-class IPlayer
+class IPlayer: public Lockable
 {
 protected:
-	SDL_mutex *mMutex;
-	SDL_SpinLock mSpinlock;
-	int mLockCounter;
 	Song& mSong;
 	PlayerState state;
 	ITrackState **trackState;
@@ -46,9 +43,6 @@ public:
 	virtual ~IPlayer();
 
 	void reset();
-
-	void lock();
-	void unlock();
 
 	int getTick() const;
 

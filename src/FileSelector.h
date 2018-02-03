@@ -9,64 +9,48 @@ struct TextEditor;
 struct Label;
 struct MessageBox;
 
-#include <vector>
-#include <string>
+#include "GenericSelector.h"
 
-class FileSelector: public Editor
+class FileSelector: public GenericSelector
 {
 	static const int filenameSize = 256;
-	static const int titleSize = 256;
 	static const int filterSize = 256;
-	
-	enum 
+
+	enum
 	{
 		MessageBoxOverwrite
 	};
-	
-	int mId;
-	char mTitle[titleSize];
+
 	char mFilter[filterSize];
 	char mFilename[filenameSize];
+	Label *mFilenameLabel;
 	TextEditor *mNameField;
-	Label *mLabel, *mFilenameLabel;
 	MessageBox *mMessageBox;
-	int mSelectedItem;
 	bool mCheckOverwrite;
-	
-	struct FileItem {
+
+	struct FileItem: public Item {
 		bool isDirectory;
 		std::string path;
 		int size;
-		
+
 		FileItem(bool isDirectory, const char *path, int size);
-		
+
 		// For sorting the listing
-		static bool directorySort(const FileItem& a, const FileItem& b);
+		static bool directorySort(const Item* a, const Item* b);
 		static bool checkDirectory(const char *name);
 		static const char *formatSize(int size);
 	};
-	
-	std::vector<FileItem> mItems;
-	
-	void selectItem(int index);
-	void renderItem(Renderer& renderer, const SDL_Rect& area, const FileItem& item, bool isSelected);
-	void accept(bool isFinal = false);
-	void reject(bool isFinal = false);
-	
+
+	virtual void onSelectItem(const Item& item);
+	virtual void renderItem(Renderer& renderer, const SDL_Rect& area, const Item& item, bool isSelected);
+	virtual void accept(bool isFinal = false);
+	virtual void reject(bool isFinal = false);
+
 	static bool fileExists(const char *path);
-	
+
 public:
 	FileSelector(EditorState& editorState);
 	virtual ~FileSelector();
-	
-	/* Set dialog id (freely set and used by the Editor that creates the dialog)
-	 */
-	void setId(int id);
-	int getId() const;
-
-	/* Set dialog title
-	 */
-	void setTitle(const char *title);
 
 	/* Set path & populate list
 	 */
@@ -90,9 +74,7 @@ public:
 	 * and filename to selected (or new) file
 	 */
 	const char * getSelectedPath() const;
-	const FileItem& getSelectedItem() const;
 
 	virtual bool onEvent(SDL_Event& event);
-	virtual void onDraw(Renderer& renderer, const SDL_Rect& area);
 	virtual void onMessageBoxEvent(const Editor& messageBox, int code);
 };
