@@ -31,6 +31,7 @@ protected:
 	virtual void accept(bool isFinal = false) = 0;
 	virtual void reject(bool isFinal = false) = 0;
 	virtual void onSelectItem(const Item& item) = 0;
+	virtual void onAreaChanged(const SDL_Rect& area);
 
 	void addItem(Item* newItem);
 	void clearItems();

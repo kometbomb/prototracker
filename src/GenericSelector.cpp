@@ -17,7 +17,7 @@ GenericSelector::GenericSelector(EditorState& editorState)
 	mLabel = new Label(editorState);
 	mLabel->setColor(Color(0, 0, 0));
 	mLabel->setBackground(Color(255, 255, 255));
-	addChild(mLabel, 0, 0, 280, 8);
+	addChild(mLabel, 0, 0, 100, 8);
 	strcpy(mTitle, "");
 }
 
@@ -172,4 +172,15 @@ void GenericSelector::clearItems()
 void GenericSelector::sortItems(bool (*comparator)(const Item* a, const Item* b))
 {
 	std::sort(mItems.begin(), mItems.end(), comparator);
+}
+
+
+void GenericSelector::onAreaChanged(const SDL_Rect& area)
+{
+	SDL_Rect labelArea = mLabel->getArea();
+
+	// Editor should handle the 2px modal margin
+	labelArea.w = area.w - 4;
+
+	mLabel->setArea(labelArea);
 }

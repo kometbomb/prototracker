@@ -93,6 +93,21 @@ void Editor::setArea(const SDL_Rect& area)
 	mThisArea.y = area.y;
 	mThisArea.w = area.w;
 	mThisArea.h = area.h;
+
+	if (mParent) mParent->childAreaChanged(this);
+
+	onAreaChanged(mThisArea);
+}
+
+
+const SDL_Rect& Editor::getArea() const
+{
+	return mThisArea;
+}
+
+
+void Editor::onAreaChanged(const SDL_Rect& area)
+{
 }
 
 
@@ -166,18 +181,18 @@ void Editor::drawChildren(Renderer& renderer, const SDL_Rect& area)
 }
 
 
-void Editor::drawModal(Renderer& renderer, const SDL_Rect& area)
+void Editor::drawModal(Renderer& renderer)
 {
 	if (mModal != NULL)
 	{
 		if (mModal->shouldRedrawBackground())
 		{
 			// Draw plain black background with white border
-			renderer.clearRect(area, Color(0, 0, 0));
-			renderer.drawRect(area, Color(255, 255, 255));
+			renderer.clearRect(mModal->getArea(), Color(0, 0, 0));
+			renderer.drawRect(mModal->getArea(), Color(255, 255, 255));
 		}
 
-		SDL_Rect modalContent = area;
+		SDL_Rect modalContent = mModal->getArea();
 		modalContent.x += 2;
 		modalContent.y += 2;
 		modalContent.w -= 4;
@@ -198,6 +213,8 @@ void Editor::setModal(Editor *modal)
 	if (mModal != NULL)
 	{
 		mModal->mParent = this;
+		SDL_Rect modalArea = { mThisArea.x + 16, mThisArea.y + 16, mThisArea.w - 32, mThisArea.h - 32 };
+		mModal->setArea(modalArea);
 	}
 
 	invalidateAll();
@@ -243,8 +260,7 @@ void Editor::draw(Renderer& renderer, const SDL_Rect& area)
 	}
 	else
 	{
-		SDL_Rect modalArea = { area.x + 16, area.y + 16, area.w - 32, area.h - 32 };
-		drawModal(renderer, modalArea);
+		drawModal(renderer);
 	}
 
 	setDirty(false);
@@ -362,5 +378,15 @@ void Editor::onLoaded()
 	for (int index = 0 ; index < mNumChildren ; ++index)
 	{
 		mChildren[index]->onLoaded();
+	}
+}
+
+
+void Editor::childAreaChanged(Editor *child)
+{
+	for (int index = 0 ; index < mNumChildren ; ++index)
+	{
+		if (mChildren[index] == child)
+			mChildrenArea[index] = child->getArea();
 	}
 }

@@ -25,22 +25,25 @@ Context::Context()
 	: ready(false), done(false), themeLoaded(false), song(), player(song), synth(), mixer(player, synth), editorState(), mainEditor(editorState, player, player.getPlayerState(), song, synth)
 {
 	Theme theme;
-	
+
 	if (!theme.load("assets/elements"))
 	{
 		return;
 	}
-		
+
 	if (!renderer.setTheme(theme))
 	{
 		return;
 	}
-	
+
+	SDL_Rect area = {0, 0, theme.getWidth(), theme.getHeight()};
+	mainEditor.setArea(area);
+
 	if (!mainEditor.loadElements(theme))
 	{
 		return;
 	}
-	
+
 	themeLoaded = true;
 	previousTick = SDL_GetTicks();
 }
@@ -55,7 +58,7 @@ void infinityAndBeyond(void *ctx)
 {
 	Context& context = *static_cast<Context*>(ctx);
 	SDL_Event event;
-		
+
 	while (SDL_PollEvent(&event))
 	{
 #ifdef __EMSCRIPTEN__
@@ -79,7 +82,7 @@ void infinityAndBeyond(void *ctx)
 		{
 			context.gamepad.loadDefinitions("/assets/gamecontrollerdb.txt");
 			context.gamepad.initControllers();
-			
+
 			context.mainEditor.loadState();
 			context.ready = true;
 			context.mixer.runThread();
@@ -90,7 +93,7 @@ void infinityAndBeyond(void *ctx)
 			emscripten_cancel_main_loop();
 			context.done = true;
 		}
-		else 
+		else
 #endif
 		if (event.type == SDL_APP_WILLENTERBACKGROUND)
 		{
@@ -108,18 +111,18 @@ void infinityAndBeyond(void *ctx)
 		else if (event.type == SDL_CONTROLLERDEVICEADDED || event.type == SDL_CONTROLLERDEVICEREMOVED || event.type == SDL_CONTROLLERDEVICEREMAPPED)
 		{
 			/* We just reinit all controllers instead of initializing a specific one */
-			
+
 #ifdef SDL_GameControllerFromInstanceID
 			if (event.type == SDL_CONTROLLERDEVICEADDED)
 				context.mainEditor.showMessageV(Editor::MessageInfo, "Plugged in %s", SDL_JoystickNameForIndex(event.cdevice.which));
-			else 
+			else
 				context.mainEditor.showMessageV(Editor::MessageInfo, "Unplugged %s", SDL_GameControllerName(SDL_GameControllerFromInstanceID(event.cdevice.which)));
 #endif
 
 			context.gamepad.deinitControllers();
 			context.gamepad.initControllers();
-			
-			
+
+
 		}
 		else
 		{
@@ -129,21 +132,21 @@ void infinityAndBeyond(void *ctx)
 			context.player.unlock();
 		}
 	}
-	
+
 	if (context.ready)
 	{
 		context.player.lock();
 		context.mainEditor.syncPlayerState();
 		context.mainEditor.syncSongParameters(context.song);
-		
+
 		Uint32 ticks = SDL_GetTicks() - context.previousTick;
-		
+
 		if (ticks > 0)
 		{
 			context.mainEditor.update(ticks);
 			context.previousTick += ticks;
 		}
-		
+
 		if (context.mainEditor.isDirty())
 		{
 			context.player.unlock();
@@ -160,7 +163,7 @@ void infinityAndBeyond(void *ctx)
 			SDL_Delay(2);
 #endif
 		}
-	
+
 #ifdef __EMSCRIPTEN__
 		context.renderer.present();
 #endif
@@ -175,50 +178,50 @@ extern "C" int main(int argc, char **argv)
 #endif
 	SDL_Init(SDL_INIT_EVERYTHING|SDL_INIT_NOPARACHUTE);
 	atexit(SDL_Quit);
-	
+
 	IMG_Init(IMG_INIT_PNG);
 	atexit(IMG_Quit);
-	
+
 	_context = new Context();
-	
+
 	Context& context = *_context;
-	
+
 	if (!context.themeLoaded)
 	{
 		// Theme was not loaded - exit
 		return 1;
 	}
-	
+
 #ifdef __EMSCRIPTEN__
 	emSyncFsAndStartup();
 	chdir("/persistent");
-	
+
 	if (!context.mainEditor.loadState())
 		context.mainEditor.loadSong("/assets/dub.song");
-	
+
 	emscripten_set_main_loop_arg(infinityAndBeyond, &context, -1, 1);
-	
+
 #else
 	context.gamepad.loadDefinitions("assets/gamecontrollerdb.txt");
 	context.gamepad.initControllers();
 	context.ready = true;
-	
+
 	if (!context.mainEditor.loadState())
 		context.mainEditor.loadSong("assets/dub.song");
-	
+
 	if (!context.mixer.runThread())
 		context.mainEditor.showMessage(Editor::MessageError, "Could not open audio device");
-	
+
 	while (!context.done)
 	{
 		infinityAndBeyond(&context);
 	}
-	
+
 	context.mixer.stopThread();
-	
+
 #endif
 
 	delete _context;
-	
+
 	return 0;
 }

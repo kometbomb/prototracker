@@ -17,20 +17,21 @@ class Editor: public Listener
 {
 public:
 	static const int maxChildren = 128;
-	
-	enum MessageClass 
+
+	enum MessageClass
 	{
 		MessageInfo,
 		MessageError
-	};	
+	};
 
 private:
 	Editor *mFocus;
-	
-	void drawModal(Renderer& renderer, const SDL_Rect& area);
+
+	void drawModal(Renderer& renderer);
 	virtual void onDraw(Renderer& renderer, const SDL_Rect& area) = 0;
 	void drawChildren(Renderer& renderer, const SDL_Rect& area);
-	
+	void childAreaChanged(Editor *child);
+
 protected:
 	Editor *mModal;
 	EditorState& mEditorState;
@@ -41,26 +42,24 @@ protected:
 	SDL_Rect mThisArea;
 	int mNumChildren;
 	bool mWantsFocus;
-	
+
 	void removeFocus();
 	void setModal(Editor *modal);
-	
+
 	void drawCoveredChildren(Renderer& renderer, const SDL_Rect& area, const SDL_Rect& childArea, int maxIndex);
-	
+
 	void invalidateAll();
 	void invalidateParent();
-	
+
 	bool shouldRedrawBackground() const;
-	
-	// Tell Editor its own top-left corner (absolute)
-	void setArea(const SDL_Rect& area);
-	
+	virtual void onAreaChanged(const SDL_Rect& area);
+
 public:
 	Editor(EditorState& editorState, bool wantFocus = true);
 	virtual ~Editor();
-	
+
 	void addChild(Editor *child, int x, int y, int w, int h);
-	
+
 	void setDirty(bool dirty);
 	virtual void onFileSelectorEvent(const Editor& fileSelector, bool accept);
 	virtual void onMessageBoxEvent(const Editor& messageBox, int code);
@@ -72,9 +71,14 @@ public:
 	void setFocus(Editor *editor);
 	Editor * getFocus();
 	bool hasFocus();
-	
+
+	// Tell Editor its own top-left corner (absolute)
+	void setArea(const SDL_Rect& area);
+
+	const SDL_Rect& getArea() const;
+
 	/**
-	 * Messages 
+	 * Messages
 	 */
 
  	/**
