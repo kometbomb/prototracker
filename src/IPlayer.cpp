@@ -204,7 +204,9 @@ void IPlayer::triggerNoteWithReset(int track, int note, int macro)
 		trackState[track]->macro = macro;
 
 	triggerNote(track, note);
-	state.tick = 0;
+
+	if (!state.isPlaying())
+		state.tick = 0;
 }
 
 
