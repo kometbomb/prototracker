@@ -76,8 +76,18 @@ bool GenericSelector::onEvent(SDL_Event& event)
 				return true;
 			}
 
+			int countVisible = (mThisArea.h - 8 - 8 - 8) / 8;
+
 			switch (event.key.keysym.sym)
 			{
+				case SDLK_PAGEUP:
+					selectItem(mSelectedItem - countVisible / 2);
+					return true;
+
+				case SDLK_PAGEDOWN:
+					selectItem(mSelectedItem + countVisible / 2);
+					return true;
+
 				case SDLK_UP:
 					selectItem(mSelectedItem - 1);
 					return true;
