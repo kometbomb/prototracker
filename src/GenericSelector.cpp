@@ -63,7 +63,7 @@ bool GenericSelector::onEvent(SDL_Event& event)
 
 	switch (event.type)
 	{
-		case SDL_KEYDOWN:
+		case SDL_KEYDOWN: {
 			if (event.key.keysym.sym == SDLK_ESCAPE)
 			{
 				reject(true);
@@ -76,7 +76,7 @@ bool GenericSelector::onEvent(SDL_Event& event)
 				return true;
 			}
 
-			int countVisible = (mThisArea.h - 8 - 8 - 8) / 8;
+			int countVisible = getVisibleCount();
 
 			switch (event.key.keysym.sym)
 			{
@@ -97,10 +97,47 @@ bool GenericSelector::onEvent(SDL_Event& event)
 					return true;
 			}
 
-			break;
+		} break;
+
+		case SDL_MOUSEBUTTONDOWN: {
+			int item = findClickedItem(event.button.x / SCALE, event.button.y / SCALE);
+			if (event.button.clicks == 2 && item == mSelectedItem)
+			{
+				accept(false);
+			}
+			else if (item != -1)
+			{
+				selectItem(item);
+			}
+			return true;
+		} break;
 	}
 
 	return false;
+}
+
+
+int GenericSelector::getVisibleCount() const
+{
+	return (mThisArea.h - 8 - 8 - 8) / 8;
+}
+
+
+void GenericSelector::getVisibleItems(int& firstVisible, int& lastVisible) const
+{
+	int countVisible = getVisibleCount();
+	firstVisible = std::max(0, mSelectedItem - countVisible / 2);
+	lastVisible = firstVisible + countVisible;
+
+	if (lastVisible >= mItems.size())
+	{
+		lastVisible = mItems.size() - 1;
+		firstVisible = lastVisible - countVisible;
+		if (firstVisible < 0)
+		{
+			firstVisible = 0;
+		}
+	}
 }
 
 
@@ -115,25 +152,9 @@ void GenericSelector::onDraw(Renderer& renderer, const SDL_Rect& area)
 		renderer.clearRect(fieldArea, Color(255, 0, 0));*/
 	}
 
-	int countVisible = (area.h - 8 - 8 - 8) / 8;
-	int firstVisible = mSelectedItem - countVisible / 2;
+	int firstVisible, lastVisible;
 
-	if (firstVisible < 0)
-	{
-		firstVisible = 0;
-	}
-
-	int lastVisible = firstVisible + countVisible;
-
-	if (lastVisible >= mItems.size())
-	{
-		lastVisible = mItems.size() - 1;
-		firstVisible = lastVisible - countVisible;
-		if (firstVisible < 0)
-		{
-			firstVisible = 0;
-		}
-	}
+	getVisibleItems(firstVisible, lastVisible);
 
 	for (int row = firstVisible ; row <= lastVisible ; ++row)
 	{
@@ -141,11 +162,33 @@ void GenericSelector::onDraw(Renderer& renderer, const SDL_Rect& area)
 		renderItem(renderer, textArea, *mItems[row], row == mSelectedItem);
 	}
 
-	int areaHeight = area.h - 8 - 8 - 4;
+	int areaHeight = area.h - 8 - 8;
 	int scrollbarTop = areaHeight * firstVisible / static_cast<int>(mItems.size());
 	int scrollbarBottom = areaHeight * (lastVisible + 1) / static_cast<int>(mItems.size());
 	SDL_Rect scrollbarArea = {area.x + area.w - 3, area.y + 16 + scrollbarTop, 2, scrollbarBottom - scrollbarTop};
 	renderer.clearRect(scrollbarArea, Color());
+}
+
+
+int GenericSelector::findClickedItem(int x, int y) const
+{
+	int firstVisible, lastVisible;
+
+	getVisibleItems(firstVisible, lastVisible);
+
+	SDL_Point point = { x, y };
+
+	for (int row = firstVisible ; row <= lastVisible ; ++row)
+	{
+		SDL_Rect textArea = {mThisArea.x, (row - firstVisible) * 8 + mThisArea.y + 16, mThisArea.w - 4, 8};
+
+		if (pointInRect(point, textArea))
+		{
+			return row;
+		}
+	}
+
+	return -1;
 }
 
 
@@ -196,7 +239,7 @@ void GenericSelector::onAreaChanged(const SDL_Rect& area)
 	SDL_Rect labelArea = mLabel->getArea();
 
 	// Editor should handle the 2px modal margin
-	labelArea.w = area.w - 4;
+	labelArea.w = area.w;
 
 	mLabel->setArea(labelArea);
 }
