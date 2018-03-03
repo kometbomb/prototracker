@@ -18,7 +18,7 @@ class GenericSelector: public Editor
 	int mId;
 	char mTitle[titleSize];
 	Label *mLabel;
-	int mSelectedItem;
+	int mSelectedItem, mScrollPosition;
 
 protected:
 	struct Item {

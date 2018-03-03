@@ -12,7 +12,7 @@
 #include <algorithm>
 
 GenericSelector::GenericSelector(EditorState& editorState)
-	: Editor(editorState), mSelectedItem(0)
+	: Editor(editorState), mSelectedItem(0), mScrollPosition(0)
 {
 	mLabel = new Label(editorState);
 	mLabel->setColor(Color(0, 0, 0));
@@ -38,6 +38,18 @@ void GenericSelector::selectItem(int index)
 
 	if (mSelectedItem < 0)
 		mSelectedItem = 0;
+
+	int countVisible = getVisibleCount();
+
+	if (mSelectedItem < mScrollPosition)
+	{
+		mScrollPosition = mSelectedItem;
+	}
+
+	if (mSelectedItem > mScrollPosition + countVisible - 1)
+	{
+		mScrollPosition = std::max(mSelectedItem - countVisible + 1, 0);
+	}
 
 	if (mItems.size() > 0)
 	{
@@ -126,8 +138,8 @@ int GenericSelector::getVisibleCount() const
 void GenericSelector::getVisibleItems(int& firstVisible, int& lastVisible) const
 {
 	int countVisible = getVisibleCount();
-	firstVisible = std::max(0, mSelectedItem - countVisible / 2);
-	lastVisible = firstVisible + countVisible;
+	firstVisible = mScrollPosition;
+	lastVisible = firstVisible + countVisible - 1;
 
 	if (lastVisible >= mItems.size())
 	{
@@ -220,10 +232,13 @@ void GenericSelector::addItem(GenericSelector::Item* newItem)
 void GenericSelector::clearItems()
 {
 	mSelectedItem = 0;
+	mScrollPosition = 0;
+
 	for (Item* item : mItems)
 	{
 		delete item;
 	}
+
 	mItems.clear();
 }
 
@@ -236,6 +251,9 @@ void GenericSelector::sortItems(bool (*comparator)(const Item* a, const Item* b)
 
 void GenericSelector::onAreaChanged(const SDL_Rect& area)
 {
+	// Reset scroll position because we need the modal area to calculate it
+	mScrollPosition = 0;
+
 	SDL_Rect labelArea = mLabel->getArea();
 
 	// Editor should handle the 2px modal margin
