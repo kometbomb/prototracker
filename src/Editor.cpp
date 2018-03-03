@@ -254,17 +254,13 @@ void Editor::draw(Renderer& renderer, const SDL_Rect& area)
 
 	invalidateAll();
 
-	if (mModal == NULL)
-	{
-		this->onDraw(renderer, area);
-		drawChildren(renderer, area);
-	}
-	else
+	this->onDraw(renderer, area);
+	drawChildren(renderer, area);
+
+	if (mModal != NULL)
 	{
 		drawModal(renderer);
 	}
-
-	setDirty(false);
 }
 
 
