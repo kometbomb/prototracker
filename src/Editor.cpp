@@ -261,6 +261,8 @@ void Editor::draw(Renderer& renderer, const SDL_Rect& area)
 	{
 		drawModal(renderer);
 	}
+
+	setDirty(false);
 }
 
 
