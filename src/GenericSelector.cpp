@@ -29,6 +29,12 @@ GenericSelector::~GenericSelector()
 }
 
 
+void GenericSelector::setScrollPosition(int position)
+{
+	mScrollPosition = std::max(0, std::min(static_cast<int>(mItems.size()) - getVisibleCount(), position));
+}
+
+
 void GenericSelector::selectItem(int index)
 {
 	mSelectedItem = index;
@@ -122,6 +128,19 @@ bool GenericSelector::onEvent(SDL_Event& event)
 				selectItem(item);
 			}
 			return true;
+		} break;
+
+		case SDL_MOUSEWHEEL: {
+			int flip = event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -1 : 1;
+
+			if (event.wheel.y < 0)
+			{
+				setScrollPosition(mScrollPosition + 4 * flip);
+			}
+			else if (event.wheel.y > 0)
+			{
+				setScrollPosition(mScrollPosition - 4 * flip);
+			}
 		} break;
 	}
 

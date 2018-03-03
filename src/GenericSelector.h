@@ -25,6 +25,7 @@ protected:
 	};
 
 	void selectItem(int index);
+	void setScrollPosition(int position);
 	const Item& getSelectedItem() const;
 	int getVisibleCount() const;
 	void getVisibleItems(int& first, int& last) const;
