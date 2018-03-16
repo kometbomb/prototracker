@@ -206,7 +206,10 @@ void Editor::drawModal(Renderer& renderer)
 void Editor::setModal(Editor *modal)
 {
 	if (mModal != NULL)
+	{
+		mModal->onModalStatusChange(false);
 		mModal->mParent = NULL;
+	}
 
 	mModal = modal;
 
@@ -216,6 +219,7 @@ void Editor::setModal(Editor *modal)
 		SDL_Rect modalArea = { mThisArea.x + 16, mThisArea.y + 16,
 			mThisArea.w - 32, mThisArea.h - 32 };
 		mModal->setArea(modalArea);
+		mModal->onModalStatusChange(true);
 	}
 
 	invalidateAll();
@@ -388,4 +392,10 @@ void Editor::childAreaChanged(Editor *child)
 		if (mChildren[index] == child)
 			mChildrenArea[index] = child->getArea();
 	}
+}
+
+
+void Editor::onModalStatusChange(bool isNowModal)
+{
+
 }

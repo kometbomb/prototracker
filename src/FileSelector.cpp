@@ -263,3 +263,11 @@ bool FileSelector::onEvent(SDL_Event& event)
 {
 	return GenericSelector::onEvent(event) || mNameField->onEvent(event);
 }
+
+
+void FileSelector::onModalStatusChange(bool isNowModal)
+{
+	// Make sure text field will receive SDL_TEXTINPUTs
+	// and disables them after dialog close
+	mNameField->setIsEditing(isNowModal);
+}

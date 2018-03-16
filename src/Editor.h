@@ -65,6 +65,7 @@ public:
 	virtual void onMessageBoxEvent(const Editor& messageBox, int code);
 	virtual void onListenableChange(Listenable *listenable);
 	virtual void onLoaded();
+	virtual void onModalStatusChange(bool isNowModal);
 	virtual bool isDirty() const;
 	bool isFocusable() const;
 	bool hasDirty() const;
