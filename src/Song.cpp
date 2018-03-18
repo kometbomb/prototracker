@@ -212,6 +212,15 @@ Song::UnpackError Song::unpack(const FileSection& section)
 
 	clear();
 
+	// Trigger synth reset
+	for (int i = 0 ; i < mNumListeners ; ++i)
+	{
+		if (mListeners[i].flags & SectionListener::Load)
+		{
+			mListeners[i].listener->onSongClear();
+		}
+	}
+
 	int offset = 0;
 	int version = section.readByte(offset);
 

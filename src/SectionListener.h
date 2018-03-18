@@ -18,4 +18,7 @@ public:
 	 */
 	virtual bool onFileSectionLoad(const FileSection& section, int& offset);
 	virtual void onFileSectionSave(FileSection& section);
+
+	// Triggered on Song::clear() if the Load event is listened to
+	virtual void onSongClear();
 };

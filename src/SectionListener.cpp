@@ -9,3 +9,8 @@ bool SectionListener::onFileSectionLoad(const FileSection& section, int& offset)
 void SectionListener::onFileSectionSave(FileSection& section)
 {
 }
+
+
+void SectionListener::onSongClear()
+{
+}
