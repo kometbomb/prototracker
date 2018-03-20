@@ -46,16 +46,27 @@ void IPlayer::handleMacroTick(int track)
 		If the effect forces reprocessing, do this max. 2 times to prevent infinite loops with Jxx etc.
 		*/
 
-		while ((trState.macroState.handleEffectZeroTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).note, trState, state) ||
-			trState.macroState.handleEffectZeroTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).effect, trState, state)) && tries < 2)
+		while (tries < 2)
 		{
+			bool jumpHappened = trState.macroState.handleEffectZeroTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).getNote(), trState, state);
+
+			for (int i = 0 ; !jumpHappened && i < PatternRow::effectParams ; ++i) {
+				jumpHappened |= trState.macroState.handleEffectZeroTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).getEffect(i), trState, state);
+			}
+
+			if (!jumpHappened)
+				break;
+
 			handleMacroNote(track);
 			tries++;
 		}
 	}
 
-	trState.macroState.handleEffectAnyTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).note, trState, state);
-	trState.macroState.handleEffectAnyTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).effect, trState, state);
+	trState.macroState.handleEffectAnyTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).getNote(), trState, state);
+
+	for (int i = 0 ; i < PatternRow::effectParams ; ++i) {
+		trState.macroState.handleEffectAnyTick(mSong.getMacro(trState.macro).getRow(trState.macroRow).getEffect(i), trState, state);
+	}
 }
 
 
@@ -165,16 +176,19 @@ void IPlayer::handleNoteOn()
 
 			if (note != PatternRow::NoNote)
 			{
-				if (patternRow.effect.effect != '3')
+				for (int effectParam = 0 ; effectParam < PatternRow::effectParams ; ++effectParam)
 				{
-					if (patternRow.effect.effect == 'm')
-						trackState[i]->macro = patternRow.effect.getParamsAsByte();
+					if (patternRow.getEffect(effectParam).effect != '3')
+					{
+						if (patternRow.getEffect(effectParam).effect == 'm')
+							trackState[i]->macro = patternRow.getEffect(effectParam).getParamsAsByte();
 
-					triggerNote(i, note);
-				}
-				else
-				{
-					trackState[i]->trackState.setSlideTargetFromNote(note);
+						triggerNote(i, note);
+					}
+					else
+					{
+						trackState[i]->trackState.setSlideTargetFromNote(note);
+					}
 				}
 			}
 		}
@@ -243,8 +257,12 @@ void IPlayer::processZeroTick(int track, const PatternRow& row)
 {
 	ITrackState& trState = *trackState[track];
 
-	trState.trackState.handleEffectZeroTick(row.note, trState, state);
-	trState.trackState.handleEffectZeroTick(row.effect, trState, state);
+	trState.trackState.handleEffectZeroTick(row.getNote(), trState, state);
+
+	for (int effectParam = 0 ; effectParam < PatternRow::effectParams ; ++effectParam)
+	{
+		trState.trackState.handleEffectZeroTick(row.getEffect(effectParam), trState, state);
+	}
 }
 
 
@@ -269,8 +287,11 @@ void IPlayer::processAnyTick()
 	{
 		ITrackState& trState = *trackState[i];
 		PatternRow&	row = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow);
-		trState.trackState.handleEffectAnyTick(row.note, trState, state);
-		trState.trackState.handleEffectAnyTick(row.effect, trState, state);
+		trState.trackState.handleEffectAnyTick(row.getNote(), trState, state);
+
+		for (int effectParam = 0 ; effectParam < PatternRow::effectParams ; ++effectParam) {
+			trState.trackState.handleEffectAnyTick(row.getEffect(effectParam), trState, state);
+		}
 	}
 }
 
@@ -281,19 +302,22 @@ bool IPlayer::processLastTick()
 
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
-		const EffectParam& effect = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow).effect;
-		switch (effect.effect)
+		for (int effectParam = 0 ; effectParam < PatternRow::effectParams ; ++effectParam)
 		{
-			case 'b':
-				advanceSequenceRow();
-				state.sequenceRow = effect.getParamsAsByte();
-				return false;
+			const EffectParam& effect = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow).getEffect(effectParam);
+			switch (effect.effect)
+			{
+				case 'b':
+					advanceSequenceRow();
+					state.sequenceRow = effect.getParamsAsByte();
+					return false;
 
-			case 'd':
-				advanceSequenceRow();
-				state.patternRow = effect.getParamsAsByte();
-				return false;
+				case 'd':
+					advanceSequenceRow();
+					state.patternRow = effect.getParamsAsByte();
+					return false;
 
+			}
 		}
 	}
 
