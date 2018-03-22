@@ -16,7 +16,7 @@ new notes.
 
 struct PatternRow
 {
-	static const int effectParams = 2;
+	static const int effectParams = 1;
 	static const int numColumns = effectParams * 3 + 3;
 
 	/*
