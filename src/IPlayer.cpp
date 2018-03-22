@@ -160,7 +160,7 @@ void IPlayer::handleNoteOn()
 	{
 		for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 		{
-			PatternRow& patternRow = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow);
+			PatternRow& patternRow = mSong.getPattern(i, seqRow.pattern[i]).getRow(state.patternRow);
 			int note = patternRow.getNoteWithOctave();
 
 			if (note != PatternRow::NoNote)
@@ -254,7 +254,7 @@ void IPlayer::processZeroTick()
 
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
-		PatternRow&	row = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow);
+		PatternRow&	row = mSong.getPattern(i, seqRow.pattern[i]).getRow(state.patternRow);
 
 		processZeroTick(i, row);
 	}
@@ -268,7 +268,7 @@ void IPlayer::processAnyTick()
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
 		ITrackState& trState = *trackState[i];
-		PatternRow&	row = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow);
+		PatternRow&	row = mSong.getPattern(i, seqRow.pattern[i]).getRow(state.patternRow);
 		trState.trackState.handleEffectAnyTick(row.note, trState, state);
 		trState.trackState.handleEffectAnyTick(row.effect, trState, state);
 	}
@@ -281,7 +281,7 @@ bool IPlayer::processLastTick()
 
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
-		const EffectParam& effect = mSong.getPattern(seqRow.pattern[i]).getRow(state.patternRow).effect;
+		const EffectParam& effect = mSong.getPattern(i, seqRow.pattern[i]).getRow(state.patternRow).effect;
 		switch (effect.effect)
 		{
 			case 'b':

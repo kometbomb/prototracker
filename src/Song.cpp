@@ -18,7 +18,13 @@ Song::Song()
 	: patternLength(64), sequenceLength(1), mNumListeners(0)
 {
 	sequence = new Sequence();
-	patterns = new Pattern[maxPatterns];
+	patterns = new Pattern*[SequenceRow::maxTracks];
+
+	for (int track = 0 ; track < SequenceRow::maxTracks ; ++track)
+	{
+		patterns[track] = new Pattern[maxPatterns];
+	}
+
 	macros = new Macro[maxMacros];
 	strcpy(name, "new song");
 }
@@ -26,6 +32,9 @@ Song::Song()
 
 Song::~Song()
 {
+	for (int track = 0 ; track < SequenceRow::maxTracks ; ++track)
+		delete[] patterns[track];
+
 	delete[] patterns;
 	delete[] macros;
 	delete sequence;
@@ -38,13 +47,13 @@ Sequence& Song::getSequence()
 }
 
 
-int Song::getLastPatternUsed() const
+int Song::getLastPatternUsed(int track) const
 {
 	int last = -1;
 
 	for (int i = 0 ; i < maxPatterns ; ++i)
 	{
-		if (!patterns[i].isEmpty())
+		if (!patterns[track][i].isEmpty())
 			last = std::max(last, i);
 	}
 
@@ -78,9 +87,9 @@ int Song::getSequenceLength() const
 }
 
 
-Pattern& Song::getPattern(int pattern)
+Pattern& Song::getPattern(int track, int pattern)
 {
-	return patterns[pattern];
+	return patterns[track][pattern];
 }
 
 
@@ -140,12 +149,15 @@ FileSection* Song::pack()
 	 */
 
 	FileSection * patternData = FileSection::createSection("PATT");
-	int patternCount = getLastPatternUsed() + 1;
-	patternData->writeByte(patternCount);
-	for (int i = 0 ; i < patternCount ; ++i)
+	for (int track = 0 ; track < SequenceRow::maxTracks ; ++track)
 	{
-		Pattern& pattern = getPattern(i);
-		patternData->writePattern(pattern);
+		int patternCount = getLastPatternUsed(track) + 1;
+		patternData->writeByte(patternCount);
+		for (int i = 0 ; i < patternCount ; ++i)
+		{
+			Pattern& pattern = getPattern(track, i);
+			patternData->writePattern(pattern);
+		}
 	}
 	song->writeSection(*patternData);
 	delete patternData;
@@ -190,9 +202,12 @@ void Song::clear()
 
 	strcpy(name, "");
 
-	for (int i = 0 ; i < maxPatterns ; ++i)
+	for (int track = 0 ; track < SequenceRow::maxTracks ; ++track)
 	{
-		patterns[i].clear();
+		for (int i = 0 ; i < maxPatterns ; ++i)
+		{
+			patterns[track][i].clear();
+		}
 	}
 
 	for (int i = 0 ; i < maxMacros ; ++i)
@@ -232,6 +247,14 @@ Song::UnpackError Song::unpack(const FileSection& section)
 
 	// Default trackCount for version == 0
 	int trackCount = 4;
+
+	// Default pattern set count (version >= 17 uses a separate set of patterns for each track)
+	int patternSets = 1;
+
+	if (version >= 17)
+	{
+		patternSets = trackCount;
+	}
 
 	if (version == FileSection::invalidRead)
 		return ErrorRead;
@@ -324,24 +347,35 @@ Song::UnpackError Song::unpack(const FileSection& section)
 			}
 			else if (strcmp(sectionName, "PATT") == 0)
 			{
-				int temp = subSection->readByte(subOffset);
+				int tempSubOffset = subOffset;
 
-				if (temp == FileSection::invalidRead)
+				for (int track = 0 ; track < trackCount ; ++track)
 				{
-					returnValue = ErrorRead;
-				}
-				else
-				{
-					int count = temp;
-
-					//printf("Reading %d patterns\n", count);
-
-					for (int i = 0 ; i < count ; ++i)
+					// If only one pattern set in the file, keep reading the
+					// same patterns for each track
+					if (patternSets == 1)
 					{
-						if (!subSection->readPattern(patterns[i], subOffset))
+						subOffset = tempSubOffset;
+					}
+
+					int temp = subSection->readByte(subOffset);
+
+					if (temp == FileSection::invalidRead)
+					{
+						returnValue = ErrorRead;
+						break;
+					}
+					else
+					{
+						int count = temp;
+
+						for (int i = 0 ; i < count ; ++i)
 						{
-							returnValue = ErrorRead;
-							break;
+							if (!subSection->readPattern(patterns[track][i], subOffset))
+							{
+								returnValue = ErrorRead;
+								break;
+							}
 						}
 					}
 				}
