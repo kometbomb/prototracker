@@ -402,7 +402,12 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						}
 						else
 						{
-							switch (static_cast<int>(mTrackEditorState.currentColumn))
+							int effectParam;
+							PatternRow::Column column;
+
+							PatternRow::translateColumnEnum(mTrackEditorState.currentColumn, effectParam, column);
+
+							switch (column)
 							{
 								case PatternRow::Column::Note:
 								case PatternRow::Column::NoteParam1:
@@ -415,30 +420,32 @@ bool TrackEditor::onEvent(SDL_Event& event)
 									}
 									break;
 
-								case PatternRow::Column::EffectType:
+								case PatternRow::Column::EffectType: {
+									EffectParam effect = patternRow.getEffect(effectParam);
+
 									if (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)
 									{
-										if (patternRow.effect.effect == '0')
-											patternRow.effect.effect = 'z';
-										else if (patternRow.effect.effect == 'a')
-											patternRow.effect.effect = '9';
+										if (effect.effect == '0')
+											effect.effect = 'z';
+										else if (effect.effect == 'a')
+											effect.effect = '9';
 										else
-											patternRow.effect.effect--;
+											effect.effect--;
 									}
 									else
 									{
-										if (patternRow.effect.effect == '9')
-											patternRow.effect.effect = 'a';
-										else if (patternRow.effect.effect == 'z')
-											patternRow.effect.effect = '0';
+										if (effect.effect == '9')
+											effect.effect = 'a';
+										else if (effect.effect == 'z')
+											effect.effect = '0';
 										else
-											patternRow.effect.effect++;
+											effect.effect++;
 									}
-									break;
+								} break;
 
 								case PatternRow::Column::EffectParam1:
 								case PatternRow::Column::EffectParam2:
-									patternRow.effect.setParamsFromByte(patternRow.effect.getParamsAsByte() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1) & 255);
+									patternRow.getEffect(effectParam).setParamsFromByte(patternRow.getEffect(effectParam).getParamsAsByte() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1) & 255);
 									break;
 							}
 						}
@@ -453,7 +460,12 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						}
 						else
 						{
-							switch (static_cast<int>(mTrackEditorState.currentColumn))
+							int effectParam;
+							PatternRow::Column column;
+
+							PatternRow::translateColumnEnum(mTrackEditorState.currentColumn, effectParam, column);
+
+							switch (column)
 							{
 								case PatternRow::Column::Note:
 								case PatternRow::Column::NoteParam1:
@@ -474,7 +486,8 @@ bool TrackEditor::onEvent(SDL_Event& event)
 
 								case PatternRow::Column::EffectParam1:
 								case PatternRow::Column::EffectParam2:
-									patternRow.effect.setParamsFromByte(patternRow.effect.getParamsAsByte() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN ? -16 : 16) & 255);
+									patternRow.getEffect(effectParam).setParamsFromByte(patternRow.getEffect(effectParam).getParamsAsByte() +
+										(event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN ? -16 : 16) & 255);
 									break;
 							}
 						}
@@ -483,8 +496,12 @@ bool TrackEditor::onEvent(SDL_Event& event)
 
 					case SDL_CONTROLLER_BUTTON_A:
 						bool bPressed = SDL_GameControllerGetButton(SDL_GameControllerFromInstanceID(event.cbutton.which), SDL_CONTROLLER_BUTTON_B);
+						int effectParam;
+						PatternRow::Column column;
 
-						switch (static_cast<int>(mTrackEditorState.currentColumn))
+						PatternRow::translateColumnEnum(mTrackEditorState.currentColumn, effectParam, column);
+
+						switch (column)
 						{
 							case PatternRow::Column::Note:
 							case PatternRow::Column::NoteParam1:
