@@ -112,7 +112,7 @@ void infinityAndBeyond(void *ctx)
 		{
 			/* We just reinit all controllers instead of initializing a specific one */
 
-#ifdef SDL_GameControllerFromInstanceID
+#if SDL_VERSION_ATLEAST(2,0,4)
 			if (event.type == SDL_CONTROLLERDEVICEADDED)
 				context.mainEditor.showMessageV(Editor::MessageInfo, "Plugged in %s", SDL_JoystickNameForIndex(event.cdevice.which));
 			else
