@@ -1,5 +1,6 @@
 #pragma once
 
+#include "App.h"
 #include "EffectParam.h"
 
 /*
@@ -16,7 +17,7 @@ new notes.
 
 struct PatternRow
 {
-	static const int effectParams = 1;
+	static const int effectParams = SONG_EFFECT_COLUMNS;
 	static const int numColumns = effectParams * 3 + 3;
 
 	/*
