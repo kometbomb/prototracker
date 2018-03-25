@@ -20,7 +20,6 @@ public:
 		ErrorVersion,	// Version number higher than our version
 		ErrorRead,		// Something went wrong while reading data
 		SectionUnhandled,	// Nobody handled a file section
-		SequencePerTrack,	// Can't downgrade to shared-patterns
 	};
 
 private:
