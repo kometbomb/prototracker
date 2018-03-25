@@ -36,11 +36,11 @@ int Pattern::getLastUsedRow() const
 	for (int i = 0 ; i < maxRows ; ++i)
 	{
 		const PatternRow& row = rows[i];
-		bool hasData = !row.getNote().isEmpty();
+		bool hasData = false;
 
-		for (int effectParam = 0 ; !hasData && effectParam < PatternRow::effectParams ; ++effectParam)
+		for (int effectParam = 0 ; !hasData && effectParam < PatternRow::effectParams + 1 ; ++effectParam)
 		{
-			hasData |= !row.getEffect(effectParam).isEmpty();
+			hasData |= !row.getAnyParam(effectParam).isEmpty();
 		}
 
 		if (hasData)
@@ -60,16 +60,13 @@ int Pattern::getLastMacroUsed() const
 	for (int i = 0 ; i < maxRows ; ++i)
 	{
 		const PatternRow& row = rows[i];
-		if (row.getNote().effect == 'm')
-		{
-			last = row.getNote().getParamsAsByte();
-		}
 
-		for (int effectParam = 0 ; effectParam < PatternRow::effectParams ; ++effectParam)
+		for (int effectParam = 0 ; effectParam < PatternRow::effectParams + 1 ; ++effectParam)
 		{
-			if (row.getEffect(effectParam).effect == 'm')
+			const EffectParam& effect = row.getAnyParam(effectParam);
+			if (effect.effect == 'm')
 			{
-				last = row.getEffect(effectParam).getParamsAsByte();
+				last = effect.getParamsAsByte();
 			}
 		}
 	}

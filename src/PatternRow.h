@@ -69,6 +69,9 @@ struct PatternRow
 	const EffectParam& getNote() const;
 	const EffectParam& getEffect(int index) const;
 
+	// Get note and effects (note index is 0)
+	const EffectParam& getAnyParam(int index) const;
+
 private:
 	// Includes the note column
 	EffectParam effect[effectParams + 1];

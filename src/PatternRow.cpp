@@ -110,3 +110,9 @@ const EffectParam& PatternRow::getEffect(int index) const
 {
 	return effect[index + 1];
 }
+
+
+const EffectParam& PatternRow::getAnyParam(int index) const
+{
+	return effect[index];
+}
