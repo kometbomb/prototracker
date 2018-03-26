@@ -149,9 +149,8 @@ void FileSelector::populate()
 		if (entry == NULL)
 			break;
 
-		//if (strlen(entry->d_name) > strlen(mFilter) && strcmp(entry->d_name + strlen(entry->d_name) - strlen(mFilter), mFilter) == 0)
-
-		if (!stat(entry->d_name, &statBuf))
+		if (!stat(entry->d_name, &statBuf) && ((statBuf.st_mode & S_IFDIR) ||
+			(strlen(entry->d_name) > strlen(mFilter) && strcmp(entry->d_name + strlen(entry->d_name) - strlen(mFilter), mFilter) == 0)))
 		{
 			addItem(new FileItem(statBuf.st_mode & S_IFDIR, entry->d_name, statBuf.st_size));
 		}
