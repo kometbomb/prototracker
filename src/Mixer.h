@@ -44,7 +44,6 @@ public:
 	bool isThreadRunning() const;
 	bool runThread(const char *deviceName);
 	void stopThread();
-	void runQueueThread();
 	int& getSamples();
 	int getSampleRate() const;
 
