@@ -79,7 +79,7 @@ bool PatternEditor::onEvent(SDL_Event& event)
 
 PatternRow& PatternEditor::getPatternRow(int track, int row)
 {
-	Pattern& pattern = mSong.getPattern(mSong.getSequence().getRow(mEditorState.sequenceEditor.currentRow).pattern[track]);
+	Pattern& pattern = mSong.getPattern(track, mSong.getSequence().getRow(mEditorState.sequenceEditor.currentRow).pattern[track]);
 	return pattern.getRow(row);
 }
 
@@ -87,7 +87,7 @@ PatternRow& PatternEditor::getPatternRow(int track, int row)
 PatternRow& PatternEditor::getCurrentPatternRow()
 {
 	SequenceRow seqRow = mSong.getSequence().getRow(mEditorState.sequenceEditor.currentRow);
-	Pattern& pattern = mSong.getPattern(seqRow.pattern[mTrackEditorState.currentTrack]);
+	Pattern& pattern = mSong.getPattern(mTrackEditorState.currentTrack, seqRow.pattern[mTrackEditorState.currentTrack]);
 
 	return pattern.getRow(mTrackEditorState.currentRow);
 }
@@ -124,7 +124,7 @@ void PatternEditor::setSequenceRow(int row)
 Pattern& PatternEditor::getCurrentPattern(int track)
 {
 	SequenceRow seqRow = mSong.getSequence().getRow(mEditorState.sequenceEditor.currentRow);
-	Pattern& pattern = mSong.getPattern(seqRow.pattern[mTrackEditorState.currentTrack]);
+	Pattern& pattern = mSong.getPattern(track, seqRow.pattern[mTrackEditorState.currentTrack]);
 
 	return pattern;
 }
@@ -135,7 +135,7 @@ void PatternEditor::findUnusedTrack(int track)
 	SequenceRow& seqRow = mSong.getSequence().getRow(mEditorState.sequenceEditor.currentRow);
 	int orig = seqRow.pattern[track];
 
-	while (!mSong.getPattern(seqRow.pattern[track]).isEmpty())
+	while (!mSong.getPattern(track, seqRow.pattern[track]).isEmpty())
 	{
 		seqRow.pattern[track] = (seqRow.pattern[track] + 1) % Song::maxPatterns;
 

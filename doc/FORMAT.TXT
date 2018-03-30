@@ -7,19 +7,24 @@ contain more sections.
 	byte		8-bit integer
 	interleaved	interleaved byte data (see below)
 	stringz		zero-limited string
-	
-Macros and patterns consist of rows which are just four bytes (effect/note, param/note 
+
+Macros and patterns consist of rows which are just four bytes (effect/note, param/note
 number, effect, param). Patterns are interleaved, first come all the bytes in the first
-column, then second etc. Same applies to the sequence, first comes the whole first 
+column, then second etc. Same applies to the sequence, first comes the whole first
 track sequence, then the second and so on.
 
 section SONG
 {
 	byte version
+	if version >= 17
+	{
+		byte trackCount
+		byte effectColumnCount
+	}
 	stringz name
 	byte numPatternRows
 	byte numSequenceRows
-	
+
 	SEQU
 	byte numRows
 	{
@@ -27,11 +32,27 @@ section SONG
 	}
 
 	PATT
-	byte numPatterns
+	if version >= 17
 	{
-		numPatternRows
+		for all tracks
 		{
-			interleaved row
+			byte numPatterns
+			{
+				numPatternRows
+				{
+					interleaved row
+				}
+			}
+		}
+	}
+	else
+	{
+		byte numPatterns
+		{
+			numPatternRows
+			{
+				interleaved row
+			}
 		}
 	}
 

@@ -19,12 +19,12 @@ public:
 		NotASong,		// Data format unknown
 		ErrorVersion,	// Version number higher than our version
 		ErrorRead,		// Something went wrong while reading data
-		SectionUnhandled	// Nobody handled a file section
+		SectionUnhandled,	// Nobody handled a file section
 	};
 
 private:
 	Sequence *sequence;
-	Pattern *patterns;
+	Pattern **patterns;
 	Macro *macros;
 
 	int patternLength;
@@ -54,10 +54,10 @@ public:
 	void setSequenceLength(int length);
 
 	Sequence& getSequence();
-	Pattern& getPattern(int pattern);
+	Pattern& getPattern(int track, int pattern);
 	Macro& getMacro(int macro);
 
-	int getLastPatternUsed() const;
+	int getLastPatternUsed(int track) const;
 	int getLastMacroUsed() const;
 	char *getSongName();
 
