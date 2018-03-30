@@ -9,59 +9,110 @@ const char *PatternRow::getNoteName(int noteIdx)
 {
 	if (noteIdx == NoNote)
 		return "--";
-	
+
 	static const char *noteNames[] = {
 		"C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-"
 	};
-	
+
 	return noteNames[noteIdx];
 }
 
 
 void PatternRow::setNoteAndOctave(int noteAndOctave)
 {
-	note.setNoteAndOctave(noteAndOctave);
+	getNote().setNoteAndOctave(noteAndOctave);
 }
 
 
 int PatternRow::getNoteWithOctave() const
 {
-	return note.getNoteWithOctave();
+	return getNote().getNoteWithOctave();
 }
 
 
 void PatternRow::setOctave(int octave)
 {
-	note.param2 = octave;
+	getNote().param2 = octave;
 }
 
 
 int PatternRow::getOctave() const
 {
-	return note.param2;
+	return getNote().param2;
 }
 
 
-int PatternRow::getNote() const
+int PatternRow::getNoteNr() const
 {
-	if (note.effect != 'n')
+	if (getNote().effect != 'n')
 		return NoNote;
-	
-	return note.param1;
+
+	return getNote().param1;
 }
 
 
 void PatternRow::clear(int flags)
 {
 	if (flags & FlagNote)
-		note = EffectParam();
-	
+		getNote() = EffectParam();
+
 	if (flags & FlagEffectType)
-		effect = EffectParam();
+	{
+		for (int i = 0 ; i < effectParams ; ++i)
+		{
+			getEffect(i) = EffectParam();
+		}
+	}
 }
 
 
 bool PatternRow::shouldSkipParam1() const
 {
-	return (note.effect == 'n');
+	return (getNote().effect == 'n');
+}
+
+
+void PatternRow::translateColumnEnum(int columnIndex, int& effectParam, PatternRow::Column& column)
+{
+	if (columnIndex < EffectType)
+	{
+		column = static_cast<Column>(columnIndex);
+		effectParam = 0;
+	}
+	else
+	{
+		// columnIndex >= 3 repeats EffectType, Param1, Param2, EffectType, Param1...
+		column = static_cast<Column>(columnIndex % 3 + EffectType);
+		effectParam = columnIndex / 3 - 1;
+	}
+}
+
+
+EffectParam& PatternRow::getNote()
+{
+	return effect[0];
+}
+
+
+EffectParam& PatternRow::getEffect(int index)
+{
+	return effect[index + 1];
+}
+
+
+const EffectParam& PatternRow::getNote() const
+{
+	return effect[0];
+}
+
+
+const EffectParam& PatternRow::getEffect(int index) const
+{
+	return effect[index + 1];
+}
+
+
+const EffectParam& PatternRow::getAnyParam(int index) const
+{
+	return effect[index];
 }

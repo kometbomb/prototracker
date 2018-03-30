@@ -32,16 +32,23 @@ void Pattern::clear()
 int Pattern::getLastUsedRow() const
 {
 	int last = -1;
-	
+
 	for (int i = 0 ; i < maxRows ; ++i)
 	{
 		const PatternRow& row = rows[i];
-		if (!row.note.isEmpty() || !row.effect.isEmpty())
+		bool hasData = false;
+
+		for (int effectParam = 0 ; !hasData && effectParam < PatternRow::effectParams + 1 ; ++effectParam)
+		{
+			hasData |= !row.getAnyParam(effectParam).isEmpty();
+		}
+
+		if (hasData)
 		{
 			last = i;
 		}
 	}
-	
+
 	return last + 1;
 }
 
@@ -49,16 +56,21 @@ int Pattern::getLastUsedRow() const
 int Pattern::getLastMacroUsed() const
 {
 	int last = -1;
-	
+
 	for (int i = 0 ; i < maxRows ; ++i)
 	{
 		const PatternRow& row = rows[i];
-		if (row.effect.effect == 'm')
+
+		for (int effectParam = 0 ; effectParam < PatternRow::effectParams + 1 ; ++effectParam)
 		{
-			last = row.effect.getParamsAsByte();
+			const EffectParam& effect = row.getAnyParam(effectParam);
+			if (effect.effect == 'm')
+			{
+				last = effect.getParamsAsByte();
+			}
 		}
 	}
-	
+
 	return last;
 }
 
@@ -75,18 +87,21 @@ void Pattern::insertRow(int row, int flags)
 	{
 		PatternRow& src = rows[i - 1];
 		PatternRow& dest = rows[i];
-		
+
 		if (flags & PatternRow::FlagNote)
 		{
-			dest.note = src.note;
+			dest.getNote() = src.getNote();
 		}
-		
+
 		if (flags & PatternRow::FlagEffect)
 		{
-			dest.effect = src.effect;
+			for (int effectParam = 0 ; effectParam < PatternRow::effectParams ; ++effectParam)
+			{
+				dest.getEffect(effectParam) = src.getEffect(effectParam);
+			}
 		}
 	}
-	
+
 	rows[row].clear(flags);
 }
 
@@ -97,18 +112,20 @@ void Pattern::deleteRow(int row, int flags)
 	{
 		PatternRow& src = rows[i + 1];
 		PatternRow& dest = rows[i];
-		
+
 		if (flags & PatternRow::FlagNote)
 		{
-			dest.note = src.note;
+			dest.getNote() = src.getNote();
 		}
-		
+
 		if (flags & PatternRow::FlagEffect)
 		{
-			dest.effect = src.effect;
+			for (int effectParam = 0 ; effectParam < PatternRow::effectParams ; ++effectParam)
+			{
+				dest.getEffect(effectParam) = src.getEffect(effectParam);
+			}
 		}
 	}
-	
+
 	rows[maxRows - 1].clear(flags);
 }
-

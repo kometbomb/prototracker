@@ -1,5 +1,6 @@
 #pragma once
 
+#include "App.h"
 #include "EffectParam.h"
 
 /*
@@ -16,7 +17,10 @@ new notes.
 
 struct PatternRow
 {
-	/* 
+	static const int effectParams = SONG_EFFECT_COLUMNS;
+	static const int numColumns = effectParams * 3 + 3;
+
+	/*
 	 * Column order when a row has a note and an effect
 	 */
 	enum Column
@@ -27,15 +31,13 @@ struct PatternRow
 		EffectType,
 		EffectParam1,
 		EffectParam2,
-		NumColumns,
-		
+
 		Note = NoteType,
-		Octave = NoteParam2
+		Octave = NoteParam2,
+		NumColumns = numColumns,
 	};
-	
-	EffectParam note, effect;
-	
-	enum ColumnFlag 
+
+	enum ColumnFlag
 	{
 		FlagNote = 1 << Note,
 		FlagOctave = 1 << Octave,
@@ -45,18 +47,33 @@ struct PatternRow
 		FlagEffect = FlagEffectType,
 		FlagAllColumns = -1
 	};
-	
+
 	PatternRow();
-	
+
 	static const char *getNoteName(int note);
-	
+
+	// Translate column index into
+	static void translateColumnEnum(int columnIndex, int& effectParam, Column& column);
+
 	bool shouldSkipParam1() const;
-	int getNote() const;
+	int getNoteNr() const;
 	int getOctave() const;
 	void clear(int flags = FlagAllColumns);
 	int getNoteWithOctave() const;
 	void setOctave(int octave);
 	void setNoteAndOctave(int noteAndOctave);
-		
+
 	static const int NoNote = 0xff;
+
+	EffectParam& getNote();
+	EffectParam& getEffect(int index);
+	const EffectParam& getNote() const;
+	const EffectParam& getEffect(int index) const;
+
+	// Get note and effects (note index is 0)
+	const EffectParam& getAnyParam(int index) const;
+
+private:
+	// Includes the note column
+	EffectParam effect[effectParams + 1];
 };

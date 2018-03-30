@@ -254,14 +254,19 @@ bool TrackEditor::onEvent(SDL_Event& event)
 					bool handled = false;
 
 					{
-						switch (static_cast<int>(mTrackEditorState.currentColumn))
+						int effectParam;
+						PatternRow::Column column;
+
+						PatternRow::translateColumnEnum(mTrackEditorState.currentColumn, effectParam, column);
+
+						switch (static_cast<int>(column))
 						{
 							case PatternRow::Column::EffectType:
 							{
 								int c = getCharFromKey(event.key.keysym);
 								if (c != -1)
 								{
-									patternRow.effect.effect = c;
+									patternRow.getEffect(effectParam).effect = c;
 									handled = true;
 								}
 
@@ -273,7 +278,7 @@ bool TrackEditor::onEvent(SDL_Event& event)
 								int hex = getHexFromKey(event.key.keysym);
 								if (hex != -1)
 								{
-									patternRow.effect.param1 = hex;
+									patternRow.getEffect(effectParam).param1 = hex;
 									handled = true;
 								}
 							}
@@ -284,7 +289,7 @@ bool TrackEditor::onEvent(SDL_Event& event)
 								int hex = getHexFromKey(event.key.keysym);
 								if (hex != -1)
 								{
-									patternRow.effect.param2 = hex;
+									patternRow.getEffect(effectParam).param2 = hex;
 									handled = true;
 								}
 							}
@@ -295,9 +300,9 @@ bool TrackEditor::onEvent(SDL_Event& event)
 								int hex = getHexFromKey(event.key.keysym);
 								if (hex != -1)
 								{
-									if (patternRow.note.effect != 'n')
+									if (patternRow.getNote().effect != 'n')
 									{
-										patternRow.note.param1 = hex;
+										patternRow.getNote().param1 = hex;
 									}
 
 									handled = true;
@@ -311,7 +316,7 @@ bool TrackEditor::onEvent(SDL_Event& event)
 								int hex = getHexFromKey(event.key.keysym);
 								if (hex != -1)
 								{
-									patternRow.note.param2 = hex;
+									patternRow.getNote().param2 = hex;
 									handled = true;
 								}
 							}
@@ -323,12 +328,12 @@ bool TrackEditor::onEvent(SDL_Event& event)
 									int c = getCharFromKey(event.key.keysym);
 									if (c != -1)
 									{
-										patternRow.note.effect = c;
+										patternRow.getNote().effect = c;
 
 										if (c == 'n')
 										{
-											patternRow.note.param1 = std::min(11, patternRow.note.param1);
-											patternRow.note.param2 = std::min(15, patternRow.note.param2);
+											patternRow.getNote().param1 = std::min(11, patternRow.getNote().param1);
+											patternRow.getNote().param2 = std::min(15, patternRow.getNote().param2);
 										}
 
 										handled = true;
@@ -342,10 +347,19 @@ bool TrackEditor::onEvent(SDL_Event& event)
 									{
 										patternRow.setNoteAndOctave(mEditorState.octave * 12 + note);
 
-										if (mAddMacroEffect && patternRow.effect.isEmpty())
+										// Add the Mxx effect in first empty column for convenience
+
+										if (mAddMacroEffect)
 										{
-											patternRow.effect.effect = 'm';
-											patternRow.effect.setParamsFromByte(mEditorState.macro);
+											for (int param = 0 ; param < PatternRow::effectParams ; ++param)
+											{
+												if (patternRow.getEffect(param).isEmpty())
+												{
+													patternRow.getEffect(0).effect = 'm';
+													patternRow.getEffect(0).setParamsFromByte(mEditorState.macro);
+													break;
+												}
+											}
 										}
 
 										handled = true;
@@ -388,43 +402,50 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						}
 						else
 						{
-							switch (static_cast<int>(mTrackEditorState.currentColumn))
+							int effectParam;
+							PatternRow::Column column;
+
+							PatternRow::translateColumnEnum(mTrackEditorState.currentColumn, effectParam, column);
+
+							switch (column)
 							{
 								case PatternRow::Column::Note:
 								case PatternRow::Column::NoteParam1:
 								case PatternRow::Column::NoteParam2:
 									// A + LEFT/RIGHT = alter note
 
-									if (patternRow.note.effect == 'n')
+									if (patternRow.getNote().effect == 'n')
 									{
-										patternRow.note.setNoteAndOctave(std::max(0, std::min(0xbf, patternRow.note.getNoteWithOctave() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1))));
+										patternRow.getNote().setNoteAndOctave(std::max(0, std::min(0xbf, patternRow.getNote().getNoteWithOctave() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1))));
 									}
 									break;
 
-								case PatternRow::Column::EffectType:
+								case PatternRow::Column::EffectType: {
+									EffectParam effect = patternRow.getEffect(effectParam);
+
 									if (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)
 									{
-										if (patternRow.effect.effect == '0')
-											patternRow.effect.effect = 'z';
-										else if (patternRow.effect.effect == 'a')
-											patternRow.effect.effect = '9';
+										if (effect.effect == '0')
+											effect.effect = 'z';
+										else if (effect.effect == 'a')
+											effect.effect = '9';
 										else
-											patternRow.effect.effect--;
+											effect.effect--;
 									}
 									else
 									{
-										if (patternRow.effect.effect == '9')
-											patternRow.effect.effect = 'a';
-										else if (patternRow.effect.effect == 'z')
-											patternRow.effect.effect = '0';
+										if (effect.effect == '9')
+											effect.effect = 'a';
+										else if (effect.effect == 'z')
+											effect.effect = '0';
 										else
-											patternRow.effect.effect++;
+											effect.effect++;
 									}
-									break;
+								} break;
 
 								case PatternRow::Column::EffectParam1:
 								case PatternRow::Column::EffectParam2:
-									patternRow.effect.setParamsFromByte(patternRow.effect.getParamsAsByte() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1) & 255);
+									patternRow.getEffect(effectParam).setParamsFromByte(patternRow.getEffect(effectParam).getParamsAsByte() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1) & 255);
 									break;
 							}
 						}
@@ -439,19 +460,24 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						}
 						else
 						{
-							switch (static_cast<int>(mTrackEditorState.currentColumn))
+							int effectParam;
+							PatternRow::Column column;
+
+							PatternRow::translateColumnEnum(mTrackEditorState.currentColumn, effectParam, column);
+
+							switch (column)
 							{
 								case PatternRow::Column::Note:
 								case PatternRow::Column::NoteParam1:
 								case PatternRow::Column::NoteParam2:
 									// A + LEFT/RIGHT = alter note
 
-									if (patternRow.note.effect == 'n')
+									if (patternRow.getNote().effect == 'n')
 									{
 										if (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)
-											patternRow.note.param2 = std::max(0, patternRow.note.param2 - 1);
+											patternRow.getNote().param2 = std::max(0, patternRow.getNote().param2 - 1);
 										else
-											patternRow.note.param2 = std::min(15, patternRow.note.param2 + 1);
+											patternRow.getNote().param2 = std::min(15, patternRow.getNote().param2 + 1);
 									}
 									break;
 
@@ -460,7 +486,8 @@ bool TrackEditor::onEvent(SDL_Event& event)
 
 								case PatternRow::Column::EffectParam1:
 								case PatternRow::Column::EffectParam2:
-									patternRow.effect.setParamsFromByte(patternRow.effect.getParamsAsByte() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN ? -16 : 16) & 255);
+									patternRow.getEffect(effectParam).setParamsFromByte(patternRow.getEffect(effectParam).getParamsAsByte() +
+										(event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN ? -16 : 16) & 255);
 									break;
 							}
 						}
@@ -469,8 +496,12 @@ bool TrackEditor::onEvent(SDL_Event& event)
 
 					case SDL_CONTROLLER_BUTTON_A:
 						bool bPressed = SDL_GameControllerGetButton(SDL_GameControllerFromInstanceID(event.cbutton.which), SDL_CONTROLLER_BUTTON_B);
+						int effectParam;
+						PatternRow::Column column;
 
-						switch (static_cast<int>(mTrackEditorState.currentColumn))
+						PatternRow::translateColumnEnum(mTrackEditorState.currentColumn, effectParam, column);
+
+						switch (column)
 						{
 							case PatternRow::Column::Note:
 							case PatternRow::Column::NoteParam1:
@@ -483,9 +514,9 @@ bool TrackEditor::onEvent(SDL_Event& event)
 								}
 								else
 								{
-									if (patternRow.note.isEmpty())
+									if (patternRow.getNote().isEmpty())
 									{
-										patternRow.note.setNoteAndOctave(mEditorState.octave * 12);
+										patternRow.getNote().setNoteAndOctave(mEditorState.octave * 12);
 									}
 								}
 								break;
@@ -515,20 +546,25 @@ bool TrackEditor::onEvent(SDL_Event& event)
 
 void TrackEditor::renderPatternRow(Renderer& renderer, const SDL_Rect& textArea, const PatternRow& row, const Color& color, int columnFlags)
 {
+	if (row.getNoteNr() != PatternRow::NoNote)
+		renderer.renderTextV(textArea, color * Color::getEffectColor(row.getNote()), "%s%x", PatternRow::getNoteName(row.getNoteNr()), row.getOctave());
+	else if (!row.getNote().isEmpty())
+		renderer.renderTextV(textArea, color * Color::getEffectColor(row.getNote()), "%c%x%x", row.getNote().effect, row.getNote().param1, row.getNote().param2);
+	else
+		renderer.renderText(textArea, color * Color::getEffectColor(row.getNote()), "---");
+
 	SDL_Rect effectPosition = textArea;
-	effectPosition.x += renderer.getFontWidth() * 3;
 
-	if (row.getNote() != PatternRow::NoNote)
-		renderer.renderTextV(textArea, color * Color::getEffectColor(row.note), "%s%x", PatternRow::getNoteName(row.getNote()), row.getOctave());
-	else if (!row.note.isEmpty())
-		renderer.renderTextV(textArea, color * Color::getEffectColor(row.note), "%c%x%x", row.note.effect, row.note.param1, row.note.param2);
-	else
-		renderer.renderText(textArea, color * Color::getEffectColor(row.note), "---");
+	for (int effectParam = 0 ; effectParam < PatternRow::effectParams ; ++effectParam)
+	{
+		effectPosition.x += renderer.getFontWidth() * 3;
 
-	if (row.effect.isEmpty())
-		renderer.renderText(effectPosition, color * Color::getEffectColor(row.effect), "---");
-	else
-		renderer.renderTextV(effectPosition, color * Color::getEffectColor(row.effect), "%c%x%x", row.effect.effect, row.effect.param1, row.effect.param2);
+		if (row.getEffect(effectParam).isEmpty())
+			renderer.renderText(effectPosition, color * Color::getEffectColor(row.getEffect(effectParam)), "---");
+		else
+			renderer.renderTextV(effectPosition, color * Color::getEffectColor(row.getEffect(effectParam)), "%c%x%x",
+				row.getEffect(effectParam).effect, row.getEffect(effectParam).param1, row.getEffect(effectParam).param2);
+	}
 }
 
 
