@@ -190,8 +190,11 @@ void GenericSelector::onDraw(Renderer& renderer, const SDL_Rect& area)
 	for (int row = firstVisible ; row <= lastVisible ; ++row)
 	{
 		SDL_Rect textArea = {area.x, (row - firstVisible) * 8 + area.y + 16, area.w - 4, 8};
+		renderer.setClip(textArea);
 		renderItem(renderer, textArea, *mItems[row], row == mSelectedItem);
 	}
+
+	renderer.unsetClip();
 
 	int areaHeight = area.h - 8 - 8;
 	int scrollbarTop = areaHeight * firstVisible / std::max(1, static_cast<int>(mItems.size()));

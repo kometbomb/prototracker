@@ -149,6 +149,12 @@ void Renderer::setClip(const SDL_Rect& area)
 }
 
 
+void Renderer::unsetClip()
+{
+	SDL_RenderSetClipRect(mRenderer, NULL);
+}
+
+
 void Renderer::renderRect(const SDL_Rect& rect, const Color& color, int index)
 {
 	SDL_SetTextureColorMod(mFont, color.r, color.g, color.b);
