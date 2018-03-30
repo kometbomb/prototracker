@@ -122,6 +122,7 @@ FileSection* Song::pack()
 	// File format version
 	song->writeByte(songVersion);
 	song->writeByte(SequenceRow::maxTracks);
+	song->writeByte(PatternRow::effectParams);
 	song->writeString(name);
 	song->writeByte(patternLength - 1);
 	song->writeByte(sequenceLength - 1);
@@ -255,6 +256,8 @@ Song::UnpackError Song::unpack(const FileSection& section)
 	{
 		patternSets = trackCount;
 	}
+	// Default effect param count for version <= 16
+	int effectParamCount = 1;
 
 	if (version == FileSection::invalidRead)
 		return ErrorRead;
@@ -264,6 +267,14 @@ Song::UnpackError Song::unpack(const FileSection& section)
 		trackCount = section.readByte(offset);
 
 		if (trackCount == FileSection::invalidRead)
+			return ErrorRead;
+	}
+
+	if (version >= 17)
+	{
+		effectParamCount = section.readByte(offset);
+
+		if (effectParamCount == FileSection::invalidRead)
 			return ErrorRead;
 	}
 
@@ -370,8 +381,9 @@ Song::UnpackError Song::unpack(const FileSection& section)
 						int count = temp;
 
 						for (int i = 0 ; i < count ; ++i)
+
 						{
-							if (!subSection->readPattern(patterns[track][i], subOffset))
+							if (!subSection->readPattern(patterns[track][i], effectParamCount, subOffset))
 							{
 								returnValue = ErrorRead;
 								break;
@@ -392,7 +404,7 @@ Song::UnpackError Song::unpack(const FileSection& section)
 				{
 					int count = temp;
 
-					//printf("Reading %d macros\n", count);
+					// printf("Reading %d macros\n", count);
 
 					for (int i = 0 ; i < count ; ++i)
 					{
@@ -406,7 +418,7 @@ Song::UnpackError Song::unpack(const FileSection& section)
 
 						strncpy(macros[i].getName(), macroName, Macro::macroNameLength + 1);
 
-						if (!subSection->readPattern(macros[i], subOffset))
+						if (!subSection->readPattern(macros[i], effectParamCount, subOffset))
 						{
 							returnValue = ErrorRead;
 							break;
