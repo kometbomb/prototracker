@@ -10,6 +10,7 @@
 #include <math.h>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <algorithm>
 
 #ifndef TUNING
@@ -21,9 +22,11 @@
 #endif
 
 Mixer::Mixer(IPlayer& player, ISynth& synth)
-	: mPlayer(player), mSynth(synth), mSampleRate(0), mThread(NULL), mAudioOpened(false), mBuffer(NULL)
+	: mPlayer(player), mSynth(synth), mSampleRate(0), mThread(NULL), mAudioOpened(false), mBuffer(NULL),
+	mDeviceId(0)
 {
 	mConvert = static_cast<SDL_AudioCVT*>(SDL_malloc(sizeof(SDL_AudioCVT)));
+	buildDeviceList();
 }
 
 
@@ -35,12 +38,14 @@ Mixer::~Mixer()
 }
 
 
-bool Mixer::runThread()
+bool Mixer::runThread(const char *deviceName)
 {
-	if (!initAudio())
+	debug("Opening audio device %s", deviceName);
+
+	if (!initAudio(deviceName))
 		return false;
 
-	SDL_PauseAudio(0);
+	SDL_PauseAudioDevice(mDeviceId, 0);
 
 	return true;
 }
@@ -52,14 +57,17 @@ void Mixer::stopThread()
 }
 
 
-/*void Mixer::runQueueThread()
+bool Mixer::initAudio(const char *deviceName)
 {
-	SDL_Thread *mThread = SDL_CreateThread(queueThread, "", this);
-}*/
+	if (deviceName == NULL)
+	{
+		// Just use the first device that we can find
+		buildDeviceList();
+		if (getNumDevices() == 0)
+			return false;
 
-
-bool Mixer::initAudio()
-{
+		return initAudio(getDevice(0));
+	}
 	SDL_AudioSpec want, have;
 
 	SDL_memset(&want, 0, sizeof(want));
@@ -75,12 +83,15 @@ bool Mixer::initAudio()
 		SDL_CloseAudio();
 
 	mAudioOpened = false;
+	mDeviceId = SDL_OpenAudioDevice(deviceName, 0, &want, &have, SDL_AUDIO_ALLOW_ANY_CHANGE);
 
-	if (SDL_OpenAudio(&want, &have) < 0)
+	if (mDeviceId <= 0)
 	{
 		debug("Failed to open audio: %s", SDL_GetError());
 		return false;
 	}
+
+	strncpy(mCurrentDevice, deviceName, MAX_DEVICE_NAME_SIZE);
 
 	mAudioOpened = true;
 
@@ -113,7 +124,7 @@ void Mixer::deinitAudio()
 	}
 
 	if (mAudioOpened)
-		SDL_CloseAudio();
+		SDL_CloseAudioDevice(mDeviceId);
 
 	mAudioOpened = false;
 
@@ -121,6 +132,7 @@ void Mixer::deinitAudio()
 		delete[] mBuffer;
 
 	mBuffer = NULL;
+	mDeviceId = 0;
 }
 
 
@@ -208,52 +220,6 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 }
 
 
-/*void Mixer::queueAudio()
-{
-	Player& player = getPlayer();
-	int chunk = getSampleRate() / 50; // 50 Hz
-	Sample16 *data = new Sample16[chunk];
-	float hzConversion = 440.0f / (float)getSampleRate(); // 1.0 = 440 Hz
-
-	player.lock();
-
-	player.runTick();
-	player.advanceTick();
-
-	for (int track = 0 ; track < SequenceRow::maxTracks ; ++track)
-	{
-		TrackState& trackState = player.getTrackState(track);
-		Oscillator& oscillator = getSynth().getOscillator(track);
-		oscillator.setFrequency(trackState.trackState.frequency * trackState.macroState.frequency * hzConversion);
-		oscillator.setVolume(trackState.trackState.volume);
-	}
-
-	player.unlock();
-
-	getSynth().render(data, chunk);
-	getSynth().update(chunk);
-	getSamples() += chunk;
-
-	SDL_QueueAudio(1, data, sizeof(Sample16) * chunk);
-
-	delete[]data;
-}
-
-
-int Mixer::queueThread(void *userdata)
-{
-	Mixer& mixer = *static_cast<Mixer*>(userdata);
-
-	while(mixer.isThreadRunning())
-	{
-		mixer.queueAudio();
-		SDL_Delay(20);
-	}
-
-	return 0;
-}*/
-
-
 int Mixer::getSampleRate() const
 {
 	return mSampleRate;
@@ -280,4 +246,41 @@ int& Mixer::getSamples()
 bool Mixer::isThreadRunning() const
 {
 	return mThreadRunning;
+}
+
+
+void Mixer::buildDeviceList()
+{
+	mNumDevices = SDL_GetNumAudioDevices(0);
+	for (int index = 0 ; index < mNumDevices && index < MAX_DEVICES ; ++index)
+	{
+		strncpy(mDeviceList[index], SDL_GetAudioDeviceName(index, 0), MAX_DEVICE_NAME_SIZE);
+	}
+}
+
+
+const int Mixer::getNumDevices() const
+{
+	return mNumDevices;
+}
+
+
+const char* Mixer::getDevice(int index) const
+{
+	return mDeviceList[index];
+}
+
+
+SDL_AudioDeviceID Mixer::getCurrentDeviceID() const
+{
+	return mDeviceId;
+}
+
+
+const char* Mixer::getCurrentDeviceName() const
+{
+	if (mDeviceId <= 0)
+		return NULL;
+
+	return mCurrentDevice;
 }

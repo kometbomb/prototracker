@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
+#include <cstring>
 
 Context* _context;
 
@@ -22,7 +23,8 @@ Context* _context;
 #endif
 
 Context::Context()
-	: ready(false), done(false), themeLoaded(false), song(), player(song), synth(), mixer(player, synth), editorState(), mainEditor(editorState, player, player.getPlayerState(), song, synth)
+	: ready(false), done(false), themeLoaded(false), song(), player(song), synth(), mixer(player, synth), editorState(),
+	mainEditor(editorState, player, player.getPlayerState(), song, synth)
 {
 	Theme theme;
 
@@ -124,6 +126,34 @@ void infinityAndBeyond(void *ctx)
 
 
 		}
+#if SDL_VERSION_ATLEAST(2,0,4)
+		else if (event.type == SDL_AUDIODEVICEADDED)
+		{
+			context.mainEditor.showMessageV(Editor::MessageInfo, "%s connected.",
+				SDL_GetAudioDeviceName(event.adevice.which, 0));
+
+			if (!context.mixer.getCurrentDeviceName())
+			{
+				context.mixer.stopThread();
+				if (context.mixer.runThread(SDL_GetAudioDeviceName(event.adevice.which, 0)))
+				{
+					context.mainEditor.showMessageV(Editor::MessageInfo, "Using %s as audio output.",
+						SDL_GetAudioDeviceName(event.adevice.which, 0));
+					context.editorState.audioDevice = SDL_GetAudioDeviceName(event.adevice.which, 0);
+				}
+			}
+		}
+		else if (event.type == SDL_AUDIODEVICEREMOVED)
+		{
+			if (context.mixer.getCurrentDeviceID() == event.adevice.which)
+			{
+				context.editorState.audioDevice = "";
+				context.mainEditor.showMessageV(Editor::MessageInfo, "%s disconnected.",
+					context.mixer.getCurrentDeviceName());
+				context.mixer.stopThread();
+			}
+		}
+#endif
 		else
 		{
 			context.player.lock();
@@ -209,8 +239,20 @@ extern "C" int main(int argc, char **argv)
 	if (!context.mainEditor.loadState())
 		context.mainEditor.loadSong("assets/dub.song");
 
-	if (!context.mixer.runThread())
-		context.mainEditor.showMessage(Editor::MessageError, "Could not open audio device");
+	// Try to use the device from the config or autodetect if not set
+
+	if (!context.mixer.runThread(context.editorState.audioDevice.c_str()))
+	{
+		if (!context.mixer.runThread(NULL))
+		{
+			context.mainEditor.showMessage(Editor::MessageError, "Could not open audio device");
+		}
+		else
+		{
+			context.mainEditor.showMessageV(Editor::MessageInfo, "Using %s", context.mixer.getCurrentDeviceName());
+			context.editorState.audioDevice = context.mixer.getCurrentDeviceName();
+		}
+	}
 
 	while (!context.done)
 	{
