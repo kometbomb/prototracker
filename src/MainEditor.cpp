@@ -625,6 +625,7 @@ void MainEditor::displaySaveDialog()
 
 void MainEditor::displayAudioDeviceDialog()
 {
+	mMixer.buildDeviceList();
 	audioDeviceSelector->setId(AudioDeviceSelection);
 	audioDeviceSelector->setTitle("Select output device");
 	audioDeviceSelector->populate(mMixer);
@@ -945,5 +946,6 @@ void MainEditor::setAudioDevice(const char *device)
 		showMessageV(Editor::MessageInfo, "Using %s", mMixer.getCurrentDeviceName());
 	}
 
-	mEditorState.audioDevice = mMixer.getCurrentDeviceName();
+	const char *currentDevice = mMixer.getCurrentDeviceName();
+	mEditorState.audioDevice = currentDevice ? currentDevice : "";
 }

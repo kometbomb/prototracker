@@ -194,8 +194,8 @@ void GenericSelector::onDraw(Renderer& renderer, const SDL_Rect& area)
 	}
 
 	int areaHeight = area.h - 8 - 8;
-	int scrollbarTop = areaHeight * firstVisible / static_cast<int>(mItems.size());
-	int scrollbarBottom = areaHeight * (lastVisible + 1) / static_cast<int>(mItems.size());
+	int scrollbarTop = areaHeight * firstVisible / std::max(1, static_cast<int>(mItems.size()));
+	int scrollbarBottom = areaHeight * (lastVisible + 1) / std::max(1, static_cast<int>(mItems.size()));
 	SDL_Rect scrollbarArea = {area.x + area.w - 3, area.y + 16 + scrollbarTop, 2, scrollbarBottom - scrollbarTop};
 	renderer.clearRect(scrollbarArea, Color());
 }

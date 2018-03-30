@@ -29,7 +29,6 @@ class Mixer
 	int mNumDevices;
 	SDL_AudioDeviceID mDeviceId;
 
-	void buildDeviceList();
 	bool initAudio(const char *deviceName);
 	void deinitAudio();
 
@@ -47,6 +46,7 @@ public:
 	int& getSamples();
 	int getSampleRate() const;
 
+	void buildDeviceList();
 	const int getNumDevices() const;
 	const char* getDevice(int index) const;
 	const char* getCurrentDeviceName() const;
