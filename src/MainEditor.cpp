@@ -19,6 +19,7 @@
 #include "Renderer.h"
 #include "Label.h"
 #include "ISynth.h"
+#include "Mixer.h"
 #include "Value.h"
 #include "SequenceRow.h"
 #include "ITrackState.h"
@@ -26,6 +27,7 @@
 #include "OctaveInfo.h"
 #include "TouchRegion.h"
 #include "FileSelector.h"
+#include "AudioDeviceSelector.h"
 #include "Emscripten.h"
 #include "MessageManager.h"
 #include "MessageDisplayer.h"
@@ -49,12 +51,13 @@
 #define SCALE 2
 #endif
 
-MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth)
-	: Editor(editorState), mPlayer(player), mPlayerState(playerState), mSong(song), mSynth(synth), mIsDragging(false)
+MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer)
+	: Editor(editorState), mPlayer(player), mPlayerState(playerState), mSong(song), mSynth(synth), mMixer(mixer), mIsDragging(false)
 {
 	mOscillatorsProbePos = new Value();
 
 	fileSelector = new FileSelector(editorState);
+	audioDeviceSelector = new AudioDeviceSelector(editorState);
 
 	mMessageManager = new MessageManager();
 	mTooltipManager = new TooltipManager();
@@ -65,6 +68,7 @@ MainEditor::~MainEditor()
 {
 	delete mOscillatorsProbePos;
 	delete fileSelector;
+	delete audioDeviceSelector;
 
 	deleteChildren();
 
@@ -340,6 +344,10 @@ bool MainEditor::onEvent(SDL_Event& event)
 								displayLoadDialog();
 								break;
 
+							case SDLK_a:
+								displayAudioDeviceDialog();
+								break;
+
 							case SDLK_n:
 								newSong();
 								showMessage(MessageInfo, "Song reset");
@@ -564,23 +572,27 @@ void MainEditor::refreshAll()
 }
 
 
-void MainEditor::onFileSelectorEvent(const Editor& fileSelector, bool accept)
+void MainEditor::onFileSelectorEvent(const Editor& selector, bool accept)
 {
 	if (accept)
 	{
-		int id = reinterpret_cast<const FileSelector&>(fileSelector).getId();
+		int id = reinterpret_cast<const GenericSelector&>(selector).getId();
 		switch (id)
 		{
 			case FileSelectionLoad:
-				if (loadSong(reinterpret_cast<const FileSelector&>(fileSelector).getSelectedPath()))
+				if (loadSong(reinterpret_cast<const FileSelector&>(selector).getSelectedPath()))
 					showMessage(MessageInfo, "Song loaded");
 				break;
 
 			case FileSelectionSave:
-				if (saveSong(reinterpret_cast<const FileSelector&>(fileSelector).getSelectedPath()))
+				if (saveSong(reinterpret_cast<const FileSelector&>(selector).getSelectedPath()))
 					showMessage(MessageInfo, "Song saved");
 				else
 					showMessage(MessageError, "Song was not saved");
+				break;
+
+			case AudioDeviceSelection:
+				setAudioDevice(reinterpret_cast<const AudioDeviceSelector&>(selector).getSelectedDevice());
 				break;
 		}
 	}
@@ -608,6 +620,15 @@ void MainEditor::displaySaveDialog()
 	fileSelector->setOverwriteCheck(true);
 	fileSelector->populate();
 	setModal(fileSelector);
+}
+
+
+void MainEditor::displayAudioDeviceDialog()
+{
+	audioDeviceSelector->setId(AudioDeviceSelection);
+	audioDeviceSelector->setTitle("Select output device");
+	audioDeviceSelector->populate(mMixer);
+	setModal(audioDeviceSelector);
 }
 
 
@@ -902,4 +923,27 @@ void MainEditor::onUpdate(int ms)
 {
 	mMessageManager->update(ms);
 	mTooltipManager->update(ms);
+}
+
+
+void MainEditor::setAudioDevice(const char *device)
+{
+	mMixer.stopThread();
+
+	if (!mMixer.runThread(device))
+	{
+		showMessage(Editor::MessageError, "Could not open audio device");
+
+		if (!mMixer.runThread(NULL))
+		{
+			showMessageV(Editor::MessageError, "No audio device found.");
+		}
+	}
+
+	if (mMixer.getCurrentDeviceID() > 0)
+	{
+		showMessageV(Editor::MessageInfo, "Using %s", mMixer.getCurrentDeviceName());
+	}
+
+	mEditorState.audioDevice = mMixer.getCurrentDeviceName();
 }

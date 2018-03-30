@@ -280,3 +280,9 @@ void GenericSelector::onAreaChanged(const SDL_Rect& area)
 
 	mLabel->setArea(labelArea);
 }
+
+
+void GenericSelector::onSelectItem(const Item& item)
+{
+
+}

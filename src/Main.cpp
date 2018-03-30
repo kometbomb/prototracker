@@ -24,7 +24,7 @@ Context* _context;
 
 Context::Context()
 	: ready(false), done(false), themeLoaded(false), song(), player(song), synth(), mixer(player, synth), editorState(),
-	mainEditor(editorState, player, player.getPlayerState(), song, synth)
+	mainEditor(editorState, player, player.getPlayerState(), song, synth, mixer)
 {
 	Theme theme;
 
@@ -134,13 +134,7 @@ void infinityAndBeyond(void *ctx)
 
 			if (!context.mixer.getCurrentDeviceName())
 			{
-				context.mixer.stopThread();
-				if (context.mixer.runThread(SDL_GetAudioDeviceName(event.adevice.which, 0)))
-				{
-					context.mainEditor.showMessageV(Editor::MessageInfo, "Using %s as audio output.",
-						SDL_GetAudioDeviceName(event.adevice.which, 0));
-					context.editorState.audioDevice = SDL_GetAudioDeviceName(event.adevice.which, 0);
-				}
+				context.mainEditor.setAudioDevice(SDL_GetAudioDeviceName(event.adevice.which, 0));
 			}
 		}
 		else if (event.type == SDL_AUDIODEVICEREMOVED)
@@ -241,18 +235,7 @@ extern "C" int main(int argc, char **argv)
 
 	// Try to use the device from the config or autodetect if not set
 
-	if (!context.mixer.runThread(context.editorState.audioDevice.c_str()))
-	{
-		if (!context.mixer.runThread(NULL))
-		{
-			context.mainEditor.showMessage(Editor::MessageError, "Could not open audio device");
-		}
-		else
-		{
-			context.mainEditor.showMessageV(Editor::MessageInfo, "Using %s", context.mixer.getCurrentDeviceName());
-			context.editorState.audioDevice = context.mixer.getCurrentDeviceName();
-		}
-	}
+	context.mainEditor.setAudioDevice(context.editorState.audioDevice.c_str());
 
 	while (!context.done)
 	{
