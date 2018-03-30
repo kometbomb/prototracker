@@ -190,12 +190,15 @@ void GenericSelector::onDraw(Renderer& renderer, const SDL_Rect& area)
 	for (int row = firstVisible ; row <= lastVisible ; ++row)
 	{
 		SDL_Rect textArea = {area.x, (row - firstVisible) * 8 + area.y + 16, area.w - 4, 8};
+		renderer.setClip(textArea);
 		renderItem(renderer, textArea, *mItems[row], row == mSelectedItem);
 	}
 
+	renderer.unsetClip();
+
 	int areaHeight = area.h - 8 - 8;
-	int scrollbarTop = areaHeight * firstVisible / static_cast<int>(mItems.size());
-	int scrollbarBottom = areaHeight * (lastVisible + 1) / static_cast<int>(mItems.size());
+	int scrollbarTop = areaHeight * firstVisible / std::max(1, static_cast<int>(mItems.size()));
+	int scrollbarBottom = areaHeight * (lastVisible + 1) / std::max(1, static_cast<int>(mItems.size()));
 	SDL_Rect scrollbarArea = {area.x + area.w - 3, area.y + 16 + scrollbarTop, 2, scrollbarBottom - scrollbarTop};
 	renderer.clearRect(scrollbarArea, Color());
 }
@@ -279,4 +282,10 @@ void GenericSelector::onAreaChanged(const SDL_Rect& area)
 	labelArea.w = area.w;
 
 	mLabel->setArea(labelArea);
+}
+
+
+void GenericSelector::onSelectItem(const Item& item)
+{
+
 }

@@ -38,3 +38,4 @@ CTRL + DELETE	Empty track note
 ALT + DELETE	Empty track effect
 CTRL + D		Duplicate row
 CAPS LOCK/SCROLL LOCK	Toggle follow song position
+CTRL + A        Select output device

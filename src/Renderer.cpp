@@ -87,7 +87,7 @@ void Renderer::renderText(const SDL_Rect& position, const Color& color, const ch
 
 void Renderer::renderChar(const SDL_Rect& position, const Color& color, int c)
 {
-	static const char *charmap = "0123456789abcdefghijklmnopqrstuvwxyz-#/:._<>,'\"!";
+	static const char *charmap = "0123456789abcdefghijklmnopqrstuvwxyz-#/:._<>,'\"!()";
 
 	c = tolower(c);
 	SDL_SetTextureBlendMode(mFont, SDL_BLENDMODE_BLEND);
@@ -146,6 +146,12 @@ void Renderer::setClip(const SDL_Rect& area)
 	rect.y = mGuiHeight - rect.y + rect.h;
 #endif
 	SDL_RenderSetClipRect(mRenderer, &rect);
+}
+
+
+void Renderer::unsetClip()
+{
+	SDL_RenderSetClipRect(mRenderer, NULL);
 }
 
 
