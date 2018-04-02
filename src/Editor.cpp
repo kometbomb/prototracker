@@ -186,6 +186,8 @@ void Editor::drawModal(Renderer& renderer)
 {
 	if (mModal != NULL)
 	{
+		renderer.unsetClip();
+
 		if (mModal->shouldRedrawBackground())
 		{
 			// Draw plain black background with white border
