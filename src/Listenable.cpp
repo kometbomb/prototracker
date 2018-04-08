@@ -1,5 +1,5 @@
 #include "Listenable.h"
-#include "Editor.h"
+#include "Listener.h"
 
 Listenable::Listenable()
 	: mNumListeners(0)
@@ -16,14 +16,12 @@ void Listenable::notify()
 }
 
 
-bool Listenable::addListener(Editor *listener)
+bool Listenable::addListener(Listener *listener)
 {
 	if (mNumListeners >= maxListeners)
 		return false;
-	
+
 	mListeners[mNumListeners++] = listener;
-	
+
 	return true;
 }
-
-
