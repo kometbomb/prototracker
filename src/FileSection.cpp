@@ -293,6 +293,9 @@ void FileSection::writePattern(Pattern& pattern)
 				case PatternRow::EffectParam2:
 					// Written with param1
 					break;
+
+				default:
+					break;
 			}
 		}
 	}
