@@ -87,7 +87,7 @@ void infinityAndBeyond(void *ctx)
 
 			context.mainEditor.loadState();
 			context.ready = true;
-			context.mixer.runThread();
+			context.mainEditor.setAudioDevice(context.editorState.audioDevice.c_str());
 			emAppReady();
 		}
 		else if (event.type == EVERYTHING_DONE)
@@ -114,7 +114,7 @@ void infinityAndBeyond(void *ctx)
 		{
 			/* We just reinit all controllers instead of initializing a specific one */
 
-#if SDL_VERSION_ATLEAST(2,0,4)
+#if SDL_VERSION_ATLEAST(2,0,4) && !defined(__EMSCRIPTEN__)
 			if (event.type == SDL_CONTROLLERDEVICEADDED)
 				context.mainEditor.showMessageV(Editor::MessageInfo, "Plugged in %s", SDL_JoystickNameForIndex(event.cdevice.which));
 			else

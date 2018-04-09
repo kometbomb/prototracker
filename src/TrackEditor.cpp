@@ -386,7 +386,7 @@ bool TrackEditor::onEvent(SDL_Event& event)
 				break;
 			}
 
-#if SDL_VERSION_ATLEAST(2,0,4)
+#if SDL_VERSION_ATLEAST(2,0,4) && !defined(__EMSCRIPTEN__)
 			case SDL_CONTROLLERBUTTONDOWN:
 			{
 				bool aPressed = SDL_GameControllerGetButton(SDL_GameControllerFromInstanceID(event.cbutton.which), SDL_CONTROLLER_BUTTON_A);
