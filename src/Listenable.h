@@ -21,5 +21,6 @@ public:
 	Listenable();
 
 	bool addListener(Listener *listener);
+	void removeListener(Listener *listener);
 	void notify();
 };
