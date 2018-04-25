@@ -1,5 +1,7 @@
 #include "SequenceRow.h"
 
+const int SequenceRow::maxTracks;
+
 SequenceRow::SequenceRow()
 {
 	clear();
@@ -18,6 +20,6 @@ bool SequenceRow::isEmpty() const
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 		if (pattern[i] != 0)
 			return false;
-		
+
 	return true;
 }
