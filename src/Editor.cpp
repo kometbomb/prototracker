@@ -7,7 +7,8 @@
 #define MODAL_BORDER 2
 
 Editor::Editor(EditorState& editorState, bool wantsFocus)
-	: mEditorState(editorState), mFocus(NULL), mModal(NULL), mIsDirty(true), mRedraw(true), mParent(NULL), mNumChildren(0), mWantsFocus(wantsFocus)
+	: mEditorState(editorState), mFocus(NULL), mModal(NULL), mIsDirty(true), mRedraw(true),
+	mParent(NULL), mNumChildren(0), mWantsFocus(wantsFocus), mPopupMessageId(-1)
 {
 	mThisArea.x = 0;
 	mThisArea.y = 0;
@@ -340,7 +341,7 @@ void Editor::showTooltip(const SDL_Rect& area, const char* message)
 }
 
 
-void Editor::showMessageV(MessageClass messageClass, const char* message, ...)
+int Editor::showMessageV(MessageClass messageClass, int messageId, const char* message, ...)
 {
 	char dest[1024];
     va_list argptr;
@@ -348,16 +349,49 @@ void Editor::showMessageV(MessageClass messageClass, const char* message, ...)
     vsnprintf(dest, sizeof(dest), message, argptr);
     va_end(argptr);
 
-	showMessage(messageClass, dest);
+	return showMessage(messageClass, messageId, dest);
 }
 
 
-void Editor::showMessage(MessageClass messageClass, const char* message)
+int Editor::showMessageV(MessageClass messageClass, const char* message, ...)
+{
+	char dest[1024];
+    va_list argptr;
+    va_start(argptr, message);
+    vsnprintf(dest, sizeof(dest), message, argptr);
+    va_end(argptr);
+
+	return showMessage(messageClass, dest);
+}
+
+
+int Editor::showMessageInner(MessageClass messageClass, int messageId, const char* message)
+{
+	debug("[%s] %s", messageClass == MessageInfo ? "INFO" : "ERROR", message);
+	return 0;
+}
+
+
+int Editor::showMessage(MessageClass messageClass, int messageId, const char* message)
 {
 	if (mParent != NULL)
-		mParent->showMessage(messageClass, message);
+		return mParent->showMessage(messageClass, messageId, message);
 	else
-		debug("[%s] %s", messageClass == MessageInfo ? "INFO" : "ERROR", message);
+	{
+		int finalId = messageId;
+
+		// If useSingleMessage was given as ID use the stored per Editor ID
+		if (messageId == replacePreviousMessage)
+			finalId = mPopupMessageId;
+
+		return mPopupMessageId = showMessageInner(messageClass, finalId, message);
+	}
+}
+
+
+int Editor::showMessage(MessageClass messageClass, const char* message)
+{
+	return showMessage(messageClass, -1, message);
 }
 
 

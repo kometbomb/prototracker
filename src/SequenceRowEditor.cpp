@@ -306,7 +306,7 @@ void SequenceRowEditor::duplicateRow()
 
 	mTrackEditorState.currentRow.notify();
 
-	showMessage(MessageInfo, "Duplicated sequence row");
+	showMessage(MessageInfo, replacePreviousMessage, "Duplicated sequence row");
 }
 
 
