@@ -17,6 +17,7 @@ class Editor: public Listener
 {
 public:
 	static const int maxChildren = 128;
+	static const int replacePreviousMessage = -1;
 
 	enum MessageClass
 	{
@@ -42,6 +43,7 @@ protected:
 	SDL_Rect mThisArea;
 	int mNumChildren;
 	bool mWantsFocus;
+	int mPopupMessageId;
 
 	void removeFocus();
 	void setModal(Editor *modal);
@@ -53,6 +55,9 @@ protected:
 
 	bool shouldRedrawBackground() const;
 	virtual void onAreaChanged(const SDL_Rect& area);
+
+	/* Actual rendering of the message */
+	virtual int showMessageInner(MessageClass messageClass, int messageId, const char* message);
 
 public:
 	Editor(EditorState& editorState, bool wantFocus = true);
@@ -91,9 +96,10 @@ public:
 	/**
 	 * Status popup
 	 */
-	virtual void showMessage(MessageClass messageClass, const char* message);
-	void showMessageV(MessageClass messageClass, const char* message, ...) __attribute__((format(printf, 3, 4)));
-
+	int showMessage(MessageClass messageClass, int messageId, const char* message);
+	int showMessage(MessageClass messageClass, const char* message);
+	int showMessageV(MessageClass messageClass, const char* message, ...) __attribute__((format(printf, 3, 4)));
+	int showMessageV(MessageClass messageClass, int messageId, const char* message, ...) __attribute__((format(printf, 4, 5)));
 
 	void draw(Renderer& renderer, const SDL_Rect& area);
 	virtual void onUpdate(int ms);
