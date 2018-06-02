@@ -68,8 +68,8 @@ public:
 	virtual bool onEvent(SDL_Event& event);
 	virtual void onDraw(Renderer& renderer, const SDL_Rect& area);
 	virtual void onFileSelectorEvent(const Editor& fileSelector, bool accept);
-	virtual void showMessage(MessageClass messageClass, const char* message);
 	virtual void showTooltip(const SDL_Rect& area, const char* message);
+	virtual int showMessageInner(MessageClass messageClass, int messageId, const char* message);
 
 	void cycleFocus();
 	void syncPlayerState();
