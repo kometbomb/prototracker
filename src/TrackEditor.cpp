@@ -20,6 +20,22 @@ TrackEditor::~TrackEditor()
 }
 
 
+void TrackEditor::killCurrentTrack()
+{
+	killTrack(mTrackEditorState.currentTrack);
+	// TODO: These shoyld say "macro" in the macro editor!
+	showMessage(MessageInfo, "Killed pattern");
+}
+
+
+void TrackEditor::findCurrentUnusedTrack()
+{
+	findUnusedTrack(mTrackEditorState.currentTrack);
+	// TODO: These shoyld say "macro" in the macro editor!
+	showMessage(MessageInfo, "Found an unused pattern");
+}
+
+
 void TrackEditor::setTriggerNotes(bool state)
 {
 	mTriggerNotes = state;
@@ -215,15 +231,11 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						}
 						else if (event.key.keysym.sym == SDLK_k)
 						{
-							killTrack(mTrackEditorState.currentTrack);
-							// TODO: These shoyld say "macro" in the macro editor!
-							showMessage(MessageInfo, "Killed pattern");
+							killCurrentTrack();
 						}
 						else if (event.key.keysym.sym == SDLK_u)
 						{
-							findUnusedTrack(mTrackEditorState.currentTrack);
-							// TODO: These shoyld say "macro" in the macro editor!
-							showMessage(MessageInfo, "Found an unused pattern");
+							findCurrentUnusedTrack();
 						}
 						else
 							return false;

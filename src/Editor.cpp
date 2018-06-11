@@ -86,6 +86,7 @@ void Editor::addChild(Editor *child, int x, int y, int w, int h)
 	SDL_Rect absArea = {area.x + mThisArea.x, area.y + mThisArea.y, area.w, area.h};
 
 	child->setArea(absArea);
+	child->onRequestCommandRegistration();
 }
 
 
@@ -434,4 +435,18 @@ void Editor::childAreaChanged(Editor *child)
 void Editor::onModalStatusChange(bool isNowModal)
 {
 
+}
+
+
+bool Editor::registerCommand(const char *commandName, Command command)
+{
+	if (mParent)
+		return mParent->registerCommand(commandName, command);
+
+	return false;
+}
+
+
+void Editor::onRequestCommandRegistration()
+{
 }

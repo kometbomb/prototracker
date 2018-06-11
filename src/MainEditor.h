@@ -19,6 +19,7 @@ struct MessageDisplayer;
 struct TooltipManager;
 struct TooltipDisplayer;
 struct AudioDeviceSelector;
+struct CommandSelector;
 
 class MainEditor: public Editor
 {
@@ -34,6 +35,7 @@ class MainEditor: public Editor
 	TextEditor *macroNameEditor;
 	FileSelector *fileSelector;
 	AudioDeviceSelector *audioDeviceSelector;
+	CommandSelector *commandSelector;
 	MessageManager *mMessageManager;
 	MessageDisplayer *mMessageDisplayer;
 	TooltipManager *mTooltipManager;
@@ -42,16 +44,23 @@ class MainEditor: public Editor
 	int mDragStartX, mDragStartY;
 	bool mIsDragging;
 
+	static const int maxCommands = 256;
+
+	CommandDescriptor mCommand[maxCommands];
+	int mNumCommands;
+
 	enum
 	{
 		FileSelectionLoad,
 		FileSelectionSave,
 		AudioDeviceSelection,
+		CommandSelection,
 	};
 
 	void displayLoadDialog();
 	void displaySaveDialog();
 	void displayAudioDeviceDialog();
+	void displayCommandPalette();
 
 	std::string mBase64Encoded;
 
@@ -60,6 +69,11 @@ class MainEditor: public Editor
 
 	void startDragging(int x, int y);
 	void stopDragging();
+	void togglePositionFollowing();
+
+protected:
+	virtual void onRequestCommandRegistration();
+	virtual bool registerCommand(const char *commandName, Command command);
 
 public:
 	MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer);
@@ -96,4 +110,7 @@ public:
 	void saveState();
 
 	bool loadElements(const Theme& theme);
+
+	int getNumCommands() const;
+	const CommandDescriptor& getCommand(int index) const;
 };

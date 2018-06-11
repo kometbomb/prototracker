@@ -11,10 +11,12 @@ protected:
 	virtual PatternRow& getCurrentPatternRow();
 	virtual Pattern& getCurrentPattern(int track);
 	virtual void findUnusedTrack(int track);
-	
+
+	virtual void onRequestCommandRegistration();
+
 public:
 	MacroEditor(EditorState& editorState, IPlayer& player, Song& song);
 	virtual ~MacroEditor();
-	
+
 	virtual bool onEvent(SDL_Event& event);
 };

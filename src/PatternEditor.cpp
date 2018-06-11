@@ -156,3 +156,10 @@ bool PatternEditor::isRowActive(int track, int row) const
 	const SequenceRow& seqRow = mSong.getSequence().getRow(mEditorState.sequenceEditor.currentRow);
 	return playerState.isPlaying() && playerState.patternRow == row && playRow.pattern[track] == seqRow.pattern[track];
 }
+
+
+void PatternEditor::onRequestCommandRegistration()
+{
+	registerCommand("Find unused pattern", [this]() { this->findCurrentUnusedTrack(); });
+	registerCommand("Kill current pattern", [this]() { this->killCurrentTrack(); });
+}

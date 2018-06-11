@@ -27,6 +27,7 @@
 #include "TouchRegion.h"
 #include "FileSelector.h"
 #include "AudioDeviceSelector.h"
+#include "CommandSelector.h"
 #include "Emscripten.h"
 #include "MessageManager.h"
 #include "MessageDisplayer.h"
@@ -57,9 +58,13 @@ MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& p
 
 	fileSelector = new FileSelector(editorState);
 	audioDeviceSelector = new AudioDeviceSelector(editorState);
+	commandSelector = new CommandSelector(editorState, *this);
 
 	mMessageManager = new MessageManager();
 	mTooltipManager = new TooltipManager();
+
+	// This is a special case because MainEditor is never added as a child so we trigger this here.
+	onRequestCommandRegistration();
 }
 
 
@@ -96,6 +101,13 @@ void MainEditor::startDragging(int x, int y)
 void MainEditor::stopDragging()
 {
 	mIsDragging = false;
+}
+
+
+void MainEditor::togglePositionFollowing()
+{
+	mEditorState.followPlayPosition = !mEditorState.followPlayPosition;
+	showMessage(MessageInfo, mEditorState.followPlayPosition ? "Cursor now follows play position" : "Disabled play position following");
 }
 
 
@@ -320,10 +332,7 @@ bool MainEditor::onEvent(SDL_Event& event)
 
 				case SDLK_CAPSLOCK:
 				case SDLK_SCROLLLOCK:
-					mEditorState.followPlayPosition = !mEditorState.followPlayPosition;
-
-					showMessage(MessageInfo, mEditorState.followPlayPosition ? "Cursor now follows play position" : "Disabled play position following");
-
+					togglePositionFollowing();
 					break;
 
 				default:
@@ -336,7 +345,10 @@ bool MainEditor::onEvent(SDL_Event& event)
 								break;
 
 							case SDLK_p:
-								exportSong();
+								if (event.key.keysym.mod & KMOD_SHIFT)
+									displayCommandPalette();
+								else
+									exportSong();
 								break;
 
 							case SDLK_o:
@@ -573,6 +585,11 @@ void MainEditor::refreshAll()
 
 void MainEditor::onFileSelectorEvent(const Editor& selector, bool accept)
 {
+	// Close modal after accept - disable for CommandSelector so a new modal opened by
+	// the command is not closed immediately.
+
+	bool closeModal = true;
+
 	if (accept)
 	{
 		int id = reinterpret_cast<const GenericSelector&>(selector).getId();
@@ -593,10 +610,17 @@ void MainEditor::onFileSelectorEvent(const Editor& selector, bool accept)
 			case AudioDeviceSelection:
 				setAudioDevice(reinterpret_cast<const AudioDeviceSelector&>(selector).getSelectedDevice());
 				break;
+
+			case CommandSelection:
+				setModal(NULL);
+				closeModal = false;
+				reinterpret_cast<const CommandSelector&>(selector).getSelectedCommand().func();
+				break;
 		}
 	}
 
-	setModal(NULL);
+	if (closeModal)
+		setModal(NULL);
 }
 
 
@@ -947,4 +971,49 @@ void MainEditor::setAudioDevice(const char *device)
 
 	const char *currentDevice = mMixer.getCurrentDeviceName();
 	mEditorState.audioDevice = currentDevice ? currentDevice : "";
+}
+
+
+bool MainEditor::registerCommand(const char *commandName, Command command)
+{
+	if (mNumCommands >= maxCommands)
+	{
+		return false;
+	}
+
+	strncpy(mCommand[mNumCommands].name, commandName, sizeof(mCommand[mNumCommands].name));
+	mCommand[mNumCommands].func = command;
+	mNumCommands++;
+	return true;
+}
+
+
+int MainEditor::getNumCommands() const
+{
+	return mNumCommands;
+}
+
+
+const Editor::CommandDescriptor& MainEditor::getCommand(int index) const
+{
+	return mCommand[index];
+}
+
+
+void MainEditor::displayCommandPalette()
+{
+	commandSelector->setId(CommandSelection);
+	commandSelector->setTitle("Select command");
+	commandSelector->populate();
+	setModal(commandSelector);
+}
+
+
+void MainEditor::onRequestCommandRegistration()
+{
+	registerCommand("Toggle play position following", [this]() { this->togglePositionFollowing(); });
+	registerCommand("Reset song", [this]() { this->newSong(); this->showMessage(MessageInfo, "Song reset"); });
+	registerCommand("Load song", [this]() { this->displayLoadDialog(); });
+	registerCommand("Save song", [this]() { this->displaySaveDialog(); });
+	registerCommand("Select output device", [this]() { this->displayAudioDeviceDialog(); });
 }

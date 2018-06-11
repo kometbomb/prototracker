@@ -2,6 +2,7 @@
 
 #include "SDL.h"
 #include "Listener.h"
+#include <functional>
 
 struct PlayerState;
 struct Renderer;
@@ -23,6 +24,13 @@ public:
 	{
 		MessageInfo,
 		MessageError
+	};
+
+	typedef std::function<void()> Command;
+
+	struct CommandDescriptor {
+		char name[200];
+		Command func;
 	};
 
 private:
@@ -58,6 +66,12 @@ protected:
 
 	/* Actual rendering of the message */
 	virtual int showMessageInner(MessageClass messageClass, int messageId, const char* message);
+
+	// Register commands only here so that the Editor is added as a child and the registration
+	// is propagated
+	virtual void onRequestCommandRegistration();
+
+	virtual bool registerCommand(const char *commandName, Command command);
 
 public:
 	Editor(EditorState& editorState, bool wantFocus = true);

@@ -21,7 +21,7 @@ MacroEditor::~MacroEditor()
 
 }
 
-	
+
 bool MacroEditor::onEvent(SDL_Event& event)
 {
 	return TrackEditor::onEvent(event);
@@ -31,7 +31,7 @@ bool MacroEditor::onEvent(SDL_Event& event)
 PatternRow& MacroEditor::getCurrentPatternRow()
 {
 	Macro& macro = mSong.getMacro(mEditorState.macro);
-	
+
 	return macro.getRow(mTrackEditorState.currentRow);
 }
 
@@ -39,7 +39,7 @@ PatternRow& MacroEditor::getCurrentPatternRow()
 PatternRow& MacroEditor::getPatternRow(int track, int row)
 {
 	Macro& macro = mSong.getMacro(mEditorState.macro);
-	
+
 	return macro.getRow(row);
 }
 
@@ -53,15 +53,21 @@ Pattern& MacroEditor::getCurrentPattern(int track)
 void MacroEditor::findUnusedTrack(int track)
 {
 	int orig = mEditorState.macro;
-	
+
 	while (!mSong.getMacro(mEditorState.macro).isEmpty())
 	{
 		mEditorState.macro = (mEditorState.macro + 1) % Song::maxMacros;
-		
+
 		// Check if we are back at starting position
-		
+
 		if (orig == mEditorState.macro)
 			break;
 	}
 }
 
+
+void MacroEditor::onRequestCommandRegistration()
+{
+	registerCommand("Find unused macro", [this]() { this->findCurrentUnusedTrack(); });
+	registerCommand("Kill current macro", [this]() { this->killCurrentTrack(); });
+}

@@ -17,6 +17,8 @@ protected:
 	virtual void findUnusedTrack(int track);
 	virtual bool isRowActive(int track, int row) const;
 
+	virtual void onRequestCommandRegistration();
+
 public:
 	PatternEditor(EditorState& editorState, IPlayer& player, Song& song);
 	virtual ~PatternEditor();
