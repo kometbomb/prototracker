@@ -27,6 +27,8 @@ class CommandSelector: public GenericSelector
 	virtual void accept(bool isFinal = false);
 	virtual void reject(bool isFinal = false);
 
+	static bool caseInsensitiveFind(const char *haystack, const char *needle);
+
 public:
 	CommandSelector(EditorState& editorState, const MainEditor& mainEditor);
 	virtual ~CommandSelector();

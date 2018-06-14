@@ -8,6 +8,7 @@
 #include "MainEditor.h"
 #include <cstdio>
 #include <cstring>
+#include <cctype>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <algorithm>
@@ -69,6 +70,40 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 }
 
 
+bool CommandSelector::caseInsensitiveFind(const char *haystack, const char *needle)
+{
+	// Empty needle, everything matches
+
+	if (*needle == '\0')
+		return true;
+
+	const char *a = haystack;
+
+	while (*a)
+	{
+		const char *prev = a, *b = needle;
+
+		do
+		{
+			if (tolower(*b) != tolower(*a))
+				break;
+
+			++b;
+			++a;
+
+			if (*b == '\0')
+				return true;
+		}
+		while (*a);
+
+		a = prev;
+		++a;
+	}
+
+	return false;
+}
+
+
 void CommandSelector::populate()
 {
 	invalidateParent();
@@ -79,7 +114,7 @@ void CommandSelector::populate()
 	for (int index = 0 ; index < numCommands ; ++index)
 	{
 		const auto& command = mMainEditor.getCommand(index);
-		if (strstr(command.name, mFilter) != NULL)
+		if (caseInsensitiveFind(command.name, mFilter))
 			addItem(new CommandItem(command));
 	}
 
@@ -114,7 +149,7 @@ bool CommandSelector::onEvent(SDL_Event& event)
 
 	bool filterEvent = mFilterField->onEvent(event);
 
-	if (event.type == SDL_KEYDOWN)
+	if (filterEvent)
 	{
 		populate();
 	}
