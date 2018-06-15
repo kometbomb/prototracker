@@ -139,6 +139,9 @@ void CommandSelector::onModalStatusChange(bool isNowModal)
 	// Make sure text field will receive SDL_TEXTINPUTs
 	// and disables them after dialog close
 	mFilterField->setIsEditing(isNowModal);
+
+	// Reset filter on modal open
+	strcpy(mFilter, "");
 }
 
 
