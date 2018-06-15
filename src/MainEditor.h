@@ -2,6 +2,7 @@
 
 #include "Editor.h"
 #include <string>
+#include <vector>
 
 struct IPlayer;
 struct Song;
@@ -46,8 +47,7 @@ class MainEditor: public Editor
 
 	static const int maxCommands = 256;
 
-	CommandDescriptor mCommand[maxCommands];
-	int mNumCommands;
+	std::vector<CommandDescriptor*> mCommands;
 
 	enum
 	{

@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Color.h"
 #include <cstdio>
+#include <cstring>
 
 #define MODAL_BORDER 2
 
@@ -449,4 +450,11 @@ bool Editor::registerCommand(const char *commandName, Command command)
 
 void Editor::onRequestCommandRegistration()
 {
+}
+
+
+Editor::CommandDescriptor::CommandDescriptor(const char *_name, Command _func)
+	: func(_func)
+{
+	strncpy(name, _name, sizeof(name));
 }

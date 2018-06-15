@@ -118,6 +118,7 @@ void CommandSelector::populate()
 			addItem(new CommandItem(command));
 	}
 
+	sortItems(CommandItem::sort);
 	selectItem(0);
 }
 
@@ -131,6 +132,15 @@ const Editor::CommandDescriptor& CommandSelector::getSelectedCommand() const
 CommandSelector::CommandItem::CommandItem(const CommandDescriptor& descriptor)
 	: command(descriptor)
 {
+}
+
+
+bool CommandSelector::CommandItem::sort(const CommandSelector::Item* ga, const CommandSelector::Item* gb)
+{
+	const auto& a = static_cast<const CommandItem&>(*ga);
+	const auto& b = static_cast<const CommandItem&>(*gb);
+
+	return strcmp(a.command.name, b.command.name) < 0;
 }
 
 

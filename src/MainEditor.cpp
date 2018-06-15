@@ -77,6 +77,11 @@ MainEditor::~MainEditor()
 	deleteChildren();
 
 	delete mMessageManager;
+
+	for (auto desc : mCommands)
+	{
+		delete desc;
+	}
 }
 
 
@@ -990,27 +995,20 @@ void MainEditor::setAudioDevice(const char *device)
 
 bool MainEditor::registerCommand(const char *commandName, Command command)
 {
-	if (mNumCommands >= maxCommands)
-	{
-		return false;
-	}
-
-	strncpy(mCommand[mNumCommands].name, commandName, sizeof(mCommand[mNumCommands].name));
-	mCommand[mNumCommands].func = command;
-	mNumCommands++;
+	mCommands.push_back(new CommandDescriptor(commandName, command));
 	return true;
 }
 
 
 int MainEditor::getNumCommands() const
 {
-	return mNumCommands;
+	return mCommands.size();
 }
 
 
 const Editor::CommandDescriptor& MainEditor::getCommand(int index) const
 {
-	return mCommand[index];
+	return *mCommands[index];
 }
 
 

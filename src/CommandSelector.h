@@ -20,6 +20,7 @@ class CommandSelector: public GenericSelector
 
 	struct CommandItem: public Item {
 		const Editor::CommandDescriptor& command;
+		static bool sort(const Item* a, const Item* b);
 		CommandItem(const Editor::CommandDescriptor& command);
 	};
 

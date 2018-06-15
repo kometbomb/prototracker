@@ -31,6 +31,7 @@ public:
 	struct CommandDescriptor {
 		char name[200];
 		Command func;
+		CommandDescriptor(const char *name, Command func);
 	};
 
 private:
