@@ -162,4 +162,8 @@ void PatternEditor::onRequestCommandRegistration()
 {
 	registerCommand("Find unused pattern", [this]() { this->findCurrentUnusedTrack(); });
 	registerCommand("Kill current pattern", [this]() { this->killCurrentTrack(); });
+	registerCommand("Copy pattern", [this]() { this->copyCurrentTrack(); });
+	registerCommand("Paste pattern", [this]() { this->pasteCurrentTrack(); });
+	registerCommand("Copy pattern block", [this]() { this->copyCurrentBlock(); });
+	registerCommand("Paste pattern block", [this]() { this->pasteCurrentBlock(); });
 }

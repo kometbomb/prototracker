@@ -95,8 +95,11 @@ public:
 	void refreshAll();
 
 	void playSong();
+	void playPattern();
 	void stopSong();
+	void muteTracks();
 	void togglePlayStop();
+	void toggleEditMode();
 
 	void setAudioDevice(const char *device);
 

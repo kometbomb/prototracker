@@ -263,17 +263,13 @@ bool MainEditor::onEvent(SDL_Event& event)
 				/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
 				case SDLK_F5:
 				case SDLK_RCTRL:
-					mPlayer.play(mEditorState.sequenceEditor.currentRow);
-					mEditorState.editMode = false;
-					refreshAll();
+					playSong();
 					return true;
 
 				/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
 				case SDLK_F6:
 				case SDLK_RSHIFT:
-					mPlayer.play(mEditorState.sequenceEditor.currentRow, PlayerState::PlaySequenceRow);
-					mEditorState.editMode = false;
-					refreshAll();
+					playPattern();
 					return true;
 
 				case SDLK_SPACE:
@@ -285,21 +281,20 @@ bool MainEditor::onEvent(SDL_Event& event)
 						}
 						else
 						{
-							mEditorState.editMode = !mEditorState.editMode;
-							refreshAll();
+							toggleEditMode();
 						}
-						mPlayer.muteTracks();
+
+						muteTracks();
 					}
 					else
 					{
-						mEditorState.editMode = !mEditorState.editMode;
-						refreshAll();
+						toggleEditMode();
 
 						// Should only mute tracks when stopped, i.e.
 						// the user has played a note and wants to stop it
 						// and not when editing while playing the song
 						if (mPlayerState.mode == PlayerState::Stop)
-							mPlayer.muteTracks();
+							muteTracks();
 					}
 
 					return true;
@@ -382,12 +377,10 @@ bool MainEditor::onEvent(SDL_Event& event)
 					else
 						mPlayer.stop();
 					return true;
-					break;
 
 				case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
 					cycleFocus();
 					return true;
-					break;
 			}
 
 			break;
@@ -895,9 +888,30 @@ void MainEditor::playSong()
 }
 
 
+void MainEditor::playPattern()
+{
+	mPlayer.play(mEditorState.sequenceEditor.currentRow, PlayerState::PlaySequenceRow);
+	mEditorState.editMode = false;
+	refreshAll();
+}
+
+
 void MainEditor::stopSong()
 {
 	mPlayer.stop();
+	refreshAll();
+}
+
+
+void MainEditor::muteTracks()
+{
+	mPlayer.muteTracks();
+}
+
+
+void MainEditor::toggleEditMode()
+{
+	mEditorState.editMode = !mEditorState.editMode;
 	refreshAll();
 }
 
@@ -1012,8 +1026,13 @@ void MainEditor::displayCommandPalette()
 void MainEditor::onRequestCommandRegistration()
 {
 	registerCommand("Toggle play position following", [this]() { this->togglePositionFollowing(); });
+	registerCommand("Toggle edit mode", [this]() { this->toggleEditMode(); });
 	registerCommand("Reset song", [this]() { this->newSong(); this->showMessage(MessageInfo, "Song reset"); });
 	registerCommand("Load song", [this]() { this->displayLoadDialog(); });
 	registerCommand("Save song", [this]() { this->displaySaveDialog(); });
+	registerCommand("Play song", [this]() { this->playSong(); });
+	registerCommand("Play and loop pattern", [this]() { this->playPattern(); });
+	registerCommand("Stop song", [this]() { this->stopSong(); });
+	registerCommand("Mute all tracks", [this]() { this->muteTracks(); });
 	registerCommand("Select output device", [this]() { this->displayAudioDeviceDialog(); });
 }

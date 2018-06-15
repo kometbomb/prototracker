@@ -70,4 +70,8 @@ void MacroEditor::onRequestCommandRegistration()
 {
 	registerCommand("Find unused macro", [this]() { this->findCurrentUnusedTrack(); });
 	registerCommand("Kill current macro", [this]() { this->killCurrentTrack(); });
+	registerCommand("Copy macro", [this]() { this->copyCurrentTrack(); });
+	registerCommand("Paste macro", [this]() { this->pasteCurrentTrack(); });
+	registerCommand("Copy macro block", [this]() { this->copyCurrentBlock(); });
+	registerCommand("Paste macro block", [this]() { this->pasteCurrentBlock(); });
 }

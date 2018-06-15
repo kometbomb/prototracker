@@ -21,6 +21,10 @@ protected:
 
 	void killCurrentTrack();
 	void findCurrentUnusedTrack();
+	void copyCurrentTrack();
+	void pasteCurrentTrack();
+	void copyCurrentBlock();
+	void pasteCurrentBlock();
 
 protected:
 	virtual Pattern& getCurrentPattern(int track) = 0;

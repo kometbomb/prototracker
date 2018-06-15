@@ -103,46 +103,36 @@ bool TrackEditor::onEvent(SDL_Event& event)
 			switch (event.key.keysym.sym)
 			{
 				case SDLK_F3:
-					copyTrack(mTrackEditorState.currentTrack);
+					copyCurrentTrack();
 					return true;
 
 				case SDLK_F4:
-					pasteTrack(mTrackEditorState.currentTrack);
+					pasteCurrentTrack();
 					return true;
 
 				case SDLK_PAGEDOWN:
 					scrollView(16, false);
-
 					return true;
-					break;
 
 				case SDLK_PAGEUP:
 					scrollView(-16, false);
-
 					return true;
-					break;
 
 				case SDLK_DOWN:
 					scrollView(1);
-
 					return true;
-					break;
 
 				case SDLK_UP:
 					scrollView(-1);
-
 					return true;
-					break;
 
 				case SDLK_HOME:
 					mTrackEditorState.currentRow = 0;
 					return true;
-					break;
 
 				case SDLK_END:
 					mTrackEditorState.currentRow = maxRows - 1;
 					return true;
-					break;
 
 				case SDLK_TAB:
 					if (event.key.keysym.mod & KMOD_SHIFT)
@@ -150,7 +140,6 @@ bool TrackEditor::onEvent(SDL_Event& event)
 					else
 						changeTrack(1);
 					return true;
-					break;
 
 				case SDLK_LEFT:
 					changeColumn(-1);
@@ -173,18 +162,15 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						playRow();
 					}
 					return true;
-					break;
 
 				case SDLK_DELETE:
 					emptyRow(false, getColumnFlagsFromModifier(event.key.keysym.mod));
 					scrollView(mTrackEditorState.editSkip);
 					return true;
-					break;
 
 				case SDLK_INSERT:
 					insertRow(false, getColumnFlagsFromModifier(event.key.keysym.mod));
 					return true;
-					break;
 
 				case SDLK_RETURN:
 					if (event.key.keysym.mod & (KMOD_LSHIFT|KMOD_LALT|KMOD_LCTRL))
@@ -200,7 +186,6 @@ bool TrackEditor::onEvent(SDL_Event& event)
 
 					scrollView(1);
 					return true;
-					break;
 
 				default:
 				{
@@ -213,13 +198,11 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						}
 						else if (event.key.keysym.sym == SDLK_c)
 						{
-							copyBlock(mTrackEditorState.currentTrack);
-							showMessage(MessageInfo, "Copied block");
+							copyCurrentBlock();
 						}
 						else if (event.key.keysym.sym == SDLK_v)
 						{
-							pasteBlock(mTrackEditorState.currentTrack);
-							showMessage(MessageInfo, "Block pasted");
+							pasteCurrentBlock();
 						}
 						else if (event.key.keysym.sym == SDLK_b)
 						{
@@ -743,4 +726,30 @@ void TrackEditor::pasteBlock(int track)
 {
 	mEditorState.copyBuffer.paste(getCurrentPattern(track), mTrackEditorState.currentRow);
 	mTrackEditorState.currentRow.notify();
+}
+
+
+void TrackEditor::copyCurrentTrack()
+{
+	copyTrack(mTrackEditorState.currentTrack);
+}
+
+
+void TrackEditor::pasteCurrentTrack()
+{
+	copyTrack(mTrackEditorState.currentTrack);
+}
+
+
+void TrackEditor::copyCurrentBlock()
+{
+	copyBlock(mTrackEditorState.currentTrack);
+	showMessage(MessageInfo, "Copied block");
+}
+
+
+void TrackEditor::pasteCurrentBlock()
+{
+	pasteBlock(mTrackEditorState.currentTrack);
+	showMessage(MessageInfo, "Block pasted");
 }
