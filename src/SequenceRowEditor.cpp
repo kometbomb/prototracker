@@ -65,15 +65,11 @@ bool SequenceRowEditor::onEvent(SDL_Event& event)
 			{
 				case SDLK_DOWN:
 					scrollView(1, false);
-
 					return true;
-					break;
 
 				case SDLK_UP:
 					scrollView(-1, false);
-
 					return true;
-					break;
 
 				case SDLK_LEFT:
 					changeColumn(-1);
@@ -85,15 +81,11 @@ bool SequenceRowEditor::onEvent(SDL_Event& event)
 
 				case SDLK_HOME:
 					mTrackEditorState.currentRow = 0;
-
 					return true;
-					break;
 
 				case SDLK_END:
 					mTrackEditorState.currentRow = mSong.getSequenceLength() - 1;
-
 					return true;
-					break;
 
 				case SDLK_BACKSPACE:
 					if (mTrackEditorState.currentRow == 0)
@@ -101,17 +93,14 @@ bool SequenceRowEditor::onEvent(SDL_Event& event)
 					scrollView(-1, false);
 					deleteRow(false, 0);
 					return true;
-					break;
 
 				case SDLK_DELETE:
 					deleteRow(false, 0);
 					return true;
-					break;
 
 				case SDLK_INSERT:
 					insertRow(false, 0);
 					return true;
-					break;
 
 				case SDLK_RETURN:
 					/*if (mTrackEditorState.currentRow == mSong.getSequenceLength() - 1)
@@ -120,7 +109,6 @@ bool SequenceRowEditor::onEvent(SDL_Event& event)
 
 					scrollView(1, false);
 					return true;
-					break;
 
 				default:
 				{
@@ -159,7 +147,7 @@ bool SequenceRowEditor::onEvent(SDL_Event& event)
 						return true;
 					}
 				}
-					break;
+				break;
 
 			}
 			break;
@@ -314,4 +302,10 @@ bool SequenceRowEditor::isRowActive(int track, int row) const
 {
 	const PlayerState& playerState = mPlayer.getPlayerState();
 	return playerState.isPlaying() && playerState.sequenceRow == row;
+}
+
+
+void SequenceRowEditor::onRequestCommandRegistration()
+{
+	registerCommand("Duplicate current sequence row", [this]() { this->duplicateRow(); });
 }
