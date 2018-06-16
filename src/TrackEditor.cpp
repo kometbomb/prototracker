@@ -737,7 +737,7 @@ void TrackEditor::copyCurrentTrack()
 
 void TrackEditor::pasteCurrentTrack()
 {
-	copyTrack(mTrackEditorState.currentTrack);
+	pasteTrack(mTrackEditorState.currentTrack);
 }
 
 
