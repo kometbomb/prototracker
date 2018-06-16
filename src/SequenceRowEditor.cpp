@@ -307,5 +307,5 @@ bool SequenceRowEditor::isRowActive(int track, int row) const
 
 void SequenceRowEditor::onRequestCommandRegistration()
 {
-	registerCommand("Duplicate current sequence row", [this]() { this->duplicateRow(); });
+	registerCommand("Sequence", "Duplicate sequence row", [this]() { this->duplicateRow(); });
 }

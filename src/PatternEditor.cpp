@@ -161,13 +161,13 @@ bool PatternEditor::isRowActive(int track, int row) const
 
 void PatternEditor::onRequestCommandRegistration()
 {
-	registerCommand("Find unused pattern", [this]() { this->findCurrentUnusedTrack(); });
-	registerCommand("Kill current pattern", [this]() { this->killCurrentTrack(); });
-	registerCommand("Copy pattern", [this]() { this->copyCurrentTrack(); });
-	registerCommand("Paste pattern", [this]() { this->pasteCurrentTrack(); });
-	registerCommand("Copy pattern block", [this]() { this->copyCurrentBlock(); });
-	registerCommand("Paste pattern block", [this]() { this->pasteCurrentBlock(); });
-	registerCommand("Set edit skip", [this](int value) {
+	registerCommand("Pattern", "Find unused pattern", [this]() { this->findCurrentUnusedTrack(); });
+	registerCommand("Pattern", "Kill current pattern", [this]() { this->killCurrentTrack(); });
+	registerCommand("Pattern", "Copy pattern", [this]() { this->copyCurrentTrack(); });
+	registerCommand("Pattern", "Paste pattern", [this]() { this->pasteCurrentTrack(); });
+	registerCommand("Pattern", "Copy pattern block", [this]() { this->copyCurrentBlock(); });
+	registerCommand("Pattern", "Paste pattern block", [this]() { this->pasteCurrentBlock(); });
+	registerCommand("Pattern", "Set edit skip", [this](int value) {
 		this->setEditSkip(value);
 	}, [this](CommandOptionSelector& selector) {
 		for (int i = 0 ; i <= 16 ; ++i)

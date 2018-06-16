@@ -32,12 +32,12 @@ public:
 	typedef std::function<void(CommandOptionSelector& optionSelector)> CommandOptionFunc;
 
 	struct CommandDescriptor {
-		char name[200];
+		char context[200], name[200];
 		Command func;
 		CommandWithOption funcWithOption;
 		CommandOptionFunc option;
-		CommandDescriptor(const char *name, Command func);
-		CommandDescriptor(const char *name, CommandWithOption func, CommandOptionFunc option);
+		CommandDescriptor(const char *context, const char *name, Command func);
+		CommandDescriptor(const char *context, const char *name, CommandWithOption func, CommandOptionFunc option);
 	};
 
 	struct EditorChild {
@@ -82,8 +82,8 @@ protected:
 	// is propagated
 	virtual void onRequestCommandRegistration();
 
-	virtual bool registerCommand(const char *commandName, Command command);
-	virtual bool registerCommand(const char *commandName, CommandWithOption command, CommandOptionFunc option);
+	virtual bool registerCommand(const char *context, const char *commandName, Command command);
+	virtual bool registerCommand(const char *context, const char *commandName, CommandWithOption command, CommandOptionFunc option);
 
 public:
 	Editor(EditorState& editorState, bool wantFocus = true);

@@ -66,7 +66,7 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 
 	int width = area.w / 8 - 10;
 
-	renderer.renderTextV(area, color, "%s", commandItem.command.name);
+	renderer.renderTextV(area, color, "%s: %s", commandItem.command.context, commandItem.command.name);
 }
 
 
@@ -114,7 +114,8 @@ void CommandSelector::populate()
 	for (int index = 0 ; index < numCommands ; ++index)
 	{
 		const auto& command = mMainEditor.getCommand(index);
-		if (caseInsensitiveFind(command.name, mFilter))
+		if (caseInsensitiveFind(command.context, mFilter) ||
+			caseInsensitiveFind(command.name, mFilter))
 			addItem(new CommandItem(command));
 	}
 
@@ -139,8 +140,12 @@ bool CommandSelector::CommandItem::sort(const CommandSelector::Item* ga, const C
 {
 	const auto& a = static_cast<const CommandItem&>(*ga);
 	const auto& b = static_cast<const CommandItem&>(*gb);
+	int cResult = strcmp(a.command.context, b.command.context);
 
-	return strcmp(a.command.name, b.command.name) < 0;
+	if (cResult == 0)
+		return strcmp(a.command.name, b.command.name) < 0;
+
+	return cResult < 0;
 }
 
 

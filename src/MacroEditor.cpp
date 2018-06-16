@@ -68,10 +68,10 @@ void MacroEditor::findUnusedTrack(int track)
 
 void MacroEditor::onRequestCommandRegistration()
 {
-	registerCommand("Find unused macro", [this]() { this->findCurrentUnusedTrack(); });
-	registerCommand("Kill current macro", [this]() { this->killCurrentTrack(); });
-	registerCommand("Copy macro", [this]() { this->copyCurrentTrack(); });
-	registerCommand("Paste macro", [this]() { this->pasteCurrentTrack(); });
-	registerCommand("Copy macro block", [this]() { this->copyCurrentBlock(); });
-	registerCommand("Paste macro block", [this]() { this->pasteCurrentBlock(); });
+	registerCommand("Macro", "Find unused macro", [this]() { this->findCurrentUnusedTrack(); });
+	registerCommand("Macro", "Kill current macro", [this]() { this->killCurrentTrack(); });
+	registerCommand("Macro", "Copy macro", [this]() { this->copyCurrentTrack(); });
+	registerCommand("Macro", "Paste macro", [this]() { this->pasteCurrentTrack(); });
+	registerCommand("Macro", "Copy macro block", [this]() { this->copyCurrentBlock(); });
+	registerCommand("Macro", "Paste macro block", [this]() { this->pasteCurrentBlock(); });
 }

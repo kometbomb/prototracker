@@ -78,8 +78,8 @@ class MainEditor: public Editor
 
 protected:
 	virtual void onRequestCommandRegistration();
-	virtual bool registerCommand(const char *commandName, Command command);
-	virtual bool registerCommand(const char *commandName, CommandWithOption command, CommandOptionFunc optionFunc);
+	virtual bool registerCommand(const char *context, const char *commandName, Command command);
+	virtual bool registerCommand(const char *context, const char *commandName, CommandWithOption command, CommandOptionFunc optionFunc);
 
 public:
 	MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer);

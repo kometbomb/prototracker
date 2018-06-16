@@ -1016,16 +1016,16 @@ void MainEditor::setPatternLength(int length)
 }
 
 
-bool MainEditor::registerCommand(const char *commandName, Command command)
+bool MainEditor::registerCommand(const char *context, const char *commandName, Command command)
 {
-	mCommands.push_back(new CommandDescriptor(commandName, command));
+	mCommands.push_back(new CommandDescriptor(context, commandName, command));
 	return true;
 }
 
 
-bool MainEditor::registerCommand(const char *commandName, CommandWithOption command, CommandOptionFunc option)
+bool MainEditor::registerCommand(const char *context, const char *commandName, CommandWithOption command, CommandOptionFunc option)
 {
-	mCommands.push_back(new CommandDescriptor(commandName, command, option));
+	mCommands.push_back(new CommandDescriptor(context, commandName, command, option));
 	return true;
 }
 
@@ -1063,17 +1063,17 @@ void MainEditor::displayCommandOptionDialog(const CommandDescriptor& command)
 
 void MainEditor::onRequestCommandRegistration()
 {
-	registerCommand("Toggle play position following", [this]() { this->togglePositionFollowing(); });
-	registerCommand("Toggle edit mode", [this]() { this->toggleEditMode(); });
-	registerCommand("Reset song", [this]() { this->newSong(); this->showMessage(MessageInfo, "Song reset"); });
-	registerCommand("Load song", [this]() { this->displayLoadDialog(); });
-	registerCommand("Save song", [this]() { this->displaySaveDialog(); });
-	registerCommand("Play song", [this]() { this->playSong(); });
-	registerCommand("Play and loop pattern", [this]() { this->playPattern(); });
-	registerCommand("Stop song", [this]() { this->stopSong(); });
-	registerCommand("Mute all tracks", [this]() { this->muteTracks(); });
-	registerCommand("Select output device", [this]() { this->displayAudioDeviceDialog(); });
-	registerCommand("Set pattern length", [this](int value) {
+	registerCommand("Editor", "Toggle play position following", [this]() { this->togglePositionFollowing(); });
+	registerCommand("Editor", "Toggle edit mode", [this]() { this->toggleEditMode(); });
+	registerCommand("Song", "Reset song", [this]() { this->newSong(); this->showMessage(MessageInfo, "Song reset"); });
+	registerCommand("Song", "Load song", [this]() { this->displayLoadDialog(); });
+	registerCommand("Song", "Save song", [this]() { this->displaySaveDialog(); });
+	registerCommand("Song", "Play song", [this]() { this->playSong(); });
+	registerCommand("Song", "Play and loop pattern", [this]() { this->playPattern(); });
+	registerCommand("Song", "Stop song", [this]() { this->stopSong(); });
+	registerCommand("Editor", "Mute all tracks", [this]() { this->muteTracks(); });
+	registerCommand("Editor", "Select output device", [this]() { this->displayAudioDeviceDialog(); });
+	registerCommand("Song", "Set pattern length", [this](int value) {
 		this->setPatternLength(value);
 	}, [this](CommandOptionSelector& selector) {
 		const int lengths[] = { 4, 16, 32, 48, 64, 128 };

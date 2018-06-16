@@ -444,19 +444,19 @@ void Editor::onModalStatusChange(bool isNowModal)
 }
 
 
-bool Editor::registerCommand(const char *commandName, CommandWithOption command, CommandOptionFunc option)
+bool Editor::registerCommand(const char *context, const char *commandName, CommandWithOption command, CommandOptionFunc option)
 {
 	if (mParent)
-		return mParent->registerCommand(commandName, command, option);
+		return mParent->registerCommand(context, commandName, command, option);
 
 	return false;
 }
 
 
-bool Editor::registerCommand(const char *commandName, Command command)
+bool Editor::registerCommand(const char *context, const char *commandName, Command command)
 {
 	if (mParent)
-		return mParent->registerCommand(commandName, command);
+		return mParent->registerCommand(context, commandName, command);
 
 	return false;
 }
@@ -468,16 +468,18 @@ void Editor::onRequestCommandRegistration()
 }
 
 
-Editor::CommandDescriptor::CommandDescriptor(const char *_name, Command _func)
+Editor::CommandDescriptor::CommandDescriptor(const char *_context, const char *_name, Command _func)
 	: func(_func), option(NULL)
 {
+	strncpy(context, _context, sizeof(context));
 	strncpy(name, _name, sizeof(name));
 }
 
 
-Editor::CommandDescriptor::CommandDescriptor(const char *_name, CommandWithOption _func, CommandOptionFunc _option)
+Editor::CommandDescriptor::CommandDescriptor(const char *_context, const char *_name, CommandWithOption _func, CommandOptionFunc _option)
 	: funcWithOption(_func), option(_option)
 {
+	strncpy(context, _context, sizeof(context));
 	strncpy(name, _name, sizeof(name));
 }
 
