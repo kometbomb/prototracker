@@ -444,6 +444,15 @@ void Editor::onModalStatusChange(bool isNowModal)
 }
 
 
+bool Editor::registerCommand(const char *commandName, CommandWithOption command, CommandOptionFunc option)
+{
+	if (mParent)
+		return mParent->registerCommand(commandName, command, option);
+
+	return false;
+}
+
+
 bool Editor::registerCommand(const char *commandName, Command command)
 {
 	if (mParent)
@@ -453,13 +462,21 @@ bool Editor::registerCommand(const char *commandName, Command command)
 }
 
 
+
 void Editor::onRequestCommandRegistration()
 {
 }
 
 
 Editor::CommandDescriptor::CommandDescriptor(const char *_name, Command _func)
-	: func(_func)
+	: func(_func), option(NULL)
+{
+	strncpy(name, _name, sizeof(name));
+}
+
+
+Editor::CommandDescriptor::CommandDescriptor(const char *_name, CommandWithOption _func, CommandOptionFunc _option)
+	: funcWithOption(_func), option(_option)
 {
 	strncpy(name, _name, sizeof(name));
 }

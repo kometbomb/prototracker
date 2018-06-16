@@ -21,6 +21,7 @@ struct TooltipManager;
 struct TooltipDisplayer;
 struct AudioDeviceSelector;
 struct CommandSelector;
+struct CommandOptionSelector;
 
 class MainEditor: public Editor
 {
@@ -37,6 +38,7 @@ class MainEditor: public Editor
 	FileSelector *fileSelector;
 	AudioDeviceSelector *audioDeviceSelector;
 	CommandSelector *commandSelector;
+	CommandOptionSelector *commandOptionSelector;
 	MessageManager *mMessageManager;
 	MessageDisplayer *mMessageDisplayer;
 	TooltipManager *mTooltipManager;
@@ -44,6 +46,7 @@ class MainEditor: public Editor
 
 	int mDragStartX, mDragStartY;
 	bool mIsDragging;
+	const CommandDescriptor *mSelectedCommand;
 
 	static const int maxCommands = 256;
 
@@ -55,12 +58,14 @@ class MainEditor: public Editor
 		FileSelectionSave,
 		AudioDeviceSelection,
 		CommandSelection,
+		CommandOptionSelection,
 	};
 
 	void displayLoadDialog();
 	void displaySaveDialog();
 	void displayAudioDeviceDialog();
 	void displayCommandPalette();
+	void displayCommandOptionDialog(const CommandDescriptor& command);
 
 	std::string mBase64Encoded;
 
@@ -74,6 +79,7 @@ class MainEditor: public Editor
 protected:
 	virtual void onRequestCommandRegistration();
 	virtual bool registerCommand(const char *commandName, Command command);
+	virtual bool registerCommand(const char *commandName, CommandWithOption command, CommandOptionFunc optionFunc);
 
 public:
 	MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer);
@@ -93,6 +99,7 @@ public:
 	void setMacro(int index);
 	void syncSongParameters(const Song& song);
 	void refreshAll();
+	void setPatternLength(int length);
 
 	void playSong();
 	void playPattern();

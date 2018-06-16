@@ -28,6 +28,7 @@
 #include "FileSelector.h"
 #include "AudioDeviceSelector.h"
 #include "CommandSelector.h"
+#include "CommandOptionSelector.h"
 #include "Emscripten.h"
 #include "MessageManager.h"
 #include "MessageDisplayer.h"
@@ -52,13 +53,15 @@
 #endif
 
 MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer)
-	: Editor(editorState), mPlayer(player), mPlayerState(playerState), mSong(song), mSynth(synth), mMixer(mixer), mIsDragging(false)
+	: Editor(editorState), mPlayer(player), mPlayerState(playerState), mSong(song), mSynth(synth), mMixer(mixer), mIsDragging(false),
+	mSelectedCommand(NULL)
 {
 	mOscillatorsProbePos = new Value();
 
 	fileSelector = new FileSelector(editorState);
 	audioDeviceSelector = new AudioDeviceSelector(editorState);
 	commandSelector = new CommandSelector(editorState, *this);
+	commandOptionSelector = new CommandOptionSelector(editorState, *this);
 
 	mMessageManager = new MessageManager();
 	mTooltipManager = new TooltipManager();
@@ -229,12 +232,12 @@ bool MainEditor::onEvent(SDL_Event& event)
 					return true;
 
 				case SDLK_F9:
-					mSong.setPatternLength(std::max(1, mSong.getPatternLength() - 1));
+					setPatternLength(std::max(1, mSong.getPatternLength() - 1));
 					refreshAll();
 					return true;
 
 				case SDLK_F10:
-					mSong.setPatternLength(std::min(Pattern::maxRows, mSong.getPatternLength() + 1));
+					setPatternLength(std::min(Pattern::maxRows, mSong.getPatternLength() + 1));
 					refreshAll();
 					return true;
 
@@ -584,6 +587,8 @@ void MainEditor::refreshAll()
 
 void MainEditor::onFileSelectorEvent(const Editor& selector, bool accept)
 {
+
+
 	// Close modal after accept - disable for CommandSelector so a new modal opened by
 	// the command is not closed immediately.
 
@@ -610,11 +615,23 @@ void MainEditor::onFileSelectorEvent(const Editor& selector, bool accept)
 				setAudioDevice(reinterpret_cast<const AudioDeviceSelector&>(selector).getSelectedDevice());
 				break;
 
-			case CommandSelection:
+			case CommandSelection: {
+				const CommandDescriptor& command = reinterpret_cast<const CommandSelector&>(selector).getSelectedCommand();
 				setModal(NULL);
 				closeModal = false;
-				reinterpret_cast<const CommandSelector&>(selector).getSelectedCommand().func();
-				break;
+				if (command.option)
+					displayCommandOptionDialog(command);
+				else
+					command.func();
+			} break;
+
+			case CommandOptionSelection: {
+				const CommandOptionSelector& optionSelector = reinterpret_cast<const CommandOptionSelector&>(selector);
+				const CommandOptionSelector::CommandOption& option = optionSelector.getSelectedOption();
+				setModal(NULL);
+				closeModal = false;
+				mSelectedCommand->funcWithOption(option.value);
+			} break;
 		}
 	}
 
@@ -993,10 +1010,22 @@ void MainEditor::setAudioDevice(const char *device)
 	mEditorState.audioDevice = currentDevice ? currentDevice : "";
 }
 
+void MainEditor::setPatternLength(int length)
+{
+	mSong.setPatternLength(length);
+}
+
 
 bool MainEditor::registerCommand(const char *commandName, Command command)
 {
 	mCommands.push_back(new CommandDescriptor(commandName, command));
+	return true;
+}
+
+
+bool MainEditor::registerCommand(const char *commandName, CommandWithOption command, CommandOptionFunc option)
+{
+	mCommands.push_back(new CommandDescriptor(commandName, command, option));
 	return true;
 }
 
@@ -1022,6 +1051,16 @@ void MainEditor::displayCommandPalette()
 }
 
 
+void MainEditor::displayCommandOptionDialog(const CommandDescriptor& command)
+{
+	mSelectedCommand = &command;
+	commandOptionSelector->setId(CommandOptionSelection);
+	commandOptionSelector->setTitle(command.name);
+	commandOptionSelector->populate(command);
+	setModal(commandOptionSelector);
+}
+
+
 void MainEditor::onRequestCommandRegistration()
 {
 	registerCommand("Toggle play position following", [this]() { this->togglePositionFollowing(); });
@@ -1034,4 +1073,11 @@ void MainEditor::onRequestCommandRegistration()
 	registerCommand("Stop song", [this]() { this->stopSong(); });
 	registerCommand("Mute all tracks", [this]() { this->muteTracks(); });
 	registerCommand("Select output device", [this]() { this->displayAudioDeviceDialog(); });
+	registerCommand("Set pattern length", [this](int value) {
+		this->setPatternLength(value);
+	}, [this](CommandOptionSelector& selector) {
+		const int lengths[] = { 4, 16, 32, 48, 64, 128 };
+		for (auto length : lengths)
+			selector.addIntItem(length);
+	});
 }

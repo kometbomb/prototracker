@@ -8,6 +8,7 @@
 struct PlayerState;
 struct Renderer;
 struct EditorState;
+struct CommandOptionSelector;
 
 /*
 
@@ -27,11 +28,16 @@ public:
 	};
 
 	typedef std::function<void()> Command;
+	typedef std::function<void(int)> CommandWithOption;
+	typedef std::function<void(CommandOptionSelector& optionSelector)> CommandOptionFunc;
 
 	struct CommandDescriptor {
 		char name[200];
 		Command func;
+		CommandWithOption funcWithOption;
+		CommandOptionFunc option;
 		CommandDescriptor(const char *name, Command func);
+		CommandDescriptor(const char *name, CommandWithOption func, CommandOptionFunc option);
 	};
 
 	struct EditorChild {
@@ -77,6 +83,7 @@ protected:
 	virtual void onRequestCommandRegistration();
 
 	virtual bool registerCommand(const char *commandName, Command command);
+	virtual bool registerCommand(const char *commandName, CommandWithOption command, CommandOptionFunc option);
 
 public:
 	Editor(EditorState& editorState, bool wantFocus = true);

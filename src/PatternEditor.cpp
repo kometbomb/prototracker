@@ -3,6 +3,7 @@
 #include "Sequence.h"
 #include "SequenceRow.h"
 #include "EditorState.h"
+#include "CommandOptionSelector.h"
 #include "Song.h"
 #include "Pattern.h"
 #include "Renderer.h"
@@ -166,4 +167,10 @@ void PatternEditor::onRequestCommandRegistration()
 	registerCommand("Paste pattern", [this]() { this->pasteCurrentTrack(); });
 	registerCommand("Copy pattern block", [this]() { this->copyCurrentBlock(); });
 	registerCommand("Paste pattern block", [this]() { this->pasteCurrentBlock(); });
+	registerCommand("Set edit skip", [this](int value) {
+		this->setEditSkip(value);
+	}, [this](CommandOptionSelector& selector) {
+		for (int i = 0 ; i <= 16 ; ++i)
+			selector.addIntItem(i);
+	});
 }

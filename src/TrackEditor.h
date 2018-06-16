@@ -25,6 +25,7 @@ protected:
 	void pasteCurrentTrack();
 	void copyCurrentBlock();
 	void pasteCurrentBlock();
+	void setEditSkip(int skip);
 
 protected:
 	virtual Pattern& getCurrentPattern(int track) = 0;

@@ -194,7 +194,7 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						int hex = getHexFromKey(event.key.keysym);
 						if (hex >= 0 && hex <= 9)
 						{
-							mTrackEditorState.editSkip = hex;
+							setEditSkip(hex);
 						}
 						else if (event.key.keysym.sym == SDLK_c)
 						{
@@ -752,4 +752,11 @@ void TrackEditor::pasteCurrentBlock()
 {
 	pasteBlock(mTrackEditorState.currentTrack);
 	showMessage(MessageInfo, "Block pasted");
+}
+
+
+void TrackEditor::setEditSkip(int skip)
+{
+	mTrackEditorState.editSkip = skip;
+	showMessageV(MessageInfo, replacePreviousMessage, "Edit skip set to %d", skip);
 }
