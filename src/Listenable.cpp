@@ -1,28 +1,25 @@
 #include "Listenable.h"
 #include "Listener.h"
 #include <cstring>
+#include <algorithm>
 
 Listenable::Listenable()
-	: mNumListeners(0)
 {
 }
 
 
 void Listenable::notify()
 {
-	for (int i = 0 ; i < mNumListeners ; ++i)
+	for (auto listener : mListeners)
 	{
-		mListeners[i]->onListenableChange(this);
+		listener->onListenableChange(this);
 	}
 }
 
 
 bool Listenable::addListener(Listener *listener)
 {
-	if (mNumListeners >= maxListeners)
-		return false;
-
-	mListeners[mNumListeners++] = listener;
+	mListeners.push_back(listener);
 
 	return true;
 }
@@ -30,13 +27,7 @@ bool Listenable::addListener(Listener *listener)
 
 void Listenable::removeListener(Listener *listener)
 {
-	for (int i = 0 ; i < mNumListeners ; ++i)
-	{
-		if (listener == mListeners[i])
-		{
-			memmove(&mListeners[i], &mListeners[i + 1], mNumListeners - i - 1);
-			mNumListeners--;
-			return;
-		}
-	}
+	auto iter = std::find(mListeners.begin(), mListeners.end(), listener);
+	if (iter != mListeners.end())
+		mListeners.erase(iter);
 }

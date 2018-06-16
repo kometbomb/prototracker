@@ -3,6 +3,7 @@
 #include "SDL.h"
 #include "Listener.h"
 #include <functional>
+#include <vector>
 
 struct PlayerState;
 struct Renderer;
@@ -17,7 +18,6 @@ The Editor class is the base class for all GUI elements.
 class Editor: public Listener
 {
 public:
-	static const int maxChildren = 128;
 	static const int replacePreviousMessage = -1;
 
 	enum MessageClass
@@ -34,23 +34,27 @@ public:
 		CommandDescriptor(const char *name, Command func);
 	};
 
+	struct EditorChild {
+		Editor *editor;
+		SDL_Rect area;
+		EditorChild(Editor *editor, const SDL_Rect& area);
+	};
+
 private:
 	Editor *mFocus;
 
 	void drawModal(Renderer& renderer);
 	virtual void onDraw(Renderer& renderer, const SDL_Rect& area) = 0;
 	void drawChildren(Renderer& renderer, const SDL_Rect& area);
-	void childAreaChanged(Editor *child);
+	void childAreaChanged(Editor *changedChild);
 
 protected:
 	Editor *mModal;
 	EditorState& mEditorState;
 	bool mIsDirty, mRedraw;
 	Editor *mParent;
-	Editor *mChildren[maxChildren];
-	SDL_Rect mChildrenArea[maxChildren];
+	std::vector<EditorChild> mChildren;
 	SDL_Rect mThisArea;
-	int mNumChildren;
 	bool mWantsFocus;
 	int mPopupMessageId;
 

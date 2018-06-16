@@ -87,10 +87,10 @@ MainEditor::~MainEditor()
 
 void MainEditor::deleteChildren()
 {
-	for (int index = 0; index < mNumChildren ; ++index)
-		delete mChildren[index];
+	for (auto child : mChildren)
+		delete child.editor;
 
-	mNumChildren = 0;
+	mChildren.clear();
 }
 
 
@@ -135,11 +135,11 @@ bool MainEditor::onEvent(SDL_Event& event)
 	{
 		SDL_Point point = {event.button.x/SCALE, event.button.y/SCALE};
 
-		for (int index = 0 ; index < mNumChildren ; ++index)
+		for (auto child : mChildren)
 		{
-			if (pointInRect(point, mChildrenArea[index]))
+			if (pointInRect(point, child.area))
 			{
-				target = mChildren[index];
+				target = child.editor;
 				break;
 			}
 		}
@@ -150,11 +150,11 @@ bool MainEditor::onEvent(SDL_Event& event)
 	{
 		SDL_Point point = {event.motion.x/SCALE, event.motion.y/SCALE};
 
-		for (int index = 0 ; index < mNumChildren ; ++index)
+		for (auto child : mChildren)
 		{
-			if (pointInRect(point, mChildrenArea[index]))
+			if (pointInRect(point, child.area))
 			{
-				target = mChildren[index];
+				target = child.editor;
 				break;
 			}
 		}
@@ -413,23 +413,24 @@ void MainEditor::cycleFocus()
 {
 	int index = 0;
 	Editor *currentFocus = getFocus();
+	int numChildren = mChildren.size();
 
-	for (; index < mNumChildren ; ++index)
-		if (mChildren[index] == currentFocus)
+	for (; index < numChildren ; ++index)
+		if (mChildren[index].editor == currentFocus)
 		{
 			break;
 		}
 
-	if (index >= mNumChildren)
+	if (index >= numChildren)
 		index = 0;
 
 	do
 	{
-		index = (index + 1) % mNumChildren;
+		index = (index + 1) % numChildren;
 	}
-	while (!mChildren[index]->isFocusable());
+	while (!mChildren[index].editor->isFocusable());
 
-	setFocus(mChildren[index]);
+	setFocus(mChildren[index].editor);
 
 	setDirty(true);
 }
