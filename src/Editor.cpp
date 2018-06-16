@@ -8,7 +8,7 @@
 
 Editor::Editor(EditorState& editorState, bool wantsFocus)
 	: mEditorState(editorState), mFocus(NULL), mModal(NULL), mIsDirty(true), mRedraw(true),
-	mParent(NULL), mNumChildren(0), mWantsFocus(wantsFocus), mPopupMessageId(-1)
+	mParent(NULL), mWantsFocus(wantsFocus), mPopupMessageId(-1)
 {
 	mThisArea.x = 0;
 	mThisArea.y = 0;
@@ -76,12 +76,8 @@ bool Editor::isDirty() const
 void Editor::addChild(Editor *child, int x, int y, int w, int h)
 {
 	child->mParent = this;
-	SDL_Rect& area = mChildrenArea[mNumChildren];
-	area.x = x;
-	area.y = y;
-	area.w = w;
-	area.h = h;
-	mChildren[mNumChildren++] = child;
+	SDL_Rect area = { x, y, w, h };
+	mChildren.push_back(EditorChild(child, area));
 
 	SDL_Rect absArea = {area.x + mThisArea.x, area.y + mThisArea.y, area.w, area.h};
 
@@ -115,8 +111,8 @@ void Editor::onAreaChanged(const SDL_Rect& area)
 
 bool Editor::hasDirty() const
 {
-	for (int i = 0 ; i < mNumChildren ; ++i)
-		if (mChildren[i]->isDirty())
+	for (auto child : mChildren)
+		if (child.editor->isDirty())
 			return true;
 
 	return false;
@@ -146,9 +142,14 @@ void Editor::drawCoveredChildren(Renderer& renderer, const SDL_Rect& area, const
 {
 	renderer.renderBackground(childArea);
 
-	for (int index = 0 ; index <= maxIndex && index < mNumChildren ; ++index)
+	int index = 0;
+
+	for (auto child : mChildren)
 	{
-		SDL_Rect thisChildArea = mChildrenArea[index];
+		if (index > maxIndex)
+			break;
+
+		SDL_Rect thisChildArea = child.area;
 		thisChildArea.x += area.x;
 		thisChildArea.y += area.y;
 
@@ -157,19 +158,22 @@ void Editor::drawCoveredChildren(Renderer& renderer, const SDL_Rect& area, const
 		if (intersectRect(childArea, thisChildArea, intersection))
 		{
 			renderer.setClip(intersection);
-			mChildren[index]->draw(renderer, thisChildArea);
+			child.editor->draw(renderer, thisChildArea);
 		}
+
+		++index;
 	}
 }
 
 
 void Editor::drawChildren(Renderer& renderer, const SDL_Rect& area)
 {
-	for (int index = 0 ; index < mNumChildren ; ++index)
+	int index = 0;
+	for (auto child : mChildren)
 	{
-		if (mChildren[index]->isDirty())
+		if (child.editor->isDirty())
 		{
-			SDL_Rect childArea = mChildrenArea[index];
+			SDL_Rect childArea = child.area;
 			childArea.x += area.x;
 			childArea.y += area.y;
 
@@ -177,8 +181,10 @@ void Editor::drawChildren(Renderer& renderer, const SDL_Rect& area)
 
 			renderer.setClip(childArea);
 
-			mChildren[index]->draw(renderer, childArea);
+			child.editor->draw(renderer, childArea);
 		}
+
+		index++;
 	}
 }
 
@@ -239,9 +245,9 @@ void Editor::invalidateAll()
 	setDirty(true);
 	mRedraw = true;
 
-	for (int index = 0 ; index < mNumChildren ; ++index)
+	for (auto child : mChildren)
 	{
-		mChildren[index]->invalidateAll();
+		child.editor->invalidateAll();
 	}
 
 	if (mModal)
@@ -405,33 +411,39 @@ void Editor::update(int ms)
 {
 	onUpdate(ms);
 
-	for (int index = 0 ; index < mNumChildren ; ++index)
+	for (auto child : mChildren)
 	{
-		mChildren[index]->update(ms);
+		child.editor->update(ms);
 	}
 }
 
 
 void Editor::onLoaded()
 {
-	for (int index = 0 ; index < mNumChildren ; ++index)
+	for (auto child : mChildren)
 	{
-		mChildren[index]->onLoaded();
+		child.editor->onLoaded();
 	}
 }
 
 
-void Editor::childAreaChanged(Editor *child)
+void Editor::childAreaChanged(Editor* changedChild)
 {
-	for (int index = 0 ; index < mNumChildren ; ++index)
-	{
-		if (mChildren[index] == child)
-			mChildrenArea[index] = child->getArea();
+	for (auto& child : mChildren) {
+		if (child.editor == changedChild)
+			child.area = changedChild->getArea();
 	}
 }
 
 
 void Editor::onModalStatusChange(bool isNowModal)
+{
+
+}
+
+
+Editor::EditorChild::EditorChild(Editor *_editor, const SDL_Rect& _area)
+	: editor(_editor), area(_area)
 {
 
 }

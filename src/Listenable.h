@@ -2,6 +2,8 @@
 
 struct Listener;
 
+#include <vector>
+
 /*
 
 This interface defines the Listenable object that Listeners can subscribe to
@@ -13,10 +15,8 @@ know when they need a redraw.
 class Listenable
 {
 protected:
-	static const int maxListeners = 128;
+	std::vector<Listener*> mListeners;
 
-	Listener *mListeners[maxListeners];
-	int mNumListeners;
 public:
 	Listenable();
 
