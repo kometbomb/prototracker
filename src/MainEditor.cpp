@@ -228,11 +228,11 @@ bool MainEditor::onEvent(SDL_Event& event)
 			switch (event.key.keysym.sym)
 			{
 				case SDLK_F1:
-					mEditorState.octave = std::max(0, mEditorState.octave - 1);
+					setOctave(mEditorState.octave - 1);
 					return true;
 
 				case SDLK_F2:
-					mEditorState.octave = std::min(15, mEditorState.octave + 1);
+					setOctave(mEditorState.octave + 1);
 					return true;
 
 				case SDLK_F9:
@@ -1020,6 +1020,12 @@ void MainEditor::setPatternLength(int length)
 }
 
 
+void MainEditor::setOctave(int octave)
+{
+	mEditorState.octave = std::min(15, std::max(0, octave));
+}
+
+
 bool MainEditor::registerCommand(const char *context, const char *commandName, Command command)
 {
 	mCommands.push_back(new CommandDescriptor(context, commandName, command));
@@ -1088,5 +1094,11 @@ void MainEditor::onRequestCommandRegistration()
 		const int lengths[] = { 4, 16, 32, 48, 64, 128 };
 		for (auto length : lengths)
 			selector.addIntItem(length);
+	});
+	registerCommand("Editor", "Set octave", [this](int value) {
+		this->setOctave(value);
+	}, [this](CommandOptionSelector& selector) {
+		for (int o = 0 ; o <= 15 ; ++o)
+			selector.addIntItem(o);
 	});
 }

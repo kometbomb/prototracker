@@ -100,6 +100,7 @@ public:
 	void syncSongParameters(const Song& song);
 	void refreshAll();
 	void setPatternLength(int length);
+	void setOctave(int octave);
 
 	void playSong();
 	void playPattern();

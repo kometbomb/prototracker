@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "EditorState.h"
 #include "Renderer.h"
+#include "CommandOptionSelector.h"
 
 MacroEditor::MacroEditor(EditorState& editorState, IPlayer& player, Song& song)
 	: TrackEditor(editorState, editorState.macroEditor, player, song, 1)
@@ -74,4 +75,10 @@ void MacroEditor::onRequestCommandRegistration()
 	registerCommand("Macro", "Paste macro", [this]() { this->pasteCurrentTrack(); });
 	registerCommand("Macro", "Copy macro block", [this]() { this->copyCurrentBlock(); });
 	registerCommand("Macro", "Paste macro block", [this]() { this->pasteCurrentBlock(); });
+	registerCommand("Macro", "Set edit skip", [this](int value) {
+		this->setEditSkip(value);
+	}, [this](CommandOptionSelector& selector) {
+		for (int i = 0 ; i <= 16 ; ++i)
+			selector.addIntItem(i);
+	});
 }
