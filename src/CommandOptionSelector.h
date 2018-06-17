@@ -13,7 +13,7 @@ struct Label;
 
 class CommandOptionSelector: public GenericSelector
 {
-	const MainEditor& mMainEditor;
+	const CommandDescriptor& mCommandDescriptor;
 	TextEditor *mFilterField;
 	Label *mFilterLabel;
 	char mFilter[200];
@@ -32,12 +32,12 @@ private:
 	static bool caseInsensitiveFind(const char *haystack, const char *needle);
 
 public:
-	CommandOptionSelector(EditorState& editorState, const MainEditor& mainEditor);
+	CommandOptionSelector(EditorState& editorState, const CommandDescriptor& command);
 	virtual ~CommandOptionSelector();
 
 	/* Fill command list from MainEditor
 	 */
-	void populate(CommandDescriptor command);
+	void populate();
 
 
 	/* After the dialog finishes this will return the option

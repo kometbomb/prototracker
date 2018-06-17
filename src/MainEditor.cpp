@@ -61,7 +61,7 @@ MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& p
 	fileSelector = new FileSelector(editorState);
 	audioDeviceSelector = new AudioDeviceSelector(editorState);
 	commandSelector = new CommandSelector(editorState, *this);
-	commandOptionSelector = new CommandOptionSelector(editorState, *this);
+	commandOptionSelector = NULL;
 
 	mMessageManager = new MessageManager();
 	mTooltipManager = new TooltipManager();
@@ -76,6 +76,10 @@ MainEditor::~MainEditor()
 	delete mOscillatorsProbePos;
 	delete fileSelector;
 	delete audioDeviceSelector;
+	delete commandSelector;
+
+	if (commandOptionSelector != NULL)
+		delete commandOptionSelector;
 
 	deleteChildren();
 
@@ -1054,9 +1058,14 @@ void MainEditor::displayCommandPalette()
 void MainEditor::displayCommandOptionDialog(const CommandDescriptor& command)
 {
 	mSelectedCommand = &command;
+
+	if (commandOptionSelector != NULL)
+		delete commandOptionSelector;
+
+	commandOptionSelector = new CommandOptionSelector(mEditorState, command);
 	commandOptionSelector->setId(CommandOptionSelection);
 	commandOptionSelector->setTitle(command.name);
-	commandOptionSelector->populate(command);
+	commandOptionSelector->populate();
 	setModal(commandOptionSelector);
 }
 

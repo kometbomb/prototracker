@@ -15,8 +15,8 @@
 #include "Mixer.h"
 #include "Label.h"
 
-CommandOptionSelector::CommandOptionSelector(EditorState& editorState, const MainEditor& mainEditor)
-	: GenericSelector(editorState), mMainEditor(mainEditor)
+CommandOptionSelector::CommandOptionSelector(EditorState& editorState, const CommandDescriptor& command)
+	: GenericSelector(editorState), mCommandDescriptor(command)
 {
 	mFilterField = new TextEditor(editorState);
 	mFilterField->setBuffer(mFilter, sizeof(mFilter));
@@ -104,13 +104,13 @@ bool CommandOptionSelector::caseInsensitiveFind(const char *haystack, const char
 }
 
 
-void CommandOptionSelector::populate(CommandDescriptor command)
+void CommandOptionSelector::populate()
 {
 	invalidateParent();
 
 	clearItems();
 
-	command.option(*this);
+	mCommandDescriptor.option(*this);
 
 	selectItem(0);
 }
@@ -146,10 +146,10 @@ bool CommandOptionSelector::onEvent(SDL_Event& event)
 
 	bool filterEvent = mFilterField->onEvent(event);
 
-	/*if (filterEvent)
+	if (filterEvent)
 	{
 		populate();
-	}*/
+	}
 
 	return filterEvent;
 }
@@ -157,5 +157,9 @@ bool CommandOptionSelector::onEvent(SDL_Event& event)
 
 void CommandOptionSelector::addIntItem(int value)
 {
-	addItem(new CommandOption(value));
+	char temp[100];
+	snprintf(temp, sizeof(temp), "%d", value);
+
+	if (caseInsensitiveFind(temp, mFilter))
+		addItem(new CommandOption(value));
 }
