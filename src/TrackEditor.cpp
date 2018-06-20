@@ -102,14 +102,6 @@ bool TrackEditor::onEvent(SDL_Event& event)
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym)
 			{
-				case SDLK_F3:
-					copyCurrentTrack();
-					return true;
-
-				case SDLK_F4:
-					pasteCurrentTrack();
-					return true;
-
 				case SDLK_PAGEDOWN:
 					scrollView(16, false);
 					return true;
@@ -196,14 +188,6 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						{
 							setEditSkip(hex);
 						}
-						else if (event.key.keysym.sym == SDLK_c)
-						{
-							copyCurrentBlock();
-						}
-						else if (event.key.keysym.sym == SDLK_v)
-						{
-							pasteCurrentBlock();
-						}
 						else if (event.key.keysym.sym == SDLK_b)
 						{
 							setBlockStart(mTrackEditorState.currentRow);
@@ -211,14 +195,6 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						else if (event.key.keysym.sym == SDLK_e)
 						{
 							setBlockEnd(mTrackEditorState.currentRow);
-						}
-						else if (event.key.keysym.sym == SDLK_k)
-						{
-							killCurrentTrack();
-						}
-						else if (event.key.keysym.sym == SDLK_u)
-						{
-							findCurrentUnusedTrack();
 						}
 						else
 							return false;

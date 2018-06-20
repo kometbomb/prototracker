@@ -110,13 +110,11 @@ void CommandSelector::populate()
 
 	clearItems();
 
-	int numCommands = mMainEditor.getNumCommands();
-	for (int index = 0 ; index < numCommands ; ++index)
+	for (auto command : mMainEditor.getChildCommands())
 	{
-		const auto& command = mMainEditor.getCommand(index);
-		if (caseInsensitiveFind(command.context, mFilter) ||
-			caseInsensitiveFind(command.name, mFilter))
-			addItem(new CommandItem(command));
+		if (caseInsensitiveFind(command->context, mFilter) ||
+			caseInsensitiveFind(command->name, mFilter))
+			addItem(new CommandItem(*command));
 	}
 
 	sortItems(CommandItem::sort);

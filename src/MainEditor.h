@@ -48,10 +48,6 @@ class MainEditor: public Editor
 	bool mIsDragging;
 	const CommandDescriptor *mSelectedCommand;
 
-	static const int maxCommands = 256;
-
-	std::vector<CommandDescriptor*> mCommands;
-
 	enum
 	{
 		FileSelectionLoad,
@@ -65,7 +61,6 @@ class MainEditor: public Editor
 	void displaySaveDialog();
 	void displayAudioDeviceDialog();
 	void displayCommandPalette();
-	void displayCommandOptionDialog(const CommandDescriptor& command);
 
 	std::string mBase64Encoded;
 
@@ -78,8 +73,6 @@ class MainEditor: public Editor
 
 protected:
 	virtual void onRequestCommandRegistration();
-	virtual bool registerCommand(const char *context, const char *commandName, Command command);
-	virtual bool registerCommand(const char *context, const char *commandName, CommandWithOption command, CommandOptionFunc optionFunc);
 
 public:
 	MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer);
@@ -110,6 +103,7 @@ public:
 	void toggleEditMode();
 
 	void setAudioDevice(const char *device);
+	void displayCommandOptionDialog(const CommandDescriptor& command);
 
 	bool saveSong(const char *path);
 	bool loadSong(const char *path);
@@ -122,6 +116,4 @@ public:
 
 	bool loadElements(const Theme& theme);
 
-	int getNumCommands() const;
-	const CommandDescriptor& getCommand(int index) const;
 };

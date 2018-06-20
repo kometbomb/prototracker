@@ -113,15 +113,7 @@ bool SequenceRowEditor::onEvent(SDL_Event& event)
 				default:
 				{
 					if (event.key.keysym.mod & KMOD_CTRL)
-					{
-						if (event.key.keysym.sym == SDLK_d)
-						{
-							duplicateRow();
-							return true;
-						}
-
 						break;
-					}
 
 					if (!mEditorState.editMode)
 						break;
@@ -307,5 +299,5 @@ bool SequenceRowEditor::isRowActive(int track, int row) const
 
 void SequenceRowEditor::onRequestCommandRegistration()
 {
-	registerCommand("Sequence", "Duplicate sequence row", [this]() { this->duplicateRow(); });
+	registerCommand("Sequence", "Duplicate sequence row", [this]() { this->duplicateRow(); }, SDLK_d, KMOD_CTRL);
 }

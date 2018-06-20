@@ -135,6 +135,11 @@ bool MainEditor::onEvent(SDL_Event& event)
 
 	Editor* target = getFocus();
 
+	if (event.type == SDL_KEYDOWN && target)
+	{
+		target->handleCommandShortcuts(*this, event);
+	}
+
 	/* Focus on GUI elements when user clicks on them.
 	 * Also, start drag (used by drag scroll below this)
 	 */
@@ -274,13 +279,11 @@ bool MainEditor::onEvent(SDL_Event& event)
 
 				/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
 				case SDLK_F5:
-				case SDLK_RCTRL:
 					playSong();
 					return true;
 
 				/* F5 and F6 also used for laptops etc. keyboards with (very) limited key layout */
 				case SDLK_F6:
-				case SDLK_RSHIFT:
 					playPattern();
 					return true;
 
@@ -337,7 +340,6 @@ bool MainEditor::onEvent(SDL_Event& event)
 					setMacro(mEditorState.macro);
 					return true;
 
-				case SDLK_CAPSLOCK:
 				case SDLK_SCROLLLOCK:
 					togglePositionFollowing();
 					break;
@@ -347,10 +349,6 @@ bool MainEditor::onEvent(SDL_Event& event)
 					{
 						switch (event.key.keysym.sym)
 						{
-							case SDLK_s:
-								displaySaveDialog();
-								break;
-
 							case SDLK_p:
 								if (event.key.keysym.mod & KMOD_SHIFT)
 									displayCommandPalette();
@@ -360,15 +358,6 @@ bool MainEditor::onEvent(SDL_Event& event)
 
 							case SDLK_o:
 								displayLoadDialog();
-								break;
-
-							case SDLK_a:
-								displayAudioDeviceDialog();
-								break;
-
-							case SDLK_n:
-								newSong();
-								showMessage(MessageInfo, "Song reset");
 								break;
 						}
 
@@ -1026,32 +1015,6 @@ void MainEditor::setOctave(int octave)
 }
 
 
-bool MainEditor::registerCommand(const char *context, const char *commandName, Command command)
-{
-	mCommands.push_back(new CommandDescriptor(context, commandName, command));
-	return true;
-}
-
-
-bool MainEditor::registerCommand(const char *context, const char *commandName, CommandWithOption command, CommandOptionFunc option)
-{
-	mCommands.push_back(new CommandDescriptor(context, commandName, command, option));
-	return true;
-}
-
-
-int MainEditor::getNumCommands() const
-{
-	return mCommands.size();
-}
-
-
-const Editor::CommandDescriptor& MainEditor::getCommand(int index) const
-{
-	return *mCommands[index];
-}
-
-
 void MainEditor::displayCommandPalette()
 {
 	commandSelector->setId(CommandSelection);
@@ -1078,13 +1041,13 @@ void MainEditor::displayCommandOptionDialog(const CommandDescriptor& command)
 
 void MainEditor::onRequestCommandRegistration()
 {
-	registerCommand("Editor", "Toggle play position following", [this]() { this->togglePositionFollowing(); });
+	registerCommand("Editor", "Toggle play position following", [this]() { this->togglePositionFollowing(); }, SDLK_CAPSLOCK);
 	registerCommand("Editor", "Toggle edit mode", [this]() { this->toggleEditMode(); });
-	registerCommand("Song", "Reset song", [this]() { this->newSong(); this->showMessage(MessageInfo, "Song reset"); });
-	registerCommand("Song", "Load song", [this]() { this->displayLoadDialog(); });
-	registerCommand("Song", "Save song", [this]() { this->displaySaveDialog(); });
-	registerCommand("Song", "Play song", [this]() { this->playSong(); });
-	registerCommand("Song", "Play and loop pattern", [this]() { this->playPattern(); });
+	registerCommand("Song", "Reset song", [this]() { this->newSong(); this->showMessage(MessageInfo, "Song reset"); }, SDLK_n, KMOD_CTRL);
+	registerCommand("Song", "Load song", [this]() { this->displayLoadDialog(); }, SDLK_o, KMOD_CTRL);
+	registerCommand("Song", "Save song", [this]() { this->displaySaveDialog(); }, SDLK_s, KMOD_CTRL);
+	registerCommand("Song", "Play song", [this]() { this->playSong(); }, SDLK_RCTRL);
+	registerCommand("Song", "Play and loop pattern", [this]() { this->playPattern(); }, SDLK_RSHIFT);
 	registerCommand("Song", "Stop song", [this]() { this->stopSong(); });
 	registerCommand("Editor", "Mute all tracks", [this]() { this->muteTracks(); });
 	registerCommand("Editor", "Select output device", [this]() { this->displayAudioDeviceDialog(); });

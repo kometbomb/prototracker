@@ -69,12 +69,12 @@ void MacroEditor::findUnusedTrack(int track)
 
 void MacroEditor::onRequestCommandRegistration()
 {
-	registerCommand("Macro", "Find unused macro", [this]() { this->findCurrentUnusedTrack(); });
-	registerCommand("Macro", "Kill current macro", [this]() { this->killCurrentTrack(); });
-	registerCommand("Macro", "Copy macro", [this]() { this->copyCurrentTrack(); });
-	registerCommand("Macro", "Paste macro", [this]() { this->pasteCurrentTrack(); });
-	registerCommand("Macro", "Copy macro block", [this]() { this->copyCurrentBlock(); });
-	registerCommand("Macro", "Paste macro block", [this]() { this->pasteCurrentBlock(); });
+	registerCommand("Macro", "Find unused macro", [this]() { this->findCurrentUnusedTrack(); }, SDLK_u, KMOD_CTRL);
+	registerCommand("Macro", "Kill current macro", [this]() { this->killCurrentTrack(); }, SDLK_k, KMOD_CTRL);
+	registerCommand("Macro", "Copy macro", [this]() { this->copyCurrentTrack(); }, SDLK_F3);
+	registerCommand("Macro", "Paste macro", [this]() { this->pasteCurrentTrack(); }, SDLK_F4);
+	registerCommand("Macro", "Copy macro block", [this]() { this->copyCurrentBlock(); }, SDLK_c, KMOD_CTRL);
+	registerCommand("Macro", "Paste macro block", [this]() { this->pasteCurrentBlock(); }, SDLK_v, KMOD_CTRL);
 	registerCommand("Macro", "Set edit skip", [this](int value) {
 		this->setEditSkip(value);
 	}, [this](CommandOptionSelector& selector) {

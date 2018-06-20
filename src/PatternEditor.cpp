@@ -161,12 +161,12 @@ bool PatternEditor::isRowActive(int track, int row) const
 
 void PatternEditor::onRequestCommandRegistration()
 {
-	registerCommand("Pattern", "Find unused pattern", [this]() { this->findCurrentUnusedTrack(); });
-	registerCommand("Pattern", "Kill current pattern", [this]() { this->killCurrentTrack(); });
-	registerCommand("Pattern", "Copy pattern", [this]() { this->copyCurrentTrack(); });
-	registerCommand("Pattern", "Paste pattern", [this]() { this->pasteCurrentTrack(); });
-	registerCommand("Pattern", "Copy pattern block", [this]() { this->copyCurrentBlock(); });
-	registerCommand("Pattern", "Paste pattern block", [this]() { this->pasteCurrentBlock(); });
+	registerCommand("Pattern", "Find unused pattern", [this]() { this->findCurrentUnusedTrack(); }, SDLK_u, KMOD_CTRL);
+	registerCommand("Pattern", "Kill current pattern", [this]() { this->killCurrentTrack(); }, SDLK_k, KMOD_CTRL);
+	registerCommand("Pattern", "Copy pattern", [this]() { this->copyCurrentTrack(); }, SDLK_F3);
+	registerCommand("Pattern", "Paste pattern", [this]() { this->pasteCurrentTrack(); }, SDLK_F4);
+	registerCommand("Pattern", "Copy pattern block", [this]() { this->copyCurrentBlock(); }, SDLK_c, KMOD_CTRL);
+	registerCommand("Pattern", "Paste pattern block", [this]() { this->pasteCurrentBlock(); }, SDLK_v, KMOD_CTRL);
 	registerCommand("Pattern", "Set edit skip", [this](int value) {
 		this->setEditSkip(value);
 	}, [this](CommandOptionSelector& selector) {

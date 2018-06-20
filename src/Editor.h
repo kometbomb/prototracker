@@ -9,7 +9,7 @@ struct PlayerState;
 struct Renderer;
 struct EditorState;
 struct CommandOptionSelector;
-
+struct MainEditor;
 /*
 
 The Editor class is the base class for all GUI elements.
@@ -36,8 +36,10 @@ public:
 		Command func;
 		CommandWithOption funcWithOption;
 		CommandOptionFunc option;
-		CommandDescriptor(const char *context, const char *name, Command func);
-		CommandDescriptor(const char *context, const char *name, CommandWithOption func, CommandOptionFunc option);
+		int sym, mod;
+
+		CommandDescriptor(const char *context, const char *name, Command func, int sym = -1, int mod = 0);
+		CommandDescriptor(const char *context, const char *name, CommandWithOption func, CommandOptionFunc option, int sym = -1, int mod = 0);
 	};
 
 	struct EditorChild {
@@ -63,6 +65,7 @@ protected:
 	SDL_Rect mThisArea;
 	bool mWantsFocus;
 	int mPopupMessageId;
+	std::vector<CommandDescriptor*> mCommands;
 
 	void removeFocus();
 	void setModal(Editor *modal);
@@ -82,8 +85,8 @@ protected:
 	// is propagated
 	virtual void onRequestCommandRegistration();
 
-	virtual bool registerCommand(const char *context, const char *commandName, Command command);
-	virtual bool registerCommand(const char *context, const char *commandName, CommandWithOption command, CommandOptionFunc option);
+	bool registerCommand(const char *context, const char *commandName, Command command, int sym = -1, int mod = 0);
+	bool registerCommand(const char *context, const char *commandName, CommandWithOption command, CommandOptionFunc option, int sym = -1, int mod = 0);
 
 public:
 	Editor(EditorState& editorState, bool wantFocus = true);
@@ -135,6 +138,10 @@ public:
 	 * so that the parent Editor knows to process it.
 	 */
 	virtual bool onEvent(SDL_Event& event);
+
+	bool handleCommandShortcuts(MainEditor& mainEditor, const SDL_Event& event);
+	const std::vector<CommandDescriptor*>& getCommands() const;
+	std::vector<CommandDescriptor*> getChildCommands() const;
 
 	/**
 	 * Helper members
