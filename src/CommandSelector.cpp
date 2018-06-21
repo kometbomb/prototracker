@@ -64,9 +64,41 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 
 	renderer.clearRect(area, Color(0, 0, 0));
 
-	int width = area.w / 8 - 10;
-
 	renderer.renderTextV(area, color, "%s: %s", commandItem.command.context, commandItem.command.name);
+
+	if (commandItem.command.sym != -1)
+	{
+		const char *keyName = SDL_GetKeyName(commandItem.command.sym);
+		SDL_Rect textRect = renderer.getTextRect(keyName);
+		SDL_Rect shortcutArea = { area.x + area.w - textRect.w, area.y, textRect.w, textRect.h };
+		renderer.clearRect(shortcutArea, Color(32, 32, 32));
+		renderer.renderTextV(shortcutArea, color, keyName);
+
+		if (commandItem.command.mod != 0)
+		{
+			static const struct { const char *name; int mod; } modMap[] = {
+				{ "CTRL", KMOD_CTRL },
+				{ "ALT", KMOD_ALT },
+				{ "SHIFT", KMOD_SHIFT },
+				{ NULL, 0 },
+			};
+
+			int left = shortcutArea.x;
+
+			for (int i = 0 ; modMap[i].name ; ++i)
+			{
+				if (commandItem.command.mod & modMap[i].mod)
+				{
+					const char *keyName = modMap[i].name;
+					SDL_Rect textRect = renderer.getTextRect(keyName);
+					SDL_Rect modifierArea = { left - textRect.w - 4, area.y, textRect.w, textRect.h };
+					renderer.clearRect(modifierArea, Color(32, 32, 32));
+					renderer.renderTextV(modifierArea, color, keyName);
+					left = modifierArea.x;
+				}
+			}
+		}
+	}
 }
 
 
