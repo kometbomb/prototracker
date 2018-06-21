@@ -32,6 +32,7 @@ GenericSelector::~GenericSelector()
 void GenericSelector::setScrollPosition(int position)
 {
 	mScrollPosition = std::max(0, std::min(static_cast<int>(mItems.size()) - getVisibleCount(), position));
+	setDirty(true);
 }
 
 
