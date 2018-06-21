@@ -161,6 +161,8 @@ bool PatternEditor::isRowActive(int track, int row) const
 
 void PatternEditor::onRequestCommandRegistration()
 {
+	registerCommand("Pattern", "Mark block start", [this]() { this->setBlockStartToCurrentRow(); }, SDLK_b, KMOD_CTRL);
+	registerCommand("Pattern", "Mark block end", [this]() { this->setBlockEndToCurrentRow(); }, SDLK_e, KMOD_CTRL);
 	registerCommand("Pattern", "Find unused pattern", [this]() { this->findCurrentUnusedTrack(); }, SDLK_u, KMOD_CTRL);
 	registerCommand("Pattern", "Kill current pattern", [this]() { this->killCurrentTrack(); }, SDLK_k, KMOD_CTRL);
 	registerCommand("Pattern", "Copy pattern", [this]() { this->copyCurrentTrack(); }, SDLK_F3);

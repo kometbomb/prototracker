@@ -188,14 +188,6 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						{
 							setEditSkip(hex);
 						}
-						else if (event.key.keysym.sym == SDLK_b)
-						{
-							setBlockStart(mTrackEditorState.currentRow);
-						}
-						else if (event.key.keysym.sym == SDLK_e)
-						{
-							setBlockEnd(mTrackEditorState.currentRow);
-						}
 						else
 							return false;
 
@@ -735,4 +727,16 @@ void TrackEditor::setEditSkip(int skip)
 {
 	mTrackEditorState.editSkip = skip;
 	showMessageV(MessageInfo, replacePreviousMessage, "Edit skip set to %d", skip);
+}
+
+
+void TrackEditor::setBlockStartToCurrentRow()
+{
+	setBlockStart(mTrackEditorState.currentRow);
+}
+
+
+void TrackEditor::setBlockEndToCurrentRow()
+{
+	setBlockEnd(mTrackEditorState.currentRow);
 }

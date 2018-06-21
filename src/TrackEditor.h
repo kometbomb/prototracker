@@ -26,6 +26,8 @@ protected:
 	void copyCurrentBlock();
 	void pasteCurrentBlock();
 	void setEditSkip(int skip);
+	void setBlockStartToCurrentRow();
+	void setBlockEndToCurrentRow();
 
 protected:
 	virtual Pattern& getCurrentPattern(int track) = 0;

@@ -69,6 +69,8 @@ void MacroEditor::findUnusedTrack(int track)
 
 void MacroEditor::onRequestCommandRegistration()
 {
+	registerCommand("Macro", "Mark block start", [this]() { this->setBlockStartToCurrentRow(); }, SDLK_b, KMOD_CTRL);
+	registerCommand("Macro", "Mark block end", [this]() { this->setBlockEndToCurrentRow(); }, SDLK_e, KMOD_CTRL);
 	registerCommand("Macro", "Find unused macro", [this]() { this->findCurrentUnusedTrack(); }, SDLK_u, KMOD_CTRL);
 	registerCommand("Macro", "Kill current macro", [this]() { this->killCurrentTrack(); }, SDLK_k, KMOD_CTRL);
 	registerCommand("Macro", "Copy macro", [this]() { this->copyCurrentTrack(); }, SDLK_F3);

@@ -135,11 +135,6 @@ bool MainEditor::onEvent(SDL_Event& event)
 
 	Editor* target = getFocus();
 
-	if (event.type == SDL_KEYDOWN && target)
-	{
-		target->handleCommandShortcuts(*this, event);
-	}
-
 	/* Focus on GUI elements when user clicks on them.
 	 * Also, start drag (used by drag scroll below this)
 	 */
@@ -227,29 +222,16 @@ bool MainEditor::onEvent(SDL_Event& event)
 		setFocus(target);
 	}
 
+	if (event.type == SDL_KEYDOWN && target)
+	{
+		target->handleCommandShortcuts(*this, event);
+	}
+
 	switch (event.type)
 	{
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym)
 			{
-				case SDLK_F1:
-					setOctave(mEditorState.octave - 1);
-					return true;
-
-				case SDLK_F2:
-					setOctave(mEditorState.octave + 1);
-					return true;
-
-				case SDLK_F9:
-					setPatternLength(std::max(1, mSong.getPatternLength() - 1));
-					refreshAll();
-					return true;
-
-				case SDLK_F10:
-					setPatternLength(std::min(Pattern::maxRows, mSong.getPatternLength() + 1));
-					refreshAll();
-					return true;
-
 				/* Mute tracks */
 				case SDLK_1:
 				case SDLK_2:
@@ -318,10 +300,6 @@ bool MainEditor::onEvent(SDL_Event& event)
 					saveState();
 					return true;
 
-				case SDLK_ESCAPE:
-					cycleFocus();
-					return true;
-
 				case SDLK_PERIOD:
 					if (!(event.key.keysym.mod & KMOD_SHIFT))
 						break;
@@ -354,10 +332,6 @@ bool MainEditor::onEvent(SDL_Event& event)
 									displayCommandPalette();
 								else
 									exportSong();
-								break;
-
-							case SDLK_o:
-								displayLoadDialog();
 								break;
 						}
 
@@ -1051,6 +1025,9 @@ void MainEditor::onRequestCommandRegistration()
 	registerCommand("Song", "Stop song", [this]() { this->stopSong(); });
 	registerCommand("Editor", "Mute all tracks", [this]() { this->muteTracks(); });
 	registerCommand("Editor", "Select output device", [this]() { this->displayAudioDeviceDialog(); });
+	registerCommand("Song", "Decrease pattern length", [this]() { this->setPatternLength(std::max(1, mSong.getPatternLength() - 1)); }, SDLK_F9);
+	registerCommand("Song", "Increase pattern length", [this]() { this->setPatternLength(std::max(1, mSong.getPatternLength() + 1)); }, SDLK_F10);
+
 	registerCommand("Song", "Set pattern length", [this](int value) {
 		this->setPatternLength(value);
 	}, [this](CommandOptionSelector& selector) {
@@ -1064,4 +1041,7 @@ void MainEditor::onRequestCommandRegistration()
 		for (int o = 0 ; o <= 15 ; ++o)
 			selector.addIntItem(o);
 	});
+	registerCommand("Editor", "Decrease octave", [this]() { this->setOctave(mEditorState.octave - 1); }, SDLK_F1);
+	registerCommand("Editor", "Increase octave", [this]() { this->setOctave(mEditorState.octave + 1); }, SDLK_F2);
+	registerCommand("Editor", "Cycle focus", [this]() { this->cycleFocus(); }, SDLK_ESCAPE);
 }
