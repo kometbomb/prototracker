@@ -12,6 +12,8 @@ class Mixer
 {
 	static const int MAX_DEVICE_NAME_SIZE = 200;
 	static const int MAX_DEVICES = 32;
+	static const int queueLengthMs = 100;
+	static const int queueGranularityMs = 1000 / 50;
 
 	IPlayer& mPlayer;
 	ISynth& mSynth;
@@ -34,6 +36,8 @@ class Mixer
 
 protected:
 	static void audioCallback(void* userdata, unsigned char* stream, int len);
+	static int queueThread(void *data);
+	int queueThreadInner();
 	IPlayer& getPlayer();
 	ISynth& getSynth();
 
