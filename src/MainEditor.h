@@ -99,6 +99,7 @@ public:
 	void playPattern();
 	void stopSong();
 	void muteTracks();
+	void toggleTrackMuting(int track);
 	void togglePlayStop();
 	void toggleEditMode();
 

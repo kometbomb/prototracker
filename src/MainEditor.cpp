@@ -249,10 +249,7 @@ bool MainEditor::onEvent(SDL_Event& event)
 
 						if (track < SequenceRow::maxTracks)
 						{
-							mPlayer.getTrackState(track).enabled ^= true;
-
-							showMessageV(MessageInfo, "%s track %d", mPlayer.getTrackState(track).enabled ? "Unmuted" : "Muted", track);
-
+							toggleTrackMuting(track);
 							return true;
 						}
 					}
@@ -899,6 +896,13 @@ void MainEditor::muteTracks()
 }
 
 
+void MainEditor::toggleTrackMuting(int track)
+{
+	mPlayer.getTrackState(track).enabled ^= true;
+	showMessageV(MessageInfo, "%s track %d", mPlayer.getTrackState(track).enabled ? "Unmuted" : "Muted", track);
+}
+
+
 void MainEditor::toggleEditMode()
 {
 	mEditorState.editMode = !mEditorState.editMode;
@@ -1024,6 +1028,12 @@ void MainEditor::onRequestCommandRegistration()
 	registerCommand("Song", "Play and loop pattern", [this]() { this->playPattern(); }, SDLK_RSHIFT);
 	registerCommand("Song", "Stop song", [this]() { this->stopSong(); });
 	registerCommand("Editor", "Mute all tracks", [this]() { this->muteTracks(); });
+	registerCommand("Editor", "Toggle track muting", [this](int value) {
+		this->toggleTrackMuting(value);
+	}, [this](CommandOptionSelector& selector) {
+		for (int o = 0 ; o <= SequenceRow::maxTracks ; ++o)
+			selector.addIntItem(o);
+	});
 	registerCommand("Editor", "Select output device", [this]() { this->displayAudioDeviceDialog(); });
 	registerCommand("Song", "Decrease pattern length", [this]() { this->setPatternLength(std::max(1, mSong.getPatternLength() - 1)); }, SDLK_F9);
 	registerCommand("Song", "Increase pattern length", [this]() { this->setPatternLength(std::max(1, mSong.getPatternLength() + 1)); }, SDLK_F10);

@@ -17,6 +17,8 @@ protected:
 	virtual void findUnusedTrack(int track);
 	virtual bool isRowActive(int track, int row) const;
 
+	void setCurrentPattern(int pattern);
+
 	virtual void onRequestCommandRegistration();
 
 public:

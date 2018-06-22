@@ -100,32 +100,38 @@ bool TrackEditor::onEvent(SDL_Event& event)
 	switch (event.type)
 	{
 		case SDL_KEYDOWN:
+			if (!(event.key.keysym.mod & (KMOD_SHIFT|KMOD_CTRL|KMOD_ALT)))
+			{
+				switch (event.key.keysym.sym)
+				{
+					case SDLK_PAGEDOWN:
+						scrollView(16, false);
+						return true;
+
+					case SDLK_PAGEUP:
+						scrollView(-16, false);
+						return true;
+
+					case SDLK_DOWN:
+						scrollView(1);
+						return true;
+
+					case SDLK_UP:
+						scrollView(-1);
+						return true;
+
+					case SDLK_HOME:
+						mTrackEditorState.currentRow = 0;
+						return true;
+
+					case SDLK_END:
+						mTrackEditorState.currentRow = maxRows - 1;
+						return true;
+				}
+			}
+
 			switch (event.key.keysym.sym)
 			{
-				case SDLK_PAGEDOWN:
-					scrollView(16, false);
-					return true;
-
-				case SDLK_PAGEUP:
-					scrollView(-16, false);
-					return true;
-
-				case SDLK_DOWN:
-					scrollView(1);
-					return true;
-
-				case SDLK_UP:
-					scrollView(-1);
-					return true;
-
-				case SDLK_HOME:
-					mTrackEditorState.currentRow = 0;
-					return true;
-
-				case SDLK_END:
-					mTrackEditorState.currentRow = maxRows - 1;
-					return true;
-
 				case SDLK_TAB:
 					if (event.key.keysym.mod & KMOD_SHIFT)
 						changeTrack(-1);
