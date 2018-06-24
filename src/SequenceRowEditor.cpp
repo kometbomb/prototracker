@@ -229,7 +229,7 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 	int trackWidth = 2 * renderer.getFontWidth() + mTrackMargin;
 	int rowHeight = renderer.getFontHeight();
 
-	int countVisible = area.h / 8;
+	int countVisible = area.h / renderer.getFontHeight();
 	int firstVisible = mTrackEditorState.currentRow - countVisible / 2;
 	int lastVisible = mTrackEditorState.currentRow + countVisible / 2;
 
@@ -243,9 +243,9 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 
 	if (hasFocus())
 	{
-		int columnWidth = 8;
+		int columnWidth = renderer.getFontWidth();
 
-		int columnX = 8 * mTrackEditorState.currentColumn;
+		int columnX = renderer.getFontWidth() * mTrackEditorState.currentColumn;
 
 		SDL_Rect textArea = {mTrackEditorState.currentTrack * trackWidth + area.x + rowNumberWidth + columnX, area.y + centerY, columnWidth, rowHeight};
 		renderer.renderRect(textArea, renderer.getTheme().getColor(mEditorState.editMode ? Theme::ColorType::EditCursor : Theme::ColorType::NonEditCursor));
@@ -274,12 +274,12 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 			if (row == mTrackEditorState.currentRow)
 			{
 				// Black text color
-				color = Color(0,0,0);
+				color = renderer.getTheme().getColor(Theme::ColorType::CurrentRow);
 			}
 			else if (isRowActive(track, row))
 			{
 				// Highlight current play row green
-				renderer.renderRect(textArea, Color(0,64,0));
+				renderer.renderRect(textArea, renderer.getTheme().getColor(Theme::ColorType::PlayHead));
 			}
 
 			renderer.renderTextV(textArea, color, "%02x", sequenceRow.pattern[track]);

@@ -38,7 +38,18 @@ public:
 		EditCursor,
 		NonEditCursor,
 		RowCounter,
+		SelectedRow,
 		ModalBackground,
+		ModalBorder,
+		ModalTitleBackground,
+		ModalTitleText,
+		NormalText,
+		ScrollBar,
+		PlayHead,
+		TextCursor,
+		TextBackground,
+		TextFocus,
+		OscilloscopeColor,
 		NumColors
 	};
 

@@ -17,12 +17,13 @@ class GenericSelector: public Editor
 	static const int titleSize = 256;
 	int mId;
 	char mTitle[titleSize];
-	Label *mLabel;
-	int mSelectedItem, mScrollPosition;
+	int mSelectedItem, mScrollPosition, mRowHeight;
 
 protected:
 	struct Item {
 	};
+
+	Label *mLabel;
 
 	void selectItem(int index);
 	void setScrollPosition(int position);
@@ -59,4 +60,5 @@ public:
 
 	virtual bool onEvent(SDL_Event& event);
 	virtual void onDraw(Renderer& renderer, const SDL_Rect& area);
+	virtual void onRendererMount(const Renderer& renderer);
 };

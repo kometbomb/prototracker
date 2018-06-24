@@ -21,3 +21,22 @@ SequencePosition	235	54	16	8
 SequenceLength	256	54 16	8
 PatternLength	277	54	16	8
 OctaveNumber	298	54	16	8
+
+# Color name            r   g   b
+Color   "CurrentRow"    0   0   0
+Color   "BlockMarker"   255 0   0
+Color   "EditCursor"    255 0   0
+Color   "NonEditCursor" 0 0 255
+Color   "RowCounter"    128 128 255
+Color   "SelectedRow"   255   0   0
+Color   "ModalBackground"   0   0   0
+Color   "ModalTitleBackground"  255 255 255
+Color   "ModalTitleText"    0   0   0
+Color   "ModalBorder"   255   255   255
+Color   "NormalText"   255   255   255
+Color   "ScrollBar"   255   255   255
+Color   "PlayHead"  0  64  0
+Color   "TextCursor"    255 255 255
+Color   "TextBackground"    0   0   0
+Color   "TextFocus" 255 0   0
+Color   "Oscilloscope"  255 255 255

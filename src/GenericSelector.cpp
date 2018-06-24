@@ -12,12 +12,11 @@
 #include <algorithm>
 
 GenericSelector::GenericSelector(EditorState& editorState)
-	: Editor(editorState), mSelectedItem(0), mScrollPosition(0)
+	: Editor(editorState), mSelectedItem(0), mScrollPosition(0), mRowHeight(8)
 {
-	mLabel = new Label(editorState);
-	mLabel->setColor(Color(0, 0, 0));
-	mLabel->setBackground(Color(255, 255, 255));
+	mLabel = new Label(mEditorState);
 	addChild(mLabel, 0, 0, 100, 8);
+
 	strcpy(mTitle, "");
 }
 
@@ -26,6 +25,19 @@ GenericSelector::~GenericSelector()
 {
 	clearItems();
 	delete mLabel;
+}
+
+
+void GenericSelector::onRendererMount(const Renderer& renderer)
+{
+	mLabel->setColor(renderer.getTheme().getColor(Theme::ColorType::ModalTitleText));
+	mLabel->setBackground(renderer.getTheme().getColor(Theme::ColorType::ModalTitleBackground));
+
+	SDL_Rect area = mLabel->getArea();
+	area.h = renderer.getFontHeight();
+	mLabel->setArea(area);
+
+	mRowHeight = renderer.getFontHeight();
 }
 
 
@@ -151,7 +163,7 @@ bool GenericSelector::onEvent(SDL_Event& event)
 
 int GenericSelector::getVisibleCount() const
 {
-	return (mThisArea.h - 8 - 8 - 8) / 8;
+	return (mThisArea.h - mLabel->getArea().h * 2 - mRowHeight) / mRowHeight;
 }
 
 
@@ -177,11 +189,7 @@ void GenericSelector::onDraw(Renderer& renderer, const SDL_Rect& area)
 {
 	if (shouldRedrawBackground())
 	{
-		renderer.clearRect(area, Color(0, 0, 0));
-
-		/*SDL_Rect fieldArea = { area.x, area.y + 8, area.w, renderer.getFontHeight() };
-
-		renderer.clearRect(fieldArea, Color(255, 0, 0));*/
+		renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
 	}
 
 	int firstVisible, lastVisible;
@@ -190,18 +198,21 @@ void GenericSelector::onDraw(Renderer& renderer, const SDL_Rect& area)
 
 	for (int row = firstVisible ; row <= lastVisible ; ++row)
 	{
-		SDL_Rect textArea = {area.x, (row - firstVisible) * 8 + area.y + 16, area.w - 4, 8};
+		SDL_Rect textArea = {area.x, (row - firstVisible) * mRowHeight + area.y + mLabel->getArea().h * 2, area.w - 4, renderer.getFontHeight()};
 		renderer.setClip(textArea);
 		renderItem(renderer, textArea, *mItems[row], row == mSelectedItem);
 	}
 
 	renderer.unsetClip();
 
-	int areaHeight = area.h - 8 - 8;
+	// height * 2 because there is an element/empty space under the label
+	int topElementsHeight = mLabel->getArea().h * 2;
+	int areaHeight = area.h - topElementsHeight;
 	int scrollbarTop = areaHeight * firstVisible / std::max(1, static_cast<int>(mItems.size()));
 	int scrollbarBottom = areaHeight * (lastVisible + 1) / std::max(1, static_cast<int>(mItems.size()));
-	SDL_Rect scrollbarArea = {area.x + area.w - 3, area.y + 16 + scrollbarTop, 2, scrollbarBottom - scrollbarTop};
-	renderer.clearRect(scrollbarArea, Color());
+	SDL_Rect scrollbarArea = {area.x + area.w - 3, area.y + topElementsHeight + scrollbarTop,
+		2, scrollbarBottom - scrollbarTop};
+	renderer.clearRect(scrollbarArea, renderer.getTheme().getColor(Theme::ColorType::ScrollBar));
 }
 
 
@@ -215,7 +226,8 @@ int GenericSelector::findClickedItem(int x, int y) const
 
 	for (int row = firstVisible ; row <= lastVisible ; ++row)
 	{
-		SDL_Rect textArea = {mThisArea.x, (row - firstVisible) * 8 + mThisArea.y + 16, mThisArea.w - 4, 8};
+		SDL_Rect textArea = {mThisArea.x, (row - firstVisible) * mRowHeight + mThisArea.y + mLabel->getArea().h * 2,
+			mThisArea.w - 4, mRowHeight};
 
 		if (pointInRect(point, textArea))
 		{
