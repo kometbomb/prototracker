@@ -48,6 +48,7 @@ protected:
 	SDL_Rect mThisArea;
 	bool mWantsFocus;
 	int mPopupMessageId;
+	bool mMounted;
 
 	void removeFocus();
 	void setModal(Editor *modal);
@@ -74,7 +75,12 @@ public:
 	virtual void onMessageBoxEvent(const Editor& messageBox, int code);
 	virtual void onListenableChange(Listenable *listenable);
 	virtual void onLoaded();
+
+	// When setting/unsetting as a modal
 	virtual void onModalStatusChange(bool isNowModal);
+
+	// When the Editor is rendered the first time
+	virtual void onRendererMount(const Renderer& renderer);
 	virtual bool isDirty() const;
 	bool isFocusable() const;
 	bool hasDirty() const;

@@ -8,7 +8,7 @@
 
 Editor::Editor(EditorState& editorState, bool wantsFocus)
 	: mEditorState(editorState), mFocus(NULL), mModal(NULL), mIsDirty(true), mRedraw(true),
-	mParent(NULL), mWantsFocus(wantsFocus), mPopupMessageId(-1)
+	mParent(NULL), mWantsFocus(wantsFocus), mPopupMessageId(-1), mMounted(false)
 {
 	mThisArea.x = 0;
 	mThisArea.y = 0;
@@ -16,6 +16,12 @@ Editor::Editor(EditorState& editorState, bool wantsFocus)
 
 
 Editor::~Editor() {}
+
+
+void Editor::onRendererMount(const Renderer& renderer)
+{
+
+}
 
 
 Editor * Editor::getFocus()
@@ -203,8 +209,8 @@ void Editor::drawModal(Renderer& renderer)
 			modalBorder.y -= MODAL_BORDER;
 			modalBorder.w += MODAL_BORDER * 2;
 			modalBorder.h += MODAL_BORDER * 2;
-			renderer.clearRect(modalBorder, Color(0, 0, 0));
-			renderer.drawRect(modalBorder, Color(255, 255, 255));
+			renderer.clearRect(modalBorder, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
+			renderer.drawRect(modalBorder, renderer.getTheme().getColor(Theme::ColorType::ModalBorder));
 		}
 
 		mModal->draw(renderer, mModal->getArea());
@@ -266,6 +272,13 @@ void Editor::draw(Renderer& renderer, const SDL_Rect& area)
 	// and perhaps also other child Editors.
 
 	invalidateAll();
+
+	// First time rendered
+	if (!mMounted)
+	{
+		this->onRendererMount(renderer);
+		mMounted = true;
+	}
 
 	this->onDraw(renderer, area);
 	drawChildren(renderer, area);

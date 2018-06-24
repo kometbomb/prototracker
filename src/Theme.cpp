@@ -134,7 +134,18 @@ bool Theme::loadDefinition(const std::string& path)
 		"EditCursor",
 		"NonEditCursor",
 		"RowCounter",
+		"SelectedRow",
 		"ModalBackground",
+		"ModalBorder",
+		"ModalTitleBackground",
+		"ModalTitleText",
+		"NormalText",
+		"ScrollBar",
+		"PlayHead",
+		"TextCursor",
+		"TextBackground",
+		"TextFocus",
+		"Oscilloscope",
 		NULL,
 	};
 
