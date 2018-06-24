@@ -231,8 +231,8 @@ void Editor::setModal(Editor *modal)
 	if (mModal != NULL)
 	{
 		mModal->mParent = this;
-		SDL_Rect modalArea = { mThisArea.x + 16, mThisArea.y + 16,
-			mThisArea.w - 32, mThisArea.h - 32 };
+		SDL_Rect modalArea = { mThisArea.x + modalMargin, mThisArea.y + modalMargin,
+			mThisArea.w - modalMargin * 2, mThisArea.h - modalMargin * 2 };
 		mModal->setArea(modalArea);
 		mModal->onModalStatusChange(true);
 	}
