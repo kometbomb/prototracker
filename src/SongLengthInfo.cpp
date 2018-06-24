@@ -20,7 +20,7 @@ SongLengthInfo::~SongLengthInfo()
 void SongLengthInfo::onDraw(Renderer& renderer, const SDL_Rect& area)
 {
 	setDirty(false);
-	
+
 	renderer.renderBackground(area);
-	renderer.renderTextV(area, Color(), "%02x", mSong.getSequenceLength());
+	renderer.renderTextV(area, renderer.getTheme().getColor(Theme::ColorType::NormalText), "%02x", mSong.getSequenceLength());
 }
