@@ -1,5 +1,6 @@
 #include "Debug.h"
 #include "Theme.h"
+#include "Color.h"
 #include <cstdio>
 #include <cstring>
 #include "SDL.h"
@@ -127,7 +128,17 @@ bool Theme::loadDefinition(const std::string& path)
 
 	int lineCounter = 0;
 
-	static const char *names[] = {
+	static const char *colorNames[] = {
+		"CurrentRow",
+		"BlockMarker",
+		"EditCursor",
+		"NonEditCursor",
+		"RowCounter",
+		"ModalBackground",
+		NULL,
+	};
+
+	static const char *elementNames[] = {
 		"PatternEditor",
 		"SequenceEditor",
 		"MacroEditor",
@@ -165,11 +176,36 @@ bool Theme::loadDefinition(const std::string& path)
 			mFontWidth = parameters[0];
 			mFontHeight = parameters[1];
 		}
-		else if (sscanf(line, "%19s \"%99[^\"]\" %d %d", elementName, path, &parameters[0], &parameters[1]) >= 4 && strcmp("GUI", elementName) == 0)
+		else if (sscanf(line, "%19s \"%99[^\"]\" %d %d %d", elementName, path, &parameters[0], &parameters[1], &parameters[2]) >= 4 &&
+			(strcmp("GUI", elementName) == 0 || strcmp("Color", elementName) == 0))
 		{
-			mBackgroundPath = mBasePath + path;
-			mWidth = parameters[0];
-			mHeight = parameters[1];
+			if (strcmp(elementName, "Color") == 0)
+			{
+				ColorType colorType = NumColors;
+				for (int index = 0 ; colorNames[index] ; ++index)
+				{
+					if (strcmp(colorNames[index], path) == 0)
+					{
+						colorType = static_cast<Theme::ColorType>(index);
+						break;
+					}
+				}
+
+				if (colorType < NumColors)
+				{
+					mColors[colorType] = Color(parameters[0], parameters[1], parameters[2]);
+				}
+				else
+				{
+					debug("Unknown color %s", elementName);
+				}
+			}
+			else
+			{
+				mBackgroundPath = mBasePath + path;
+				mWidth = parameters[0];
+				mHeight = parameters[1];
+			}
 		}
 		else if ((sscanf(line, "%19s %d %d %d %d \"%50[^\"]\" \"%50[^\"]\"", elementName, &parameters[0], &parameters[1], &parameters[2], &parameters[3], strParameters[0], strParameters[1]) >= 5
 			&& strcmp("TouchRegion", elementName) == 0)
@@ -178,14 +214,13 @@ bool Theme::loadDefinition(const std::string& path)
 			Element element;
 			element.type = Theme::Unknown;
 
-			for (int index = 0 ; names[index] ; ++index)
+			for (int index = 0 ; elementNames[index] ; ++index)
 			{
-				if (strcmp(names[index], elementName) == 0)
+				if (strcmp(elementNames[index], elementName) == 0)
 				{
 					element.type = static_cast<Theme::ElementType>(index);
 					break;
 				}
-
 			}
 
 			if (element.type != Theme::Unknown)
@@ -208,4 +243,10 @@ bool Theme::loadDefinition(const std::string& path)
 	SDL_RWclose(rw);
 
 	return true;
+}
+
+
+const Color& Theme::getColor(ColorType type) const
+{
+	return mColors[type];
 }

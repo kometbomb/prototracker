@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "Color.h"
 
 class Theme
 {
@@ -29,21 +30,35 @@ public:
 		int parameters[10];
 		char strParameters[10][50];
 	};
-	
+
+	enum ColorType
+	{
+		CurrentRow,
+		BlockMarker,
+		EditCursor,
+		NonEditCursor,
+		RowCounter,
+		ModalBackground,
+		NumColors
+	};
+
+	static const int numColors = ColorType::NumColors;
+
 private:
 	std::string mName;
 	std::string mPath, mBackgroundPath, mFontPath, mBasePath;
 	int mWidth, mHeight, mFontWidth, mFontHeight;
 	std::vector<Element> mElement;
-	
+	Color mColors[numColors];
+
 	bool loadDefinition(const std::string& path);
-	
+
 public:
-	
+
 	Theme();
-	
+
 	bool load(const std::string& path);
-	
+
 	const std::string& getName() const;
 	const std::string& getPath() const;
 	const std::string& getFontPath() const;
@@ -54,4 +69,5 @@ public:
 	int getHeight() const;
 	const Element& getElement(int index) const;
 	int getElementCount() const;
+	const Color& getColor(ColorType type) const;
 };
