@@ -18,6 +18,7 @@ class Editor: public Listener
 {
 public:
 	static const int replacePreviousMessage = -1;
+	static const int modalMargin = 16;
 
 	enum MessageClass
 	{
