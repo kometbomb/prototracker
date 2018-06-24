@@ -78,4 +78,5 @@ public:
 	virtual bool onEvent(SDL_Event& event);
 	virtual void onMessageBoxEvent(const Editor& messageBox, int code);
 	virtual void onModalStatusChange(bool isNowModal);
+	virtual void onRendererMount(const Renderer& renderer);
 };

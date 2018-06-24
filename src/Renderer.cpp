@@ -284,7 +284,15 @@ bool Renderer::setTheme(const Theme& theme)
 	if (!loadFont(theme.getFontPath(), theme.getFontWidth(), theme.getFontHeight()))
 		return false;
 
+	mTheme = theme;
+
 	return true;
+}
+
+
+const Theme& Renderer::getTheme() const
+{
+	return mTheme;
 }
 
 
