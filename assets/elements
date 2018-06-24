@@ -3,21 +3,21 @@ GUI "gui.png" 320 240
 
 # this is a comment
 # element		x 	y	w	h 	track
-Oscilloscope	2 	2 	55 	61 	0
-Oscilloscope 	59 	2 	55 	61 	1
-Oscilloscope 	116 2 	55 	61 	2
-Oscilloscope 	173 2 	55 	61 	3
+Oscilloscope	29 	15 	51 	30 	0
+Oscilloscope 	81	15	51 	30 	1
+Oscilloscope 	133	15  51  30	2
+Oscilloscope 	185 15	51 	30 	3
 
 # element     	x 	y  	w	h  	m1	m2
-PatternEditor	3 	78	232	160	4	4
-MacroEditor		241	78 	76 	160	4 	4
-SequenceEditor	234	3 	82 	40	2 	0
+PatternEditor	3 	47	232	193 4	4
+MacroEditor		240	61 	76 	178	4 	4
+SequenceEditor	237	3	82 	40	2 	0
 
 # element     	x 	y  	w	h
-SongName		4	67 	128	8
-MacroName		258	67 	56 	8
-MacroNumber		241	67	16	8
-SequencePosition	235	54	16	8
-SequenceLength	256	54 16	8
-PatternLength	277	54	16	8
-OctaveNumber	298	54	16	8
+SongName		8	4 	128	8
+MacroName		260	49 	56 	8
+MacroNumber		240	49	16	8
+SequencePosition	192	4	16	8
+SequenceLength		215	4 	16	8
+PatternLength	7	34 	16	8
+OctaveNumber	7	19	16	8
