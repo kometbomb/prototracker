@@ -24,8 +24,6 @@ CommandSelector::CommandSelector(EditorState& editorState, const MainEditor& mai
 	mFilterField->setAlwaysShowCursor(true);
 
 	mFilterLabel = new Label(editorState);
-	mFilterLabel->setColor(Color(0, 0, 0));
-	mFilterLabel->setBackground(Color(255, 255, 255));
 	mFilterLabel->setText(">");
 	addChild(mFilterLabel, 0, 8, 8, 8);
 
@@ -39,6 +37,28 @@ CommandSelector::~CommandSelector()
 {
 	delete mFilterField;
 	delete mFilterLabel;
+}
+
+
+void CommandSelector::onRendererMount(const Renderer& renderer)
+{
+	GenericSelector::onRendererMount(renderer);
+
+	mFilterLabel->setColor(renderer.getTheme().getColor(Theme::ColorType::ModalTitleText));
+	mFilterLabel->setBackground(renderer.getTheme().getColor(Theme::ColorType::ModalTitleBackground));
+
+	SDL_Rect filterLabelArea = mFilterLabel->getArea();
+	filterLabelArea.y = mLabel->getArea().h;
+	filterLabelArea.w = renderer.getFontWidth();
+	filterLabelArea.h = renderer.getFontHeight();
+	mFilterLabel->setArea(filterLabelArea);
+
+	SDL_Rect filterArea = mFilterField->getArea();
+	filterArea.x = filterArea.x + filterArea.w;
+	filterArea.y = filterArea.y;
+	filterArea.w = mThisArea.w - filterArea.x;
+	filterArea.h = renderer.getFontHeight();
+	mFilterField->setArea(filterArea);
 }
 
 
@@ -60,9 +80,9 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 	Color color;
 
 	if (isSelected)
-		color = Color(255, 0, 0);
+		color = renderer.getTheme().getColor(Theme::ColorType::SelectedRow);
 
-	renderer.clearRect(area, Color(0, 0, 0));
+	renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
 
 	renderer.renderTextV(area, color, "%s: %s", commandItem.command.context, commandItem.command.name);
 
@@ -71,8 +91,8 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 		const char *keyName = SDL_GetKeyName(commandItem.command.sym);
 		SDL_Rect textRect = renderer.getTextRect(keyName);
 		SDL_Rect shortcutArea = { area.x + area.w - textRect.w, area.y, textRect.w, textRect.h };
-		renderer.clearRect(shortcutArea, Color(32, 32, 32));
-		renderer.renderTextV(shortcutArea, color, keyName);
+		renderer.clearRect(shortcutArea, renderer.getTheme().getColor(Theme::ColorType::CommandShortcutBackground));
+		renderer.renderTextV(shortcutArea, renderer.getTheme().getColor(Theme::ColorType::CommandShortcut), keyName);
 
 		if (commandItem.command.mod != 0)
 		{
@@ -92,8 +112,8 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 					const char *keyName = modMap[i].name;
 					SDL_Rect textRect = renderer.getTextRect(keyName);
 					SDL_Rect modifierArea = { left - textRect.w - 4, area.y, textRect.w, textRect.h };
-					renderer.clearRect(modifierArea, Color(32, 32, 32));
-					renderer.renderTextV(modifierArea, color, keyName);
+					renderer.clearRect(modifierArea, renderer.getTheme().getColor(Theme::ColorType::CommandShortcutBackground));
+					renderer.renderTextV(modifierArea, renderer.getTheme().getColor(Theme::ColorType::CommandShortcut), keyName);
 					left = modifierArea.x;
 				}
 			}

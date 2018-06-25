@@ -20,7 +20,7 @@ PatternLengthInfo::~PatternLengthInfo()
 void PatternLengthInfo::onDraw(Renderer& renderer, const SDL_Rect& area)
 {
 	setDirty(false);
-	
+
 	renderer.renderBackground(area);
-	renderer.renderTextV(area, Color(), "%02x", static_cast<int>(mSong.getPatternLength()));
+	renderer.renderTextV(area, renderer.getTheme().getColor(Theme::ColorType::NormalText), "%02x", static_cast<int>(mSong.getPatternLength()));
 }

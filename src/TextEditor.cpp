@@ -17,10 +17,10 @@ TextEditor::~TextEditor()
 void TextEditor::setIsEditing(bool state)
 {
 	mIsEditing = state;
-	
+
 	if (state)
 		SDL_StartTextInput();
-	else 
+	else
 		SDL_StopTextInput();
 }
 
@@ -49,12 +49,12 @@ bool TextEditor::onEvent(SDL_Event& event)
 				{
 					if (event.key.keysym.sym < 127)
 						typeText((std::string() + static_cast<char>(event.key.keysym.sym)).c_str());
-					
+
 					return true;
 				}
 #endif
 				break;
-			
+
 			case SDL_TEXTINPUT:
 				typeText(event.text.text);
 				return true;
@@ -69,7 +69,7 @@ bool TextEditor::onEvent(SDL_Event& event)
 				setDirty(true);
 				return true;
 				break;
-				
+
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_RETURN)
 				{
@@ -88,23 +88,24 @@ bool TextEditor::onEvent(SDL_Event& event)
 void TextEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 {
 	setDirty(false);
-	
+
 	if (hasFocus())
-		renderer.clearRect(area, Color(255,0,0));
+		renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::TextFocus));
 	else
 	{
 		if (mSolidBackground)
-			renderer.clearRect(area, Color(0,0,0));
+			renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::TextBackground));
 		else
 			renderer.renderBackground(area);
 	}
-		
-	renderer.renderText(area, Color(), mBuffer);
-	
+
+	renderer.renderText(area, renderer.getTheme().getColor(Theme::ColorType::NormalText), mBuffer);
+
 	if ((hasFocus() && mIsEditing) || mAlwaysShowCursor)
 	{
-		SDL_Rect cursor = { area.x + 8 * static_cast<int>(strlen(mBuffer)), area.y, 8, 8 };
-		renderer.clearRect(cursor, Color(255,255,255));
+		SDL_Rect cursor = { area.x + renderer.getFontWidth() * static_cast<int>(strlen(mBuffer)), area.y,
+			renderer.getFontWidth(), renderer.getFontHeight() };
+		renderer.clearRect(cursor, renderer.getTheme().getColor(Theme::ColorType::TextCursor));
 	}
 }
 
@@ -133,13 +134,13 @@ void TextEditor::typeText(const char *text)
 void TextEditor::handleBackspace()
 {
 	int length = strlen(mBuffer);
-	
+
 	if (length > 0)
 	{
 		mBuffer[length - 1] = '\0';
 		setDirty(true);
 	}
-	
+
 }
 
 
@@ -153,6 +154,5 @@ void TextEditor::setText(const char *text)
 void TextEditor::setAlwaysShowCursor(bool state)
 {
 	mAlwaysShowCursor = state;
-	
-}
 
+}

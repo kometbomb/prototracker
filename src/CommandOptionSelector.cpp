@@ -24,8 +24,6 @@ CommandOptionSelector::CommandOptionSelector(EditorState& editorState, const Com
 	mFilterField->setAlwaysShowCursor(true);
 
 	mFilterLabel = new Label(editorState);
-	mFilterLabel->setColor(Color(0, 0, 0));
-	mFilterLabel->setBackground(Color(255, 255, 255));
 	mFilterLabel->setText(">");
 	addChild(mFilterLabel, 0, 8, 8, 8);
 
@@ -39,6 +37,28 @@ CommandOptionSelector::~CommandOptionSelector()
 {
 	delete mFilterField;
 	delete mFilterLabel;
+}
+
+
+void CommandOptionSelector::onRendererMount(const Renderer& renderer)
+{
+	GenericSelector::onRendererMount(renderer);
+
+	mFilterLabel->setColor(renderer.getTheme().getColor(Theme::ColorType::ModalTitleText));
+	mFilterLabel->setBackground(renderer.getTheme().getColor(Theme::ColorType::ModalTitleBackground));
+
+	SDL_Rect filterLabelArea = mFilterLabel->getArea();
+	filterLabelArea.y = mLabel->getArea().h;
+	filterLabelArea.w = renderer.getFontWidth();
+	filterLabelArea.h = renderer.getFontHeight();
+	mFilterLabel->setArea(filterLabelArea);
+
+	SDL_Rect filterArea = mFilterField->getArea();
+	filterArea.x = filterArea.x + filterArea.w;
+	filterArea.y = filterArea.y;
+	filterArea.w = mThisArea.w - filterArea.x;
+	filterArea.h = renderer.getFontHeight();
+	mFilterField->setArea(filterArea);
 }
 
 
@@ -60,9 +80,9 @@ void CommandOptionSelector::renderItem(Renderer& renderer, const SDL_Rect& area,
 	Color color;
 
 	if (isSelected)
-		color = Color(255, 0, 0);
+		color = renderer.getTheme().getColor(Theme::ColorType::SelectedRow);
 
-	renderer.clearRect(area, Color(0, 0, 0));
+	renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
 
 	int width = area.w / 8 - 10;
 

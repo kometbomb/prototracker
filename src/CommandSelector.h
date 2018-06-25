@@ -45,4 +45,5 @@ public:
 
 	virtual void onModalStatusChange(bool isNowModal);
 	virtual bool onEvent(SDL_Event& event);
+	virtual void onRendererMount(const Renderer& renderer);
 };

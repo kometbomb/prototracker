@@ -6,6 +6,7 @@ struct Color;
 struct Theme;
 
 #include <string>
+#include "Theme.h"
 
 class Renderer
 {
@@ -13,16 +14,17 @@ class Renderer
 	SDL_Renderer *mRenderer;
 	SDL_Texture *mFont, *mBackground, *mIntermediateTexture;
 	int mGuiWidth, mGuiHeight, mFontWidth, mFontHeight;
+	Theme mTheme;
 
 	bool loadFont(const std::string& path, int charWidth, int charHeight);
 	bool loadGui(const std::string& path, int width, int height);
 
 public:
-
 	Renderer();
 	~Renderer();
 
 	bool setTheme(const Theme& theme);
+	const Theme& getTheme() const;
 	void clearRect(const SDL_Rect& rect, const Color& color);
 	void drawRect(const SDL_Rect& rect, const Color& color);
 	void setClip(const SDL_Rect& area);

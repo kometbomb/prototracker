@@ -21,5 +21,5 @@ void {{Name}}::onDraw(Renderer& renderer, const SDL_Rect& area)
 	setDirty(false);
 
 	renderer.renderBackground(area);
-	renderer.renderText(area, Color(), "{{Name}}");
+	renderer.renderText(area, renderer.getTheme().getColor(Theme::ColorType::NormalText), "{{Name}}");
 }
