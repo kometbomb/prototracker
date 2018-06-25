@@ -208,7 +208,7 @@ bool Theme::loadDefinition(const std::string& path)
 				}
 				else
 				{
-					debug("Unknown color %s", elementName);
+					debug("Unknown color %s", path);
 				}
 			}
 			else
