@@ -630,7 +630,7 @@ void TrackEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 			else if (isRowActive(track, row))
 			{
 				// Highlight current play row green
-				renderer.renderRect(textArea, Color(0,64,0));
+				renderer.renderRect(textArea, renderer.getTheme().getColor(Theme::ColorType::PlayHead));
 			}
 
 			renderPatternRow(renderer, textArea, patternRow, color);
