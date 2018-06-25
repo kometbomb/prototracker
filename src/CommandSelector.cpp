@@ -54,8 +54,8 @@ void CommandSelector::onRendererMount(const Renderer& renderer)
 	mFilterLabel->setArea(filterLabelArea);
 
 	SDL_Rect filterArea = mFilterField->getArea();
-	filterArea.x = filterArea.x + filterArea.w;
-	filterArea.y = filterArea.y;
+	filterArea.x = filterLabelArea.x + filterLabelArea.w;
+	filterArea.y = filterLabelArea.y;
 	filterArea.w = mThisArea.w - filterArea.x;
 	filterArea.h = renderer.getFontHeight();
 	mFilterField->setArea(filterArea);
