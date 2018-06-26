@@ -90,22 +90,22 @@ void TextEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 	setDirty(false);
 
 	if (hasFocus())
-		renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::TextFocus));
+		renderer.clearRect(area, Theme::ColorType::TextFocus);
 	else
 	{
 		if (mSolidBackground)
-			renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::TextBackground));
+			renderer.clearRect(area, Theme::ColorType::TextBackground);
 		else
 			renderer.renderBackground(area);
 	}
 
-	renderer.renderText(area, renderer.getTheme().getColor(Theme::ColorType::NormalText), mBuffer);
+	renderer.renderText(area, Theme::ColorType::NormalText, mBuffer);
 
 	if ((hasFocus() && mIsEditing) || mAlwaysShowCursor)
 	{
 		SDL_Rect cursor = { area.x + renderer.getFontWidth() * static_cast<int>(strlen(mBuffer)), area.y,
 			renderer.getFontWidth(), renderer.getFontHeight() };
-		renderer.clearRect(cursor, renderer.getTheme().getColor(Theme::ColorType::TextCursor));
+		renderer.clearRect(cursor, Theme::ColorType::TextCursor);
 	}
 }
 

@@ -44,7 +44,7 @@ void AudioDeviceSelector::renderItem(Renderer& renderer, const SDL_Rect& area, c
 	if (isSelected)
 		color = renderer.getTheme().getColor(Theme::ColorType::SelectedRow);
 
-	renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
+	renderer.clearRect(area, Theme::ColorType::ModalBackground);
 
 	int width = area.w / renderer.getFontHeight() - 10;
 

@@ -209,8 +209,8 @@ void Editor::drawModal(Renderer& renderer)
 			modalBorder.y -= MODAL_BORDER;
 			modalBorder.w += MODAL_BORDER * 2;
 			modalBorder.h += MODAL_BORDER * 2;
-			renderer.clearRect(modalBorder, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
-			renderer.drawRect(modalBorder, renderer.getTheme().getColor(Theme::ColorType::ModalBorder));
+			renderer.clearRect(modalBorder, Theme::ColorType::ModalBackground);
+			renderer.drawRect(modalBorder, Theme::ColorType::ModalBorder);
 		}
 
 		mModal->draw(renderer, mModal->getArea());

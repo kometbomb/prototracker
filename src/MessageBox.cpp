@@ -65,7 +65,7 @@ bool MessageBox::onEvent(SDL_Event& event)
 void MessageBox::onDraw(Renderer& renderer, const SDL_Rect& area)
 {
 	if (shouldRedrawBackground())
-		renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
+		renderer.clearRect(area, Theme::ColorType::ModalBackground);
 }
 
 int MessageBox::getId() const
