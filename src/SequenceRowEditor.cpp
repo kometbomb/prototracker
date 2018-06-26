@@ -254,10 +254,10 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 	for (int row = firstVisible ; row <= lastVisible ; ++row)
 	{
 		SDL_Rect textArea = {area.x, (row - mTrackEditorState.currentRow) * rowHeight + area.y + centerY, trackWidth, rowHeight};
-		Color color = renderer.getTheme().getColor(Theme::ColorType::RowCounter);
+		Theme::ColorType color = Theme::ColorType::RowCounter;
 
 		if (row == mTrackEditorState.currentRow)
-			color = renderer.getTheme().getColor(Theme::ColorType::CurrentRow);
+			color = Theme::ColorType::CurrentRow;
 
 		renderer.renderTextV(textArea, color, "%02d", row);
 	}
@@ -269,12 +269,12 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 		{
 			SDL_Rect textArea = {track * trackWidth + area.x + rowNumberWidth, (row - mTrackEditorState.currentRow) * rowHeight + area.y + centerY, trackWidth, rowHeight};
 
-			Color color;
+			Theme::ColorType color = Theme::ColorType::NormalText;
 
 			if (row == mTrackEditorState.currentRow)
 			{
 				// Black text color
-				color = renderer.getTheme().getColor(Theme::ColorType::CurrentRow);
+				color = Theme::ColorType::CurrentRow;
 			}
 			else if (isRowActive(track, row))
 			{
