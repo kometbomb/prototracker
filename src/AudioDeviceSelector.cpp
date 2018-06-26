@@ -46,7 +46,7 @@ void AudioDeviceSelector::renderItem(Renderer& renderer, const SDL_Rect& area, c
 
 	renderer.clearRect(area, Theme::ColorType::ModalBackground);
 
-	int width = area.w / renderer.getFontHeight() - 10;
+	int width = area.w / renderer.getFontWidth() - 10;
 
 	renderer.renderTextV(area, color, "%s", deviceItem.name.c_str());
 }
