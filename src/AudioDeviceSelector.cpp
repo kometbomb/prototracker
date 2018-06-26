@@ -39,10 +39,10 @@ void AudioDeviceSelector::reject(bool isFinal)
 void AudioDeviceSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const Item& item, bool isSelected)
 {
 	const AudioDeviceItem& deviceItem = static_cast<const AudioDeviceItem&>(item);
-	Color color;
+	Theme::ColorType color = Theme::ColorType::NormalText;
 
 	if (isSelected)
-		color = renderer.getTheme().getColor(Theme::ColorType::SelectedRow);
+		color = Theme::ColorType::SelectedRow;
 
 	renderer.clearRect(area, Theme::ColorType::ModalBackground);
 
