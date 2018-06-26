@@ -248,7 +248,7 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 		int columnX = renderer.getFontWidth() * mTrackEditorState.currentColumn;
 
 		SDL_Rect textArea = {mTrackEditorState.currentTrack * trackWidth + area.x + rowNumberWidth + columnX, area.y + centerY, columnWidth, rowHeight};
-		renderer.renderRect(textArea, mEditorState.editMode ? Theme::ColorType::EditCursor : Theme::ColorType::NonEditCursor);
+		renderer.clearRect(textArea, mEditorState.editMode ? Theme::ColorType::EditCursor : Theme::ColorType::NonEditCursor);
 	}
 
 	for (int row = firstVisible ; row <= lastVisible ; ++row)
@@ -279,7 +279,7 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 			else if (isRowActive(track, row))
 			{
 				// Highlight current play row green
-				renderer.renderRect(textArea, Theme::ColorType::PlayHead);
+				renderer.clearRect(textArea, Theme::ColorType::PlayHead);
 			}
 
 			renderer.renderTextV(textArea, color, "%02x", sequenceRow.pattern[track]);
