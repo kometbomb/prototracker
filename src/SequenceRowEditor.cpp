@@ -228,16 +228,16 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 		int columnX = renderer.getFontWidth() * mTrackEditorState.currentColumn;
 
 		SDL_Rect textArea = {mTrackEditorState.currentTrack * trackWidth + area.x + rowNumberWidth + columnX, area.y + centerY, columnWidth, rowHeight};
-		renderer.renderRect(textArea, renderer.getTheme().getColor(mEditorState.editMode ? Theme::ColorType::EditCursor : Theme::ColorType::NonEditCursor));
+		renderer.clearRect(textArea, mEditorState.editMode ? Theme::ColorType::EditCursor : Theme::ColorType::NonEditCursor);
 	}
 
 	for (int row = firstVisible ; row <= lastVisible ; ++row)
 	{
 		SDL_Rect textArea = {area.x, (row - mTrackEditorState.currentRow) * rowHeight + area.y + centerY, trackWidth, rowHeight};
-		Color color = renderer.getTheme().getColor(Theme::ColorType::RowCounter);
+		Theme::ColorType color = Theme::ColorType::RowCounter;
 
 		if (row == mTrackEditorState.currentRow)
-			color = renderer.getTheme().getColor(Theme::ColorType::CurrentRow);
+			color = Theme::ColorType::CurrentRow;
 
 		renderer.renderTextV(textArea, color, "%02d", row);
 	}
@@ -249,17 +249,17 @@ void SequenceRowEditor::onDraw(Renderer& renderer, const SDL_Rect& area)
 		{
 			SDL_Rect textArea = {track * trackWidth + area.x + rowNumberWidth, (row - mTrackEditorState.currentRow) * rowHeight + area.y + centerY, trackWidth, rowHeight};
 
-			Color color;
+			Theme::ColorType color = Theme::ColorType::NormalText;
 
 			if (row == mTrackEditorState.currentRow)
 			{
 				// Black text color
-				color = renderer.getTheme().getColor(Theme::ColorType::CurrentRow);
+				color = Theme::ColorType::CurrentRow;
 			}
 			else if (isRowActive(track, row))
 			{
 				// Highlight current play row green
-				renderer.renderRect(textArea, renderer.getTheme().getColor(Theme::ColorType::PlayHead));
+				renderer.clearRect(textArea, Theme::ColorType::PlayHead);
 			}
 
 			renderer.renderTextV(textArea, color, "%02x", sequenceRow.pattern[track]);

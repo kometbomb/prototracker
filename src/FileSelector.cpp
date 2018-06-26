@@ -124,12 +124,12 @@ void FileSelector::reject(bool isFinal)
 void FileSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const Item& item, bool isSelected)
 {
 	const FileItem& fileItem = static_cast<const FileItem&>(item);
-	Color color;
+	Theme::ColorType color = Theme::ColorType::NormalText;
 
 	if (isSelected)
-		color = renderer.getTheme().getColor(Theme::ColorType::SelectedRow);
+		color = Theme::ColorType::SelectedRow;
 
-	renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
+	renderer.clearRect(area, Theme::ColorType::ModalBackground);
 
 	int width = area.w / renderer.getFontWidth() - 10;
 

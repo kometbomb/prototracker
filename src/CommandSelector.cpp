@@ -77,12 +77,12 @@ void CommandSelector::reject(bool isFinal)
 void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const Item& item, bool isSelected)
 {
 	const CommandItem& commandItem = static_cast<const CommandItem&>(item);
-	Color color;
+	Theme::ColorType color = Theme::ColorType::NormalText;
 
 	if (isSelected)
-		color = renderer.getTheme().getColor(Theme::ColorType::SelectedRow);
+		color = Theme::ColorType::SelectedRow;
 
-	renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
+	renderer.clearRect(area, Theme::ColorType::ModalBackground);
 
 	renderer.renderTextV(area, color, "%s: %s", commandItem.command.context, commandItem.command.name);
 
@@ -91,8 +91,8 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 		const char *keyName = SDL_GetKeyName(commandItem.command.sym);
 		SDL_Rect textRect = renderer.getTextRect(keyName);
 		SDL_Rect shortcutArea = { area.x + area.w - textRect.w, area.y, textRect.w, textRect.h };
-		renderer.clearRect(shortcutArea, renderer.getTheme().getColor(Theme::ColorType::CommandShortcutBackground));
-		renderer.renderTextV(shortcutArea, renderer.getTheme().getColor(Theme::ColorType::CommandShortcut), keyName);
+		renderer.clearRect(shortcutArea, Theme::ColorType::CommandShortcutBackground);
+		renderer.renderTextV(shortcutArea, Theme::ColorType::CommandShortcut, keyName);
 
 		if (commandItem.command.mod != 0)
 		{
@@ -112,8 +112,8 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 					const char *keyName = modMap[i].name;
 					SDL_Rect textRect = renderer.getTextRect(keyName);
 					SDL_Rect modifierArea = { left - textRect.w - 4, area.y, textRect.w, textRect.h };
-					renderer.clearRect(modifierArea, renderer.getTheme().getColor(Theme::ColorType::CommandShortcutBackground));
-					renderer.renderTextV(modifierArea, renderer.getTheme().getColor(Theme::ColorType::CommandShortcut), keyName);
+					renderer.clearRect(modifierArea, Theme::ColorType::CommandShortcutBackground);
+					renderer.renderTextV(modifierArea, Theme::ColorType::CommandShortcut, keyName);
 					left = modifierArea.x;
 				}
 			}

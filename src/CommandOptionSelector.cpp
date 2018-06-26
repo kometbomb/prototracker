@@ -54,7 +54,7 @@ void CommandOptionSelector::onRendererMount(const Renderer& renderer)
 	mFilterLabel->setArea(filterLabelArea);
 
 	SDL_Rect filterArea = mFilterField->getArea();
-	filterArea.x = filterArea.x + filterArea.w;
+	filterArea.x = filterLabelArea.x + filterLabelArea.w;
 	filterArea.y = filterArea.y;
 	filterArea.w = mThisArea.w - filterArea.x;
 	filterArea.h = renderer.getFontHeight();
@@ -77,12 +77,12 @@ void CommandOptionSelector::reject(bool isFinal)
 void CommandOptionSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const Item& item, bool isSelected)
 {
 	const CommandOption& commandOption = static_cast<const CommandOption&>(item);
-	Color color;
+	Theme::ColorType color = Theme::ColorType::NormalText;
 
 	if (isSelected)
-		color = renderer.getTheme().getColor(Theme::ColorType::SelectedRow);
+		color = Theme::ColorType::SelectedRow;
 
-	renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
+	renderer.clearRect(area, Theme::ColorType::ModalBackground);
 
 	int width = area.w / 8 - 10;
 

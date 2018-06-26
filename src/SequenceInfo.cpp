@@ -22,5 +22,5 @@ void SequenceInfo::onDraw(Renderer& renderer, const SDL_Rect& area)
 	setDirty(false);
 
 	renderer.renderBackground(area);
-	renderer.renderTextV(area, renderer.getTheme().getColor(Theme::ColorType::NormalText), "%02x", static_cast<int>(mEditorState.sequenceEditor.currentRow));
+	renderer.renderTextV(area, Theme::ColorType::NormalText, "%02x", static_cast<int>(mEditorState.sequenceEditor.currentRow));
 }

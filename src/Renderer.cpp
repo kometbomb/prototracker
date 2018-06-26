@@ -54,10 +54,22 @@ void Renderer::clearRect(const SDL_Rect& rect, const Color& color)
 }
 
 
+void Renderer::clearRect(const SDL_Rect& rect, const Theme::ColorType& color)
+{
+	clearRect(rect, getTheme().getColor(color));
+}
+
+
 void Renderer::drawRect(const SDL_Rect& rect, const Color& color)
 {
 	setColor(color);
 	SDL_RenderDrawRect(mRenderer, &rect);
+}
+
+
+void Renderer::drawRect(const SDL_Rect& rect, const Theme::ColorType& color)
+{
+	drawRect(rect, getTheme().getColor(color));
 }
 
 
@@ -72,6 +84,17 @@ void Renderer::renderTextV(const SDL_Rect& position, const Color& color, const c
 }
 
 
+void Renderer::renderTextV(const SDL_Rect& position, const Theme::ColorType& color, const char * text, ...)
+{
+	char dest[1024];
+    va_list argptr;
+    va_start(argptr, text);
+    vsnprintf(dest, sizeof(dest), text, argptr);
+    va_end(argptr);
+    renderText(position, getTheme().getColor(color), dest);
+}
+
+
 void Renderer::renderText(const SDL_Rect& position, const Color& color, const char * text)
 {
 	SDL_Rect charArea = { position.x, position.y, getFontWidth(), getFontHeight() };
@@ -82,6 +105,12 @@ void Renderer::renderText(const SDL_Rect& position, const Color& color, const ch
 
 		charArea.x += charArea.w;
 	}
+}
+
+
+void Renderer::renderText(const SDL_Rect& position, const Theme::ColorType& color, const char * text)
+{
+	renderText(position, getTheme().getColor(color), text);
 }
 
 
@@ -170,13 +199,6 @@ void Renderer::renderBackground(const SDL_Rect& rect)
 }
 
 
-void Renderer::renderLine(int x1, int y1, int x2, int y2, const Color& color)
-{
-	setColor(color);
-	SDL_RenderDrawLine(mRenderer, x1, y1, x2, y2);
-}
-
-
 void Renderer::beginRendering()
 {
 	// Start rendering, render to an intermediate texture for chunky scaled pixels
@@ -184,10 +206,29 @@ void Renderer::beginRendering()
 }
 
 
+void Renderer::renderLine(int x1, int y1, int x2, int y2, const Color& color)
+{
+	setColor(color);
+	SDL_RenderDrawLine(mRenderer, x1, y1, x2, y2);
+}
+
+
+void Renderer::renderLine(int x1, int y1, int x2, int y2, const Theme::ColorType& color)
+{
+	renderLine(x1, y1, x2, y2, getTheme().getColor(color));
+}
+
+
 void Renderer::renderPoints(const SDL_Point* points, int count, const Color& color)
 {
 	setColor(color);
 	SDL_RenderDrawPoints(mRenderer, points, count);
+}
+
+
+void Renderer::renderPoints(const SDL_Point* points, int count, const Theme::ColorType& color)
+{
+	renderPoints(points, count, getTheme().getColor(color));
 }
 
 

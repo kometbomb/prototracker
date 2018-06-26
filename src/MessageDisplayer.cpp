@@ -35,10 +35,10 @@ void MessageDisplayer::onDraw(Renderer& renderer, const SDL_Rect& area)
 		if (frameArea.w > 0 && frameArea.h > 0)
 		{
 			renderer.setClip(frameArea);
-			renderer.clearRect(frameArea, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
-			renderer.drawRect(frameArea, renderer.getTheme().getColor(Theme::ColorType::ModalBorder));
+			renderer.clearRect(frameArea, Theme::ColorType::ModalBackground);
+			renderer.drawRect(frameArea, Theme::ColorType::ModalBorder);
 
-			renderer.renderText(finalArea, renderer.getTheme().getColor(Theme::ColorType::NormalText), message->text.c_str());
+			renderer.renderText(finalArea, Theme::ColorType::NormalText, message->text.c_str());
 		}
 	}
 }
