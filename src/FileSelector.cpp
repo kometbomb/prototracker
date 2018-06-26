@@ -129,7 +129,7 @@ void FileSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const It
 	if (isSelected)
 		color = renderer.getTheme().getColor(Theme::ColorType::SelectedRow);
 
-	renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
+	renderer.clearRect(area, Theme::ColorType::ModalBackground);
 
 	int width = area.w / renderer.getFontWidth() - 10;
 

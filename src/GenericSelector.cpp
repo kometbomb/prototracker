@@ -189,7 +189,7 @@ void GenericSelector::onDraw(Renderer& renderer, const SDL_Rect& area)
 {
 	if (shouldRedrawBackground())
 	{
-		renderer.clearRect(area, renderer.getTheme().getColor(Theme::ColorType::ModalBackground));
+		renderer.clearRect(area, Theme::ColorType::ModalBackground);
 	}
 
 	int firstVisible, lastVisible;
@@ -212,7 +212,7 @@ void GenericSelector::onDraw(Renderer& renderer, const SDL_Rect& area)
 	int scrollbarBottom = areaHeight * (lastVisible + 1) / std::max(1, static_cast<int>(mItems.size()));
 	SDL_Rect scrollbarArea = {area.x + area.w - 3, area.y + topElementsHeight + scrollbarTop,
 		2, scrollbarBottom - scrollbarTop};
-	renderer.clearRect(scrollbarArea, renderer.getTheme().getColor(Theme::ColorType::ScrollBar));
+	renderer.clearRect(scrollbarArea, Theme::ColorType::ScrollBar);
 }
 
 
