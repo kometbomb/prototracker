@@ -151,25 +151,25 @@ int Mixer::queueThread(void *data)
 int Mixer::queueThreadInner()
 {
 	debug("Running audio thread (deviceId = %d) %d", mDeviceId, mBufferSize);
+	Uint64 lastUpdate = SDL_GetPerformanceCounter();
+	Uint64 perfFreq = SDL_GetPerformanceFrequency();
+	int minSliceLength = queueGranularityMs * mSampleRate / 1000;
 
 	while (isThreadRunning())
 	{
-		Uint32 queueSize = SDL_GetQueuedAudioSize(mDeviceId);
-		debug("size: %d", queueSize);
-		if (queueSize == 0 || queueSize < mConvert->len_cvt * 4)
-		{
+		// Buffer either the minimum buffer length
+		// or granularity's worth of audio
+		int requestedSamples = std::max(
+			queueLengthMs * mSampleRate / 1000 - static_cast<int>(SDL_GetQueuedAudioSize(mDeviceId) / sizeof(Sample16)),
+			static_cast<int>((SDL_GetPerformanceCounter() - lastUpdate) * mSampleRate / perfFreq)
+		);
+		int samples = std::min(mBufferSize, requestedSamples);
 
-			int bufferLength = mBufferSize * sizeof(Sample16);
-
-			debug("queuing: %d (%d)", bufferLength, mBufferSize);
+		if (samples >= minSliceLength) {
+			lastUpdate = SDL_GetPerformanceCounter();
+			int bufferLength = samples * sizeof(Sample16);
 
 			audioCallback(reinterpret_cast<void*>(this), reinterpret_cast<unsigned char*>(mBuffer), bufferLength);
-
-			/*for (int i = 0 ; i < mBufferSize ; ++i)
-			{
-				mBuffer[i].left = 10000;
-				mBuffer[i].right = 0;
-			}*/
 
 			if (SDL_QueueAudio(mDeviceId, mBuffer, mConvert->len_cvt) != 0)
 			{
@@ -178,7 +178,7 @@ int Mixer::queueThreadInner()
 		}
 		else
 		{
-			SDL_Delay(queueGranularityMs / 2);
+			SDL_Delay(1);
 		}
 	}
 
