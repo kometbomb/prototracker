@@ -11,6 +11,7 @@
 #include "Emscripten.h"
 #include "Theme.h"
 #include "Context.h"
+#include "MIDIHandler.h"
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
@@ -230,6 +231,9 @@ extern "C" int main(int argc, char **argv)
 	context.gamepad.initControllers();
 	context.ready = true;
 
+	MIDIHandler midi;
+	midi.run();
+
 	if (!context.mainEditor.loadState())
 		context.mainEditor.loadSong("assets/dub.song");
 
@@ -243,6 +247,8 @@ extern "C" int main(int argc, char **argv)
 	}
 
 	context.mixer.stopThread();
+
+	midi.stop();
 
 #endif
 
