@@ -100,7 +100,7 @@ bool Mixer::initAudio(const char *deviceName)
 
 	mSampleRate = have.freq;
 	mSamples = 0;
-	mBufferSize = queueGranularityMs * mSampleRate / 1000;
+	mBufferSize = queueLengthTargetMs * mSampleRate / 1000;
 
 	debug("sampleRate = %d buffer = %d", mSampleRate, mBufferSize);
 
@@ -158,11 +158,15 @@ int Mixer::queueThreadInner()
 	while (isThreadRunning())
 	{
 		// Buffer either the minimum buffer length
-		// or granularity's worth of audio
-		int requestedSamples = std::max(
-			queueLengthMs * mSampleRate / 1000 - static_cast<int>(SDL_GetQueuedAudioSize(mDeviceId) / sizeof(Sample16)),
-			static_cast<int>((SDL_GetPerformanceCounter() - lastUpdate) * mSampleRate / perfFreq)
-		);
+		// or if we are running low on buffer the target length
+
+		int requestedSamples;
+
+		if (queueLengthLowLimitMs * mSampleRate / 1000 > static_cast<int>(SDL_GetQueuedAudioSize(mDeviceId) / sizeof(Sample16)))
+			requestedSamples = queueLengthTargetMs * mSampleRate / 1000;
+		else
+			requestedSamples = (SDL_GetPerformanceCounter() - lastUpdate) * mSampleRate / perfFreq;
+
 		int samples = std::min(mBufferSize, requestedSamples);
 
 		if (samples >= minSliceLength) {
