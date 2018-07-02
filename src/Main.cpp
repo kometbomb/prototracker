@@ -11,7 +11,6 @@
 #include "Emscripten.h"
 #include "Theme.h"
 #include "Context.h"
-#include "MIDIHandler.h"
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
@@ -49,11 +48,14 @@ Context::Context()
 
 	themeLoaded = true;
 	previousTick = SDL_GetTicks();
+
+	midiHandler.run();
 }
 
 
 Context::~Context()
 {
+	midiHandler.stop();
 }
 
 

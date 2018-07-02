@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MainEditor.h"
+#include "MIDIHandler.h"
 #include "Renderer.h"
 #include "Mixer.h"
 #include "Song.h"
@@ -15,17 +16,18 @@ struct Context
 	bool done;
 	bool themeLoaded;
 	Uint32 previousTick;
-	
+
 	Song song;
 	Player player;
 	Synth synth;
-	
+
 	EditorState editorState;
 	MainEditor mainEditor;
 	Renderer renderer;
 	Mixer mixer;
 	Gamepad gamepad;
-	
+	MIDIHandler midiHandler;
+
 	Context();
 	~Context();
 };
