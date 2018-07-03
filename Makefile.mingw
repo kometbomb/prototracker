@@ -1,5 +1,6 @@
 OUTPUT=prototracker.exe
-SRC=src/*.cpp
+PLATFORM=windows
+SRC=src/*.cpp src/$(PLATFORM)/*.cpp
 
 $(OUTPUT): $(SRC) src/*.h
-	g++ -DSCALE=2 -O3 -Wformat -std=c++11 -o $@ $(SRC) -lwinmm -lmingw32 -lSDL2_image -lSDL2main -lSDL2 -Ic:/mingw/include/SDL2 -Ic:/tdm-gcc-32/include/SDL2 -s
+	g++ -DSCALE=2 -O3 -Wformat -std=c++11 -Isrc -Isrc/$(PLATFORM) -o $@ $(SRC) -lwinmm -lmingw32 -lSDL2_image -lSDL2main -lSDL2 -Ic:/mingw/include/SDL2 -Ic:/tdm-gcc-32/include/SDL2 -s

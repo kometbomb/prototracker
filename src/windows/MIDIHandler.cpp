@@ -5,14 +5,11 @@ MIDIHandler::MIDIHandler()
     : mHandle(0), mDeviceId(0)
 {
     debug("[MIDI] %d devices detected", midiInGetNumDevs());
-
-    mChannel = new MIDIChannel[numChannels];
 }
 
 
 MIDIHandler::~MIDIHandler()
 {
-    delete[] mChannel;
 }
 
 
@@ -43,23 +40,9 @@ void CALLBACK MIDIHandler::midiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwIn
 
     if (wMsg == MIM_DATA)
     {
-        handler.onMessage(dwParam1, dwParam2);
-    }
-}
-
-
-void MIDIHandler::onMessage(Uint32 message, Uint32 timestamp)
-{
-    Uint8 event = message & 0xf0, channel = message & 15;
-    Uint8 data1 = (message >> 8) & 127, data2 = (message >> 16) & 127;
-
-    debug("[MIDI] [%08u] event = %x channel = %x, data1 = %02x data2 = %02x", timestamp, event, channel, data1, data2);
-
-    switch (event)
-    {
-        case 0xb0:
-            onControllerChange(channel, data1, data2);
-            break;
+        Uint8 status = (dwParam1 >> 16) & 255;
+        Uint8 data1 = (dwParam1 >> 8) & 127, data2 = (dwParam1 >> 16) & 127;
+        handler.onMessage(status, data1, data2, dwParam2);
     }
 }
 
@@ -84,31 +67,4 @@ void MIDIHandler::stop()
     }
 
     unregisterCallback();
-}
-
-
-void MIDIHandler::onControllerChange(int channel, int controller, Uint8 value)
-{
-    mMutex.lock();
-    mChannel[channel].controllerValue[controller] = value;
-    mMutex.unlock();
-}
-
-
-MIDIHandler::MIDIChannel::MIDIChannel()
-{
-    for (auto& value : controllerValue)
-    {
-        value = 0;
-    }
-}
-
-
-Uint8 MIDIHandler::getControllerValue(int channel, int controller) const
-{
-    mMutex.lock();
-    Uint8 value = mChannel[channel].controllerValue[controller];
-    mMutex.unlock();
-
-    return value;
 }
