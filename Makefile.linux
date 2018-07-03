@@ -1,5 +1,5 @@
 OUTPUT=prototracker
-PLARTFORM=common
+PLATFORM=common
 SRC=src/*.cpp src/$(PLATFORM)/*.cpp
 
 $(OUTPUT): $(SRC) src/*.h
