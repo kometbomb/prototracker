@@ -19,8 +19,6 @@ FileSelector::FileSelector(EditorState& editorState)
 	mNameField->setIsEditing(true);
 	mNameField->setAlwaysShowCursor(true);
 	mFilenameLabel = new Label(editorState);
-	mFilenameLabel->setColor(Color(0, 0, 0));
-	mFilenameLabel->setBackground(Color(255, 255, 255));
 	mFilenameLabel->setText("FILENAME:");
 	addChild(mFilenameLabel, 0, 8, 8*9, 8);
 	addChild(mNameField, 8*9, 8, 208, 8);
@@ -36,6 +34,28 @@ FileSelector::~FileSelector()
 	delete mNameField;
 	delete mFilenameLabel;
 	delete mMessageBox;
+}
+
+
+void FileSelector::onRendererMount(const Renderer& renderer)
+{
+	GenericSelector::onRendererMount(renderer);
+
+	mFilenameLabel->setColor(renderer.getTheme().getColor(Theme::ColorType::ModalTitleText));
+	mFilenameLabel->setBackground(renderer.getTheme().getColor(Theme::ColorType::ModalTitleBackground));
+
+	SDL_Rect filenameLabelArea = mFilenameLabel->getArea();
+	filenameLabelArea.y = mLabel->getArea().h;
+	filenameLabelArea.w = renderer.getFontWidth() * 9;
+	filenameLabelArea.h = renderer.getFontHeight();
+	mFilenameLabel->setArea(filenameLabelArea);
+
+	SDL_Rect filenameArea = mNameField->getArea();
+	filenameArea.x = filenameLabelArea.x + filenameLabelArea.w;
+	filenameArea.y = filenameLabelArea.y;
+	filenameArea.w = mThisArea.w - filenameArea.x;
+	filenameArea.h = renderer.getFontHeight();
+	mNameField->setArea(filenameArea);
 }
 
 
@@ -104,14 +124,14 @@ void FileSelector::reject(bool isFinal)
 void FileSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const Item& item, bool isSelected)
 {
 	const FileItem& fileItem = static_cast<const FileItem&>(item);
-	Color color;
+	Theme::ColorType color = Theme::ColorType::NormalText;
 
 	if (isSelected)
-		color = Color(255, 0, 0);
+		color = Theme::ColorType::SelectedRow;
 
-	renderer.clearRect(area, Color(0, 0, 0));
+	renderer.clearRect(area, Theme::ColorType::ModalBackground);
 
-	int width = area.w / 8 - 10;
+	int width = area.w / renderer.getFontWidth() - 10;
 
 	if (fileItem.isDirectory)
 		renderer.renderTextV(area, color, "<%*s>     DIR", -width, fileItem.path.c_str());

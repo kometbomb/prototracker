@@ -1,5 +1,6 @@
 #include "Debug.h"
 #include "Theme.h"
+#include "Color.h"
 #include <cstdio>
 #include <cstring>
 #include "SDL.h"
@@ -127,20 +128,39 @@ bool Theme::loadDefinition(const std::string& path)
 
 	int lineCounter = 0;
 
-	static const char *names[] = {
-		"PatternEditor",
-		"SequenceEditor",
-		"MacroEditor",
-		"Oscilloscope",
-		"SongName",
-		"MacroName",
-		"MacroNumber",
-		"SequencePosition",
-		"SequenceLength",
-		"PatternLength",
-		"OctaveNumber",
-		"TouchRegion",
-		NULL
+	static struct { ColorType type; const char *name; } colors[] = {
+		{ ColorType::CurrentRow, "CurrentRow" },
+		{ ColorType::BlockMarker, "BlockMarker" },
+		{ ColorType::EditCursor, "EditCursor" },
+		{ ColorType::NonEditCursor, "NonEditCursor" },
+		{ ColorType::RowCounter, "RowCounter" },
+		{ ColorType::SelectedRow, "SelectedRow" },
+		{ ColorType::ModalBackground, "ModalBackground" },
+		{ ColorType::ModalBorder, "ModalBorder" },
+		{ ColorType::ModalTitleBackground, "ModalTitleBackground" },
+		{ ColorType::ModalTitleText, "ModalTitleText" },
+		{ ColorType::NormalText, "NormalText" },
+		{ ColorType::ScrollBar, "ScrollBar" },
+		{ ColorType::PlayHead, "PlayHead" },
+		{ ColorType::TextCursor, "TextCursor" },
+		{ ColorType::TextBackground, "TextBackground" },
+		{ ColorType::TextFocus, "TextFocus" },
+		{ ColorType::OscilloscopeColor, "Oscilloscope" },
+	};
+
+	static struct { ElementType type; const char *name; } elements[] = {
+		{ ElementType::PatternEditor, "PatternEditor" },
+		{ ElementType::SequenceEditor, "SequenceEditor" },
+		{ ElementType::MacroEditor, "MacroEditor" },
+		{ ElementType::Oscilloscope, "Oscilloscope"},
+		{ ElementType::SongName, "SongName"},
+		{ ElementType::MacroName, "MacroName"},
+		{ ElementType::MacroNumber, "MacroNumber"},
+		{ ElementType::SequencePosition, "SequencePosition"},
+		{ ElementType::SequenceLength, "SequenceLength"},
+		{ ElementType::PatternLength, "PatternLength"},
+		{ ElementType::OctaveNumber, "OctaveNumber"},
+		{ ElementType::TouchRegion, "TouchRegion"},
 	};
 
 	while (true)
@@ -165,11 +185,36 @@ bool Theme::loadDefinition(const std::string& path)
 			mFontWidth = parameters[0];
 			mFontHeight = parameters[1];
 		}
-		else if (sscanf(line, "%19s \"%99[^\"]\" %d %d", elementName, path, &parameters[0], &parameters[1]) >= 4 && strcmp("GUI", elementName) == 0)
+		else if (sscanf(line, "%19s \"%99[^\"]\" %d %d %d", elementName, path, &parameters[0], &parameters[1], &parameters[2]) >= 4 &&
+			(strcmp("GUI", elementName) == 0 || strcmp("Color", elementName) == 0))
 		{
-			mBackgroundPath = mBasePath + path;
-			mWidth = parameters[0];
-			mHeight = parameters[1];
+			if (strcmp(elementName, "Color") == 0)
+			{
+				ColorType colorType = NumColors;
+				for (auto color : colors)
+				{
+					if (strcmp(color.name, path) == 0)
+					{
+						colorType = color.type;
+						break;
+					}
+				}
+
+				if (colorType < NumColors)
+				{
+					mColors[colorType] = Color(parameters[0], parameters[1], parameters[2]);
+				}
+				else
+				{
+					debug("Unknown color %s", path);
+				}
+			}
+			else
+			{
+				mBackgroundPath = mBasePath + path;
+				mWidth = parameters[0];
+				mHeight = parameters[1];
+			}
 		}
 		else if ((sscanf(line, "%19s %d %d %d %d \"%50[^\"]\" \"%50[^\"]\"", elementName, &parameters[0], &parameters[1], &parameters[2], &parameters[3], strParameters[0], strParameters[1]) >= 5
 			&& strcmp("TouchRegion", elementName) == 0)
@@ -178,14 +223,13 @@ bool Theme::loadDefinition(const std::string& path)
 			Element element;
 			element.type = Theme::Unknown;
 
-			for (int index = 0 ; names[index] ; ++index)
+			for (auto elementDef : elements)
 			{
-				if (strcmp(names[index], elementName) == 0)
+				if (strcmp(elementDef.name, elementName) == 0)
 				{
-					element.type = static_cast<Theme::ElementType>(index);
+					element.type = elementDef.type;
 					break;
 				}
-
 			}
 
 			if (element.type != Theme::Unknown)
@@ -208,4 +252,10 @@ bool Theme::loadDefinition(const std::string& path)
 	SDL_RWclose(rw);
 
 	return true;
+}
+
+
+const Color& Theme::getColor(ColorType type) const
+{
+	return mColors[type];
 }

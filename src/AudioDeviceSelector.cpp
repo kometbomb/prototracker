@@ -39,14 +39,14 @@ void AudioDeviceSelector::reject(bool isFinal)
 void AudioDeviceSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const Item& item, bool isSelected)
 {
 	const AudioDeviceItem& deviceItem = static_cast<const AudioDeviceItem&>(item);
-	Color color;
+	Theme::ColorType color = Theme::ColorType::NormalText;
 
 	if (isSelected)
-		color = Color(255, 0, 0);
+		color = Theme::ColorType::SelectedRow;
 
-	renderer.clearRect(area, Color(0, 0, 0));
+	renderer.clearRect(area, Theme::ColorType::ModalBackground);
 
-	int width = area.w / 8 - 10;
+	int width = area.w / renderer.getFontWidth() - 10;
 
 	renderer.renderTextV(area, color, "%s", deviceItem.name.c_str());
 }
