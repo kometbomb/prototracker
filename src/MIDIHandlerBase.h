@@ -3,9 +3,13 @@
 #include "SDL.h"
 #include "Lockable.h"
 
+struct MainEditor;
+
 class MIDIHandlerBase {
     static const int numChannels = 16;
     mutable Lockable mMutex;
+    MainEditor& mMainEditor;
+
     struct MIDIChannel {
         Uint8 controllerValue[128];
         MIDIChannel();
@@ -15,10 +19,11 @@ class MIDIHandlerBase {
 
 protected:
     void onControllerChange(int channel, int controller, Uint8 value);
+    void onKeyStateChange(int channel, int key, bool keyDown);
     void onMessage(Uint8 status, Uint8 data1, Uint8 data2, Uint32 timestamp);
 
 public:
-    MIDIHandlerBase();
+    MIDIHandlerBase(MainEditor& mainEditor);
     virtual ~MIDIHandlerBase();
 
     virtual void run() = 0;

@@ -24,7 +24,7 @@ Context* _context;
 
 Context::Context()
 	: ready(false), done(false), themeLoaded(false), song(), player(song), synth(), mixer(player, synth), editorState(),
-	mainEditor(editorState, player, player.getPlayerState(), song, synth, mixer)
+	mainEditor(editorState, player, player.getPlayerState(), song, synth, mixer), midiHandler(mainEditor)
 {
 	Theme theme;
 
@@ -233,9 +233,6 @@ extern "C" int main(int argc, char **argv)
 	context.gamepad.initControllers();
 	context.ready = true;
 
-	MIDIHandler midi;
-	midi.run();
-
 	if (!context.mainEditor.loadState())
 		context.mainEditor.loadSong("assets/dub.song");
 
@@ -249,8 +246,6 @@ extern "C" int main(int argc, char **argv)
 	}
 
 	context.mixer.stopThread();
-
-	midi.stop();
 
 #endif
 

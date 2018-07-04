@@ -1,8 +1,8 @@
 #include "MIDIHandler.h"
 #include "Debug.h"
 
-MIDIHandler::MIDIHandler()
-    : mHandle(0), mDeviceId(0)
+MIDIHandler::MIDIHandler(MainEditor& mainEditor)
+    : MIDIHandlerBase(mainEditor), mHandle(0), mDeviceId(0)
 {
     debug("[MIDI] %d devices detected", midiInGetNumDevs());
 }
@@ -40,7 +40,7 @@ void CALLBACK MIDIHandler::midiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwIn
 
     if (wMsg == MIM_DATA)
     {
-        Uint8 status = (dwParam1 >> 16) & 255;
+        Uint8 status = dwParam1 & 255;
         Uint8 data1 = (dwParam1 >> 8) & 127, data2 = (dwParam1 >> 16) & 127;
         handler.onMessage(status, data1, data2, dwParam2);
     }

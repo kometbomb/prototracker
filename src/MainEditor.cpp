@@ -949,3 +949,12 @@ void MainEditor::setAudioDevice(const char *device)
 	const char *currentDevice = mMixer.getCurrentDeviceName();
 	mEditorState.audioDevice = currentDevice ? currentDevice : "";
 }
+
+
+void MainEditor::onExternalKeyStateChange(int key, bool keyDown)
+{
+	if (keyDown)
+	{
+		mPlayer.triggerNoteWithReset(mEditorState.patternEditor.currentTrack, key);
+	}
+}

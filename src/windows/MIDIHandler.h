@@ -13,7 +13,7 @@ class MIDIHandler: public MIDIHandlerBase {
     void unregisterCallback();
 
 public:
-    MIDIHandler();
+    MIDIHandler(MainEditor& mainEditor);
     virtual ~MIDIHandler();
 
     virtual void run();

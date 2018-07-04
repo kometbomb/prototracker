@@ -1,6 +1,7 @@
 #include "MIDIHandler.h"
 
-MIDIHandler::MIDIHandler()
+MIDIHandler::MIDIHandler(MainEditor& mainEditor)
+    : MIDIHandlerBase(mainEditor)
 {
 }
 

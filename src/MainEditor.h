@@ -71,6 +71,8 @@ public:
 	virtual void showTooltip(const SDL_Rect& area, const char* message);
 	virtual int showMessageInner(MessageClass messageClass, int messageId, const char* message);
 
+	void onExternalKeyStateChange(int key, bool keyDown);
+
 	void cycleFocus();
 	void syncPlayerState();
 
