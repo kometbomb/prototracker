@@ -118,13 +118,31 @@ bool TrackEditor::onEvent(SDL_Event& event)
 {
 	switch (event.type)
 	{
-		case MIDI_KEY_EVENT:
-			if (mEditorState.editMode)
+		case MIDI_KEY_EVENT: {
+			// TODO: Fix this horrible thing
+			bool isKeyDown = event.user.data2 != NULL;
+			int note = reinterpret_cast<int>(event.user.data1);
+
+			if (isKeyDown)
 			{
-				setNoteToCurrentPosition(reinterpret_cast<int>(event.user.data1));
-				advanceCursorRow();
+				if (mEditorState.editMode)
+				{
+					setNoteToCurrentPosition(note);
+					advanceCursorRow();
+				}
+				else
+				{
+					if (mTriggerNotes)
+						mPlayer.triggerNoteWithReset(mTrackEditorState.currentTrack, note, mEditorState.macro);
+				}
 			}
+			else
+			{
+				mPlayer.muteTrack(mTrackEditorState.currentTrack);
+			}
+
 			return true;
+		}
 
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym)

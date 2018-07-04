@@ -954,13 +954,10 @@ void MainEditor::setAudioDevice(const char *device)
 
 void MainEditor::onExternalKeyStateChange(int key, bool keyDown)
 {
-	if (keyDown)
-	{
-		//mPlayer.triggerNoteWithReset(mEditorState.patternEditor.currentTrack, key);
-		SDL_Event event;
-		SDL_zero(event);
-		event.type = MIDI_KEY_EVENT;
-		event.user.data1 = reinterpret_cast<void*>(key);
-		SDL_PushEvent(&event);
-	}
+	SDL_Event event;
+	SDL_zero(event);
+	event.type = MIDI_KEY_EVENT;
+	event.user.data1 = reinterpret_cast<void*>(key);
+	event.user.data2 = reinterpret_cast<void*>(keyDown);
+	SDL_PushEvent(&event);
 }

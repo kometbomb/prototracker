@@ -49,6 +49,7 @@ public:
 	void play(int sequenceRow);
 	void play(int sequenceRow, int mode);
 	void stop();
+	void muteTrack(int track);
 	void muteTracks();
 	void triggerNote(int track, int note);
 	void triggerNote(int track, const PatternRow& row);

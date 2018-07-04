@@ -251,6 +251,13 @@ void IPlayer::triggerNote(int track, const PatternRow& row)
 }
 
 
+void IPlayer::muteTrack(int track)
+{
+	ITrackState& trState = *trackState[track];
+	trState.trackState.volume = 0;
+}
+
+
 void IPlayer::processZeroTick(int track, const PatternRow& row)
 {
 	ITrackState& trState = *trackState[track];
@@ -375,8 +382,7 @@ void IPlayer::muteTracks()
 {
 	for (int i = 0 ; i < SequenceRow::maxTracks ; ++i)
 	{
-		ITrackState& trState = *trackState[i];
-		trState.trackState.volume = 0;
+		muteTrack(i);
 	}
 }
 
