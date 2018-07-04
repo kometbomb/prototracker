@@ -6,17 +6,7 @@ C-callbacks for Emscripten
 
 */
 
-#include "SDL.h"
-
-// We use SDL_Events to signal the app actions from the host webpage
-enum {
-	EVERYTHING_DONE = SDL_USEREVENT,
-	EVERYTHING_READY,
-	SONG_IMPORTED,
-	EXPORT_SONG,
-	PLAY_SONG,
-	NEW_SONG
-};
+#include "UserEvents.h"
 
 extern "C"
 {

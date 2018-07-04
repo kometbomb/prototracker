@@ -18,6 +18,8 @@ protected:
 	bool mAddMacroEffect;
 
 	int getColumnFlagsFromModifier(int mod) const;
+	void setNoteToCurrentPosition(int note);
+	void advanceCursorRow();
 
 protected:
 	virtual Pattern& getCurrentPattern(int track) = 0;

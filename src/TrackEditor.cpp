@@ -4,7 +4,9 @@
 #include "Color.h"
 #include "Player.h"
 #include "Pattern.h"
+#include "Debug.h"
 #include "EditorState.h"
+#include "UserEvents.h"
 #include <cstdio>
 
 
@@ -79,10 +81,51 @@ void TrackEditor::killTrack(int track)
 }
 
 
+void TrackEditor::setNoteToCurrentPosition(int note)
+{
+	PatternRow& patternRow = getCurrentPatternRow();
+	patternRow.setNoteAndOctave(mEditorState.octave * 12 + note);
+
+	// Add the Mxx effect in first empty column for convenience
+
+	if (mAddMacroEffect)
+	{
+		for (int param = 0 ; param < PatternRow::effectParams ; ++param)
+		{
+			if (patternRow.getEffect(param).isEmpty())
+			{
+				patternRow.getEffect(0).effect = 'm';
+				patternRow.getEffect(0).setParamsFromByte(mEditorState.macro);
+				break;
+			}
+		}
+	}
+
+	//mPlayer.triggerNote(mTrackEditorState.currentTrack, patternRow);
+	if (mEditorState.followPlayPosition && mTriggerNotes)
+		mPlayer.triggerNoteWithReset(mTrackEditorState.currentTrack, note, mEditorState.macro);
+}
+
+
+void TrackEditor::advanceCursorRow()
+{
+	mTrackEditorState.currentRow += mTrackEditorState.editSkip;
+	mTrackEditorState.currentRow %= maxRows;
+}
+
+
 bool TrackEditor::onEvent(SDL_Event& event)
 {
 	switch (event.type)
 	{
+		case MIDI_KEY_EVENT:
+			if (mEditorState.editMode)
+			{
+				setNoteToCurrentPosition(reinterpret_cast<int>(event.user.data1));
+				advanceCursorRow();
+			}
+			return true;
+
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym)
 			{
@@ -345,28 +388,9 @@ bool TrackEditor::onEvent(SDL_Event& event)
 
 									if (note != -1)
 									{
-										patternRow.setNoteAndOctave(mEditorState.octave * 12 + note);
-
-										// Add the Mxx effect in first empty column for convenience
-
-										if (mAddMacroEffect)
-										{
-											for (int param = 0 ; param < PatternRow::effectParams ; ++param)
-											{
-												if (patternRow.getEffect(param).isEmpty())
-												{
-													patternRow.getEffect(0).effect = 'm';
-													patternRow.getEffect(0).setParamsFromByte(mEditorState.macro);
-													break;
-												}
-											}
-										}
-
 										handled = true;
 
-										//mPlayer.triggerNote(mTrackEditorState.currentTrack, patternRow);
-										if (mEditorState.followPlayPosition && mTriggerNotes)
-											mPlayer.triggerNoteWithReset(mTrackEditorState.currentTrack, note + mEditorState.octave * 12, mEditorState.macro);
+										setNoteToCurrentPosition(note + mEditorState.octave * 12);
 									}
 
 								}
@@ -376,8 +400,7 @@ bool TrackEditor::onEvent(SDL_Event& event)
 
 						if (handled)
 						{
-							mTrackEditorState.currentRow += mTrackEditorState.editSkip;
-							mTrackEditorState.currentRow %= maxRows;
+							advanceCursorRow();
 
 							return true;
 						}

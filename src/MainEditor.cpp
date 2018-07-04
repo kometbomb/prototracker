@@ -35,6 +35,7 @@
 #include "App.h"
 #include "SDL.h"
 #include "Theme.h"
+#include "UserEvents.h"
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -955,6 +956,11 @@ void MainEditor::onExternalKeyStateChange(int key, bool keyDown)
 {
 	if (keyDown)
 	{
-		mPlayer.triggerNoteWithReset(mEditorState.patternEditor.currentTrack, key);
+		//mPlayer.triggerNoteWithReset(mEditorState.patternEditor.currentTrack, key);
+		SDL_Event event;
+		SDL_zero(event);
+		event.type = MIDI_KEY_EVENT;
+		event.user.data1 = reinterpret_cast<void*>(key);
+		SDL_PushEvent(&event);
 	}
 }
