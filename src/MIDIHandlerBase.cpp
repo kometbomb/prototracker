@@ -22,11 +22,11 @@ void MIDIHandlerBase::onMessage(Uint8 status, Uint8 data1, Uint8 data2, Uint32 t
     switch (event)
     {
         case 0x80:
-            onKeyStateChange(channel, data1, false);
+            onKeyStateChange(channel, data1, static_cast<float>(data2) / 127, false);
             break;
 
         case 0x90:
-            onKeyStateChange(channel, data1, true);
+            onKeyStateChange(channel, data1, static_cast<float>(data2) / 127, true);
             break;
 
         case 0xb0:
@@ -44,7 +44,7 @@ void MIDIHandlerBase::onControllerChange(int channel, int controller, Uint8 valu
 }
 
 
-void MIDIHandlerBase::onKeyStateChange(int channel, int key, bool keyDown)
+void MIDIHandlerBase::onKeyStateChange(int channel, int key, float velocity, bool keyDown)
 {
     mMainEditor.onExternalKeyStateChange(key, keyDown);
 }

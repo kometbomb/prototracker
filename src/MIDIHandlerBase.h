@@ -19,7 +19,7 @@ class MIDIHandlerBase {
 
 protected:
     void onControllerChange(int channel, int controller, Uint8 value);
-    void onKeyStateChange(int channel, int key, bool keyDown);
+    void onKeyStateChange(int channel, int key, float velocity, bool keyDown);
     void onMessage(Uint8 status, Uint8 data1, Uint8 data2, Uint32 timestamp);
 
 public:
