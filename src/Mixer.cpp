@@ -244,10 +244,8 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 			oscillator.handleTrackState(trackState);
 			oscillator.setFrequency(trackState.trackState.frequency * trackState.macroState.frequency * hzConversion);
 
-			if (trackState.enabled)
-				oscillator.setVolume(trackState.trackState.volume * trackState.macroState.volume / ITrackState::maxVolume);
-			else
-				oscillator.setVolume(0);
+			oscillator.setVolume(trackState.trackState.volume * trackState.macroState.volume / ITrackState::maxVolume);
+			oscillator.setEnabled(trackState.enabled);
 		}
 
 		chunk = mixer.getSampleRate() / player.getPlayerState().songRate;
