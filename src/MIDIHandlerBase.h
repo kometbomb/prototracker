@@ -6,6 +6,7 @@
 struct MainEditor;
 
 class MIDIHandlerBase {
+protected:
     static const int numChannels = 16;
     mutable Lockable mMutex;
     MainEditor& mMainEditor;

@@ -1,5 +1,6 @@
 #include "MIDIHandler.h"
 #include "Debug.h"
+#include "MainEditor.h"
 
 MIDIHandler::MIDIHandler(MainEditor& mainEditor)
     : MIDIHandlerBase(mainEditor), mHandle(0), mDeviceId(0)
@@ -49,13 +50,25 @@ void CALLBACK MIDIHandler::midiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwIn
 
 void MIDIHandler::run()
 {
+    bool failed = false;
+
     if (registerCallback())
     {
         if (midiInStart(mHandle) != MMSYSERR_NOERROR)
         {
             debug("[MIDI] midiInStart error");
+            failed = true;
         }
     }
+    else
+    {
+        failed = true;
+    }
+
+    if (failed)
+        mMainEditor.showMessage(Editor::MessageError, "Could not open MIDI input");
+    else
+        mMainEditor.showMessage(Editor::MessageInfo, "MIDI opened");
 }
 
 
