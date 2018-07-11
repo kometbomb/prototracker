@@ -40,3 +40,4 @@ Color   "TextCursor"    255 255 255
 Color   "TextBackground"    0   0   0
 Color   "TextFocus" 255 0   0
 Color   "Oscilloscope"  255 255 255
+Color   "MutedOscilloscope" 128 128 128
