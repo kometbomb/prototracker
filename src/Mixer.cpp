@@ -102,17 +102,12 @@ bool Mixer::initAudio(const char *deviceName)
 	mSamples = 0;
 	mBufferSize = queueLengthTargetMs * mSampleRate / 1000;
 
-	debug("sampleRate = %d buffer = %d", mSampleRate, mBufferSize);
-
 	SDL_BuildAudioCVT(mConvert, want.format, want.channels, have.freq, have.format, have.channels, have.freq);
 
 	if (mBuffer != NULL)
 		delete[] mBuffer;
 
 	mBuffer = new Sample16[mBufferSize * mConvert->len_mult];
-
-	//printf("Got %d Hz format=%d (wanted %d Hz/%d) buffer = %d\n", have.freq, have.format, want.freq, want.format, want.samples);
-
 	mSynth.setSampleRate(mSampleRate);
 
 	return true;
@@ -169,7 +164,8 @@ int Mixer::queueThreadInner()
 
 		int samples = std::min(mBufferSize, requestedSamples);
 
-		if (samples >= minSliceLength) {
+		if (samples >= minSliceLength)
+		{
 			lastUpdate = SDL_GetPerformanceCounter();
 			int bufferLength = samples * sizeof(Sample16);
 
