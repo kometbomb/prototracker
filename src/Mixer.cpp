@@ -45,6 +45,9 @@ bool Mixer::runThread(const char *deviceName)
 	if (!initAudio(deviceName))
 		return false;
 
+	mThreadRunning = true;
+	mThread = SDL_CreateThread(queueThread, "QueueThread", this);
+
 	SDL_PauseAudioDevice(mDeviceId, 0);
 
 	return true;
@@ -76,7 +79,7 @@ bool Mixer::initAudio(const char *deviceName)
 	want.format = AUDIO_S16SYS;
 	want.channels = 2;
 	want.samples = 1024;
-	want.callback = static_cast<SDL_AudioCallback>(audioCallback);
+	want.callback = NULL;
 	want.userdata = this;
 
 	if (mAudioOpened)
@@ -97,14 +100,16 @@ bool Mixer::initAudio(const char *deviceName)
 
 	mSampleRate = have.freq;
 	mSamples = 0;
-	mBufferSize = have.samples;
+	mBufferSize = queueLengthTargetMs * mSampleRate / 1000;
+
+	debug("sampleRate = %d buffer = %d", mSampleRate, mBufferSize);
+
+	SDL_BuildAudioCVT(mConvert, want.format, want.channels, have.freq, have.format, have.channels, have.freq);
 
 	if (mBuffer != NULL)
 		delete[] mBuffer;
 
-	mBuffer = new Sample16[mBufferSize];
-
-	SDL_BuildAudioCVT(mConvert, want.format, want.channels, have.freq, have.format, have.channels, have.freq);
+	mBuffer = new Sample16[mBufferSize * mConvert->len_mult];
 
 	//printf("Got %d Hz format=%d (wanted %d Hz/%d) buffer = %d\n", have.freq, have.format, want.freq, want.format, want.samples);
 
@@ -136,6 +141,57 @@ void Mixer::deinitAudio()
 }
 
 
+int Mixer::queueThread(void *data)
+{
+	Mixer& mixer = *reinterpret_cast<Mixer*>(data);
+	return mixer.queueThreadInner();
+}
+
+
+int Mixer::queueThreadInner()
+{
+	debug("Running audio thread (deviceId = %d) %d", mDeviceId, mBufferSize);
+	Uint64 lastUpdate = SDL_GetPerformanceCounter();
+	Uint64 perfFreq = SDL_GetPerformanceFrequency();
+	int minSliceLength = queueGranularityMs * mSampleRate / 1000;
+
+	while (isThreadRunning())
+	{
+		// Buffer either the minimum buffer length
+		// or if we are running low on buffer the target length
+
+		int requestedSamples;
+
+		if (queueLengthLowLimitMs * mSampleRate / 1000 > static_cast<int>(SDL_GetQueuedAudioSize(mDeviceId) / sizeof(Sample16)))
+			requestedSamples = queueLengthTargetMs * mSampleRate / 1000;
+		else
+			requestedSamples = (SDL_GetPerformanceCounter() - lastUpdate) * mSampleRate / perfFreq;
+
+		int samples = std::min(mBufferSize, requestedSamples);
+
+		if (samples >= minSliceLength) {
+			lastUpdate = SDL_GetPerformanceCounter();
+			int bufferLength = samples * sizeof(Sample16);
+
+			audioCallback(reinterpret_cast<void*>(this), reinterpret_cast<unsigned char*>(mBuffer), bufferLength);
+
+			if (SDL_QueueAudio(mDeviceId, mBuffer, mConvert->len_cvt) != 0)
+			{
+				debug("SDL_QueueAudio: %s", SDL_GetError());
+			}
+		}
+		else
+		{
+			SDL_Delay(1);
+		}
+	}
+
+	debug("Audio thread exiting");
+
+	return 0;
+}
+
+
 void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 {
 	Uint64 startTicks = SDL_GetPerformanceCounter();
@@ -143,7 +199,7 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 	IPlayer& player = mixer.getPlayer();
 
 	Sample16 *data = reinterpret_cast<Sample16*>(stream);
-	int length = mixer.mBufferSize; //len / sizeof(Sample16);
+	int length = len / sizeof(Sample16);
 	int chunk = mixer.getSampleRate() / player.getPlayerState().songRate;
 	float hzConversion = static_cast<float>(TUNING / 2) / (float)mixer.getSampleRate(); // 1.0 = 440 Hz
 	int samples = std::min(length, (chunk - mixer.getSamples() % chunk) % chunk);

@@ -413,7 +413,7 @@ int Editor::showMessage(MessageClass messageClass, int messageId, const char* me
 
 int Editor::showMessage(MessageClass messageClass, const char* message)
 {
-	return showMessage(messageClass, -1, message);
+	return showMessage(messageClass, -2, message);
 }
 
 
