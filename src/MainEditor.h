@@ -19,6 +19,7 @@ struct MessageDisplayer;
 struct TooltipManager;
 struct TooltipDisplayer;
 struct AudioDeviceSelector;
+struct MIDIDeviceSelector;
 struct MIDIHandler;
 
 class MainEditor: public Editor
@@ -36,6 +37,7 @@ class MainEditor: public Editor
 	TextEditor *macroNameEditor;
 	FileSelector *fileSelector;
 	AudioDeviceSelector *audioDeviceSelector;
+	MIDIDeviceSelector *midiDeviceSelector;
 	MessageManager *mMessageManager;
 	MessageDisplayer *mMessageDisplayer;
 	TooltipManager *mTooltipManager;
@@ -49,11 +51,13 @@ class MainEditor: public Editor
 		FileSelectionLoad,
 		FileSelectionSave,
 		AudioDeviceSelection,
+		MIDIDeviceSelection,
 	};
 
 	void displayLoadDialog();
 	void displaySaveDialog();
 	void displayAudioDeviceDialog();
+	void displayMIDIDeviceDialog();
 
 	std::string mBase64Encoded;
 

@@ -31,6 +31,8 @@ public:
     virtual void stop() = 0;
     virtual int getCurrentDeviceID() const = 0;
     virtual const char * getCurrentDeviceName() const = 0;
+    virtual int getNumDevices() const = 0;
+    virtual const char * getDevice(int index) const = 0;
 
     Uint8 getControllerValue(int channel, int controller) const;
 };

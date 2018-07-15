@@ -27,6 +27,7 @@
 #include "TouchRegion.h"
 #include "FileSelector.h"
 #include "AudioDeviceSelector.h"
+#include "MIDIDeviceSelector.h"
 #include "MIDIHandler.h"
 #include "Emscripten.h"
 #include "MessageManager.h"
@@ -60,6 +61,7 @@ MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& p
 
 	fileSelector = new FileSelector(editorState);
 	audioDeviceSelector = new AudioDeviceSelector(editorState);
+	midiDeviceSelector = new MIDIDeviceSelector(editorState);
 
 	mMessageManager = new MessageManager();
 	mTooltipManager = new TooltipManager();
@@ -71,6 +73,7 @@ MainEditor::~MainEditor()
 	delete mOscillatorsProbePos;
 	delete fileSelector;
 	delete audioDeviceSelector;
+	delete midiDeviceSelector;
 
 	deleteChildren();
 
@@ -350,6 +353,10 @@ bool MainEditor::onEvent(SDL_Event& event)
 								displayAudioDeviceDialog();
 								break;
 
+							case SDLK_m:
+								displayMIDIDeviceDialog();
+								break;
+
 							case SDLK_n:
 								newSong();
 								showMessage(MessageInfo, "Song reset");
@@ -597,6 +604,10 @@ void MainEditor::onFileSelectorEvent(const Editor& selector, bool accept)
 			case AudioDeviceSelection:
 				setAudioDevice(reinterpret_cast<const AudioDeviceSelector&>(selector).getSelectedDevice());
 				break;
+
+			case MIDIDeviceSelection:
+				setMIDIDevice(reinterpret_cast<const MIDIDeviceSelector&>(selector).getSelectedDevice());
+				break;
 		}
 	}
 
@@ -630,9 +641,18 @@ void MainEditor::displayAudioDeviceDialog()
 {
 	mMixer.buildDeviceList();
 	audioDeviceSelector->setId(AudioDeviceSelection);
-	audioDeviceSelector->setTitle("Select output device");
+	audioDeviceSelector->setTitle("Select audio output");
 	audioDeviceSelector->populate(mMixer);
 	setModal(audioDeviceSelector);
+}
+
+
+void MainEditor::displayMIDIDeviceDialog()
+{
+	midiDeviceSelector->setId(MIDIDeviceSelection);
+	midiDeviceSelector->setTitle("Select MIDI input");
+	midiDeviceSelector->populate(mMIDIHandler);
+	setModal(midiDeviceSelector);
 }
 
 

@@ -101,15 +101,27 @@ void MIDIHandler::stop()
 
 const char * MIDIHandler::getCurrentDeviceName() const
 {
-    static MIDIINCAPS caps;
-    if (midiInGetDevCaps(mDeviceId, &caps, sizeof(caps)) == MMSYSERR_NOERROR)
-        return caps.szPname;
-
-    return NULL;
+    return getDevice(getCurrentDeviceID());
 }
 
 
 int MIDIHandler::getCurrentDeviceID() const
 {
     return mDeviceId;
+}
+
+
+int MIDIHandler::getNumDevices() const
+{
+    return midiInGetNumDevs();
+}
+
+
+const char * MIDIHandler::getDevice(int index) const
+{
+    static MIDIINCAPS caps;
+    if (midiInGetDevCaps(index, &caps, sizeof(caps)) == MMSYSERR_NOERROR)
+        return caps.szPname;
+
+    return NULL;
 }

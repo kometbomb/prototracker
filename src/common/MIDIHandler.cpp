@@ -33,3 +33,15 @@ int MIDIHandler::getCurrentDeviceID() const
 {
     return -1;
 }
+
+
+int MIDIHandler::getNumDevices() const
+{
+    return 0;
+}
+
+
+const char * MIDIHandler::getDevice(int index) const
+{
+    return NULL;
+}

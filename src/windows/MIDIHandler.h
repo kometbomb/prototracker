@@ -21,4 +21,6 @@ public:
     virtual void stop();
     virtual int getCurrentDeviceID() const;
     virtual const char * getCurrentDeviceName() const;
+    virtual int getNumDevices() const;
+    virtual const char * getDevice(int index) const;
 };

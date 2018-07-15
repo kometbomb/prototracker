@@ -5,16 +5,16 @@
 struct EditorState;
 struct Renderer;
 struct SDL_Rect;
-struct Mixer;
+struct MIDIHandlerBase;
 
 #include "GenericSelector.h"
 
-class AudioDeviceSelector: public GenericSelector
+class MIDIDeviceSelector: public GenericSelector
 {
 
-	struct AudioDeviceItem: public Item {
+	struct MIDIDeviceItem: public Item {
 		std::string name;
-		AudioDeviceItem(const char *name);
+		MIDIDeviceItem(const char *name);
 	};
 
 	virtual void renderItem(Renderer& renderer, const SDL_Rect& area, const Item& item, bool isSelected);
@@ -22,12 +22,12 @@ class AudioDeviceSelector: public GenericSelector
 	virtual void reject(bool isFinal = false);
 
 public:
-	AudioDeviceSelector(EditorState& editorState);
-	virtual ~AudioDeviceSelector();
+	MIDIDeviceSelector(EditorState& editorState);
+	virtual ~MIDIDeviceSelector();
 
-	/* Fill device list from Mixer
+	/* Fill device list from MIDIHandler
 	 */
-	void populate(const Mixer& mixer);
+	void populate(const MIDIHandlerBase& midiHandler);
 
 
 	/* After the dialog finishes this will return the device
