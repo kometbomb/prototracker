@@ -24,7 +24,7 @@ Context* _context;
 
 Context::Context()
 	: ready(false), done(false), themeLoaded(false), song(), player(song), synth(), mixer(player, synth), editorState(),
-	mainEditor(editorState, player, player.getPlayerState(), song, synth, mixer), midiHandler(mainEditor)
+	mainEditor(editorState, player, player.getPlayerState(), song, synth, mixer, midiHandler), midiHandler(mainEditor)
 {
 	Theme theme;
 
@@ -48,14 +48,12 @@ Context::Context()
 
 	themeLoaded = true;
 	previousTick = SDL_GetTicks();
-
-	midiHandler.run();
 }
 
 
 Context::~Context()
 {
-	midiHandler.stop();
+
 }
 
 
@@ -239,6 +237,7 @@ extern "C" int main(int argc, char **argv)
 	// Try to use the device from the config or autodetect if not set
 
 	context.mainEditor.setAudioDevice(context.editorState.audioDevice.c_str());
+	context.mainEditor.setMIDIDevice(context.editorState.midiDevice.c_str());
 
 	while (!context.done)
 	{
@@ -246,6 +245,7 @@ extern "C" int main(int argc, char **argv)
 	}
 
 	context.mixer.stopThread();
+	context.midiHandler.stop();
 
 #endif
 

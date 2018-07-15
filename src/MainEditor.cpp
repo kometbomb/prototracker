@@ -27,6 +27,7 @@
 #include "TouchRegion.h"
 #include "FileSelector.h"
 #include "AudioDeviceSelector.h"
+#include "MIDIHandler.h"
 #include "Emscripten.h"
 #include "MessageManager.h"
 #include "MessageDisplayer.h"
@@ -51,8 +52,9 @@
 #define SCALE 2
 #endif
 
-MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer)
-	: Editor(editorState), mPlayer(player), mPlayerState(playerState), mSong(song), mSynth(synth), mMixer(mixer), mIsDragging(false)
+MainEditor::MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer, MIDIHandler& midiHandler)
+	: Editor(editorState), mPlayer(player), mPlayerState(playerState), mSong(song), mSynth(synth), mMixer(mixer), mMIDIHandler(midiHandler),
+	mIsDragging(false)
 {
 	mOscillatorsProbePos = new Value();
 
@@ -949,6 +951,30 @@ void MainEditor::setAudioDevice(const char *device)
 
 	const char *currentDevice = mMixer.getCurrentDeviceName();
 	mEditorState.audioDevice = currentDevice ? currentDevice : "";
+}
+
+
+void MainEditor::setMIDIDevice(const char *device)
+{
+	mMIDIHandler.stop();
+
+	if (!mMIDIHandler.run(device))
+	{
+		showMessage(Editor::MessageError, "Could not open MIDI device");
+
+		if (!mMIDIHandler.run(NULL))
+		{
+			showMessageV(Editor::MessageError, "No MIDI device found.");
+		}
+	}
+
+	if (mMIDIHandler.getCurrentDeviceID() >= 0)
+	{
+		showMessageV(Editor::MessageInfo, "Using %s", mMIDIHandler.getCurrentDeviceName());
+	}
+
+	const char *currentDevice = mMIDIHandler.getCurrentDeviceName();
+	mEditorState.midiDevice = currentDevice ? currentDevice : "";
 }
 
 

@@ -34,7 +34,7 @@ struct EditorState
 	CopyBuffer copyBuffer;
 
 	bool followPlayPosition;
-	std::string audioDevice;
+	std::string audioDevice, midiDevice;
 
 	EditorState();
 

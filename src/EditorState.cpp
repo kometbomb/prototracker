@@ -42,6 +42,7 @@ FileSection * EditorState::pack()
 	delete trState;
 
 	state->writeString(audioDevice.c_str());
+	state->writeString(midiDevice.c_str());
 
 	return state;
 }
@@ -133,11 +134,17 @@ bool EditorState::unpack(const FileSection& section)
 	if (!tempAudioDevice)
 		return false;
 
+	const char *tempMIDIDevice = section.readString(offset);
+
+	if (!tempMIDIDevice)
+		return false;
+
 	macro = macroNr;
 	octave = octaveNr;
 	editMode = editModeNr;
 	followPlayPosition = followNr;
 	audioDevice = tempAudioDevice;
+	midiDevice = tempMIDIDevice;
 
 	return true;
 }
@@ -226,4 +233,5 @@ void EditorState::reset()
 	octave = 4;
 	editMode = 0;
 	audioDevice = "";
+	midiDevice = "";
 }

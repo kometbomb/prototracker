@@ -9,6 +9,8 @@ public:
     MIDIHandler(MainEditor& mainEditor);
     virtual ~MIDIHandler();
 
-    virtual void run();
+    virtual bool run(const char *deviceName);
     virtual void stop();
+    virtual int getCurrentDeviceID() const;
+    virtual const char * getCurrentDeviceName() const;
 };

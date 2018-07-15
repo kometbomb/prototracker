@@ -3,7 +3,7 @@
 #include "MainEditor.h"
 
 MIDIHandler::MIDIHandler(MainEditor& mainEditor)
-    : MIDIHandlerBase(mainEditor), mHandle(0), mDeviceId(0)
+    : MIDIHandlerBase(mainEditor), mHandle(0), mDeviceId(-1), mIsRunning(false)
 {
     debug("[MIDI] %d devices detected", midiInGetNumDevs());
 }
@@ -14,15 +14,28 @@ MIDIHandler::~MIDIHandler()
 }
 
 
-bool MIDIHandler::registerCallback()
+bool MIDIHandler::registerCallback(const char *name)
 {
-    if (midiInOpen(&mHandle, mDeviceId, reinterpret_cast<DWORD_PTR>(midiInProc), reinterpret_cast<DWORD_PTR>(this), CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
+    mIsRunning = false;
+
+    for (int i = 0 ; i < midiInGetNumDevs() ; ++i)
     {
-        debug("[MIDI] midiInOpen error");
-        return false;
+        MIDIINCAPS caps;
+        if (midiInGetDevCaps(i, &caps, sizeof(caps)) == MMSYSERR_NOERROR && (name == NULL || strcmp(caps.szPname, name) == 0))
+        {
+            mDeviceId = i;
+
+            if (midiInOpen(&mHandle, mDeviceId, reinterpret_cast<DWORD_PTR>(midiInProc), reinterpret_cast<DWORD_PTR>(this), CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
+            {
+                debug("[MIDI] midiInOpen error");
+                return false;
+            }
+
+            return true;
+        }
     }
 
-    return true;
+    return false;
 }
 
 
@@ -48,36 +61,55 @@ void CALLBACK MIDIHandler::midiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwIn
 }
 
 
-void MIDIHandler::run()
+bool MIDIHandler::run(const char *name)
 {
-    bool failed = false;
+    if (mIsRunning)
+        stop();
 
-    if (registerCallback())
+    mIsRunning = false;
+
+    if (!registerCallback(name))
+        return false;
+
+    if (midiInStart(mHandle) == MMSYSERR_NOERROR)
     {
-        if (midiInStart(mHandle) != MMSYSERR_NOERROR)
-        {
-            debug("[MIDI] midiInStart error");
-            failed = true;
-        }
-    }
-    else
-    {
-        failed = true;
+        mIsRunning = true;
+        return true;
     }
 
-    if (failed)
-        mMainEditor.showMessage(Editor::MessageError, "Could not open MIDI input");
-    else
-        mMainEditor.showMessage(Editor::MessageInfo, "MIDI opened");
+    debug("[MIDI] midiInStart error");
+
+    return false;
 }
 
 
 void MIDIHandler::stop()
 {
+    if (!mIsRunning)
+        return;
+
     if (midiInStop(mHandle) != MMSYSERR_NOERROR)
     {
         debug("[MIDI] midiInStop error");
     }
 
     unregisterCallback();
+
+    mIsRunning = false;
+}
+
+
+const char * MIDIHandler::getCurrentDeviceName() const
+{
+    static MIDIINCAPS caps;
+    if (midiInGetDevCaps(mDeviceId, &caps, sizeof(caps)) == MMSYSERR_NOERROR)
+        return caps.szPname;
+
+    return NULL;
+}
+
+
+int MIDIHandler::getCurrentDeviceID() const
+{
+    return mDeviceId;
 }

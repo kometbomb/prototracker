@@ -19,6 +19,7 @@ struct MessageDisplayer;
 struct TooltipManager;
 struct TooltipDisplayer;
 struct AudioDeviceSelector;
+struct MIDIHandler;
 
 class MainEditor: public Editor
 {
@@ -27,6 +28,7 @@ class MainEditor: public Editor
 	Song& mSong;
 	ISynth& mSynth;
 	Mixer& mMixer;
+	MIDIHandler& mMIDIHandler;
 	Listenable *mOscillatorsProbePos;
 	PatternEditor *patternEditor;
 	SequenceRowEditor *sequenceRowEditor;
@@ -62,7 +64,7 @@ class MainEditor: public Editor
 	void stopDragging();
 
 public:
-	MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer);
+	MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer, MIDIHandler& midiHandler);
 	virtual ~MainEditor();
 
 	virtual bool onEvent(SDL_Event& event);
@@ -87,6 +89,7 @@ public:
 	void togglePlayStop();
 
 	void setAudioDevice(const char *device);
+	void setMIDIDevice(const char *device);
 
 	bool saveSong(const char *path);
 	bool loadSong(const char *path);
