@@ -52,6 +52,7 @@ public:
 		TextBackground,
 		TextFocus,
 		OscilloscopeColor,
+		MutedOscilloscopeColor,
 		NumColors
 	};
 

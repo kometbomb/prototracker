@@ -6,6 +6,7 @@ struct ITrackState;
 class IOscillator
 {
 protected:
+	bool mIsEnabled;
 	int mSampleRate;
 public:
 	static const int oscillatorResolution = 4096;
@@ -13,9 +14,11 @@ public:
 	IOscillator();
 	virtual ~IOscillator();
 	virtual void setSampleRate(int rate);
+	virtual void setEnabled(bool enabled);
 
 	// The oscillator should update its own parameters from handleTrackState()
 	virtual void handleTrackState(ITrackState& trackState);
+
 
 	/*
 	IOscillator needs to implement these.
