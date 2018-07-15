@@ -34,9 +34,12 @@ Color   "ModalTitleBackground"  255 255 255
 Color   "ModalTitleText"    0   0   0
 Color   "ModalBorder"   255   255   255
 Color   "NormalText"   255   255   255
+Color   "CommandShortcut"   192 192 192
+Color   "CommandShortcutBackground" 64  64  64
 Color   "ScrollBar"   255   255   255
 Color   "PlayHead"  0  64  0
 Color   "TextCursor"    255 255 255
 Color   "TextBackground"    0   0   0
 Color   "TextFocus" 255 0   0
 Color   "Oscilloscope"  255 255 255
+Color   "MutedOscilloscope" 128 128 128

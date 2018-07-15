@@ -146,6 +146,9 @@ bool Theme::loadDefinition(const std::string& path)
 		{ ColorType::TextBackground, "TextBackground" },
 		{ ColorType::TextFocus, "TextFocus" },
 		{ ColorType::OscilloscopeColor, "Oscilloscope" },
+		{ ColorType::CommandShortcut, "CommandShortcut" },
+		{ ColorType::CommandShortcutBackground, "CommandShortcutBackground" },
+		{ ColorType::MutedOscilloscopeColor, "MutedOscilloscope" },
 	};
 
 	static struct { ElementType type; const char *name; } elements[] = {

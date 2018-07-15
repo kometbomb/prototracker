@@ -48,7 +48,14 @@ void Oscilloscope::onDraw(Renderer& renderer, const SDL_Rect& area)
 		points[x].y = area.y + y;
 	}
 
-	renderer.renderPoints(points, area.w, Theme::ColorType::OscilloscopeColor);
+	Theme::ColorType color;
+
+	if (mPlayer.getTrackState(mChannel).enabled)
+		color = Theme::ColorType::OscilloscopeColor;
+	else
+		color = Theme::ColorType::MutedOscilloscopeColor;
+
+	renderer.renderPoints(points, area.w, color);
 }
 
 

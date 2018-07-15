@@ -44,12 +44,15 @@ public:
 		ModalTitleBackground,
 		ModalTitleText,
 		NormalText,
+		CommandShortcut,
+		CommandShortcutBackground,
 		ScrollBar,
 		PlayHead,
 		TextCursor,
 		TextBackground,
 		TextFocus,
 		OscilloscopeColor,
+		MutedOscilloscopeColor,
 		NumColors
 	};
 

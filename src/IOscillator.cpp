@@ -21,3 +21,9 @@ void IOscillator::setSampleRate(int rate)
 {
 	mSampleRate = rate;
 }
+
+
+void IOscillator::setEnabled(bool state)
+{
+	mIsEnabled = state;
+}

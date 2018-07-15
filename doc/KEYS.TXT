@@ -1,3 +1,4 @@
+CTRL + SHIFT + P    Display a list of misc GUI actions
 CTRL + O		Load song
 CTRL + S		Save song
 CTRL + P 		Export song

@@ -17,6 +17,9 @@ class SequenceRowEditor: public ColumnEditor
 	void emptyRow(bool allTracks, int flags);
 	virtual bool isRowActive(int track, int row) const;
 
+protected:
+	virtual void onRequestCommandRegistration();
+
 public:
 	SequenceRowEditor(EditorState& editorState, IPlayer& player, Song& song);
 	virtual ~SequenceRowEditor();
