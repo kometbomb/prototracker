@@ -2,7 +2,9 @@
 #include "Editor.h"
 #include "Renderer.h"
 #include "Color.h"
+#include "MainEditor.h"
 #include <cstdio>
+#include <cstring>
 
 #define MODAL_BORDER 2
 
@@ -88,6 +90,7 @@ void Editor::addChild(Editor *child, int x, int y, int w, int h)
 	SDL_Rect absArea = {area.x + mThisArea.x, area.y + mThisArea.y, area.w, area.h};
 
 	child->setArea(absArea);
+	child->onRequestCommandRegistration();
 }
 
 
@@ -455,8 +458,91 @@ void Editor::onModalStatusChange(bool isNowModal)
 }
 
 
+bool Editor::registerCommand(const char *context, const char *commandName, Command command, int sym, int mod)
+{
+	mCommands.push_back(new CommandDescriptor(context, commandName, command, sym, mod));
+	return true;
+}
+
+
+bool Editor::registerCommand(const char *context, const char *commandName, CommandWithOption command, CommandOptionFunc option, int sym, int mod)
+{
+	mCommands.push_back(new CommandDescriptor(context, commandName, command, option, sym, mod));
+	return true;
+}
+
+
+void Editor::onRequestCommandRegistration()
+{
+}
+
+
+Editor::CommandDescriptor::CommandDescriptor(const char *_context, const char *_name, Command _func, int _sym, int _mod)
+	: func(_func), option(NULL), sym(_sym), mod(_mod)
+{
+	strncpy(context, _context, sizeof(context));
+	strncpy(name, _name, sizeof(name));
+}
+
+
+Editor::CommandDescriptor::CommandDescriptor(const char *_context, const char *_name, CommandWithOption _func, CommandOptionFunc _option, int _sym, int _mod)
+	: funcWithOption(_func), option(_option), sym(_sym), mod(_mod)
+{
+	strncpy(context, _context, sizeof(context));
+	strncpy(name, _name, sizeof(name));
+}
+
+
 Editor::EditorChild::EditorChild(Editor *_editor, const SDL_Rect& _area)
 	: editor(_editor), area(_area)
 {
 
+}
+
+
+bool Editor::handleCommandShortcuts(MainEditor& mainEditor, const SDL_Event& event)
+{
+	if (event.type != SDL_KEYDOWN)
+	{
+		return false;
+	}
+
+	for (auto command : mCommands)
+	{
+		if (event.key.keysym.sym == command->sym && (event.key.keysym.mod & command->mod || command->mod == 0))
+		{
+			if (command->option)
+				mainEditor.displayCommandOptionDialog(*command);
+			else
+				command->func();
+			return true;
+		}
+	}
+
+	if (mParent == NULL)
+	{
+		return false;
+	}
+
+	return mParent->handleCommandShortcuts(mainEditor, event);
+}
+
+
+const std::vector<Editor::CommandDescriptor*>& Editor::getCommands() const
+{
+	return mCommands;
+}
+
+
+std::vector<Editor::CommandDescriptor*> Editor::getChildCommands() const
+{
+	std::vector<CommandDescriptor*> allCommands = getCommands();
+
+	for (auto child : mChildren)
+	{
+		const std::vector<CommandDescriptor*> childCommands = child.editor->getChildCommands();
+		allCommands.insert(allCommands.end(), childCommands.begin(), childCommands.end());
+	}
+
+	return allCommands;
 }

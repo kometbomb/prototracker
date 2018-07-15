@@ -20,6 +20,22 @@ TrackEditor::~TrackEditor()
 }
 
 
+void TrackEditor::killCurrentTrack()
+{
+	killTrack(mTrackEditorState.currentTrack);
+	// TODO: These shoyld say "macro" in the macro editor!
+	showMessage(MessageInfo, "Killed pattern");
+}
+
+
+void TrackEditor::findCurrentUnusedTrack()
+{
+	findUnusedTrack(mTrackEditorState.currentTrack);
+	// TODO: These shoyld say "macro" in the macro editor!
+	showMessage(MessageInfo, "Found an unused pattern");
+}
+
+
 void TrackEditor::setTriggerNotes(bool state)
 {
 	mTriggerNotes = state;
@@ -84,57 +100,44 @@ bool TrackEditor::onEvent(SDL_Event& event)
 	switch (event.type)
 	{
 		case SDL_KEYDOWN:
+			if (!(event.key.keysym.mod & (KMOD_SHIFT|KMOD_CTRL|KMOD_ALT)))
+			{
+				switch (event.key.keysym.sym)
+				{
+					case SDLK_PAGEDOWN:
+						scrollView(16, false);
+						return true;
+
+					case SDLK_PAGEUP:
+						scrollView(-16, false);
+						return true;
+
+					case SDLK_DOWN:
+						scrollView(1);
+						return true;
+
+					case SDLK_UP:
+						scrollView(-1);
+						return true;
+
+					case SDLK_HOME:
+						mTrackEditorState.currentRow = 0;
+						return true;
+
+					case SDLK_END:
+						mTrackEditorState.currentRow = maxRows - 1;
+						return true;
+				}
+			}
+
 			switch (event.key.keysym.sym)
 			{
-				case SDLK_F3:
-					copyTrack(mTrackEditorState.currentTrack);
-					return true;
-
-				case SDLK_F4:
-					pasteTrack(mTrackEditorState.currentTrack);
-					return true;
-
-				case SDLK_PAGEDOWN:
-					scrollView(16, false);
-
-					return true;
-					break;
-
-				case SDLK_PAGEUP:
-					scrollView(-16, false);
-
-					return true;
-					break;
-
-				case SDLK_DOWN:
-					scrollView(1);
-
-					return true;
-					break;
-
-				case SDLK_UP:
-					scrollView(-1);
-
-					return true;
-					break;
-
-				case SDLK_HOME:
-					mTrackEditorState.currentRow = 0;
-					return true;
-					break;
-
-				case SDLK_END:
-					mTrackEditorState.currentRow = maxRows - 1;
-					return true;
-					break;
-
 				case SDLK_TAB:
 					if (event.key.keysym.mod & KMOD_SHIFT)
 						changeTrack(-1);
 					else
 						changeTrack(1);
 					return true;
-					break;
 
 				case SDLK_LEFT:
 					changeColumn(-1);
@@ -157,18 +160,15 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						playRow();
 					}
 					return true;
-					break;
 
 				case SDLK_DELETE:
 					emptyRow(false, getColumnFlagsFromModifier(event.key.keysym.mod));
 					scrollView(mTrackEditorState.editSkip);
 					return true;
-					break;
 
 				case SDLK_INSERT:
 					insertRow(false, getColumnFlagsFromModifier(event.key.keysym.mod));
 					return true;
-					break;
 
 				case SDLK_RETURN:
 					if (event.key.keysym.mod & (KMOD_LSHIFT|KMOD_LALT|KMOD_LCTRL))
@@ -184,7 +184,6 @@ bool TrackEditor::onEvent(SDL_Event& event)
 
 					scrollView(1);
 					return true;
-					break;
 
 				default:
 				{
@@ -193,37 +192,7 @@ bool TrackEditor::onEvent(SDL_Event& event)
 						int hex = getHexFromKey(event.key.keysym);
 						if (hex >= 0 && hex <= 9)
 						{
-							mTrackEditorState.editSkip = hex;
-						}
-						else if (event.key.keysym.sym == SDLK_c)
-						{
-							copyBlock(mTrackEditorState.currentTrack);
-							showMessage(MessageInfo, "Copied block");
-						}
-						else if (event.key.keysym.sym == SDLK_v)
-						{
-							pasteBlock(mTrackEditorState.currentTrack);
-							showMessage(MessageInfo, "Block pasted");
-						}
-						else if (event.key.keysym.sym == SDLK_b)
-						{
-							setBlockStart(mTrackEditorState.currentRow);
-						}
-						else if (event.key.keysym.sym == SDLK_e)
-						{
-							setBlockEnd(mTrackEditorState.currentRow);
-						}
-						else if (event.key.keysym.sym == SDLK_k)
-						{
-							killTrack(mTrackEditorState.currentTrack);
-							// TODO: These shoyld say "macro" in the macro editor!
-							showMessage(MessageInfo, "Killed pattern");
-						}
-						else if (event.key.keysym.sym == SDLK_u)
-						{
-							findUnusedTrack(mTrackEditorState.currentTrack);
-							// TODO: These shoyld say "macro" in the macro editor!
-							showMessage(MessageInfo, "Found an unused pattern");
+							setEditSkip(hex);
 						}
 						else
 							return false;
@@ -731,4 +700,49 @@ void TrackEditor::pasteBlock(int track)
 {
 	mEditorState.copyBuffer.paste(getCurrentPattern(track), mTrackEditorState.currentRow);
 	mTrackEditorState.currentRow.notify();
+}
+
+
+void TrackEditor::copyCurrentTrack()
+{
+	copyTrack(mTrackEditorState.currentTrack);
+}
+
+
+void TrackEditor::pasteCurrentTrack()
+{
+	pasteTrack(mTrackEditorState.currentTrack);
+}
+
+
+void TrackEditor::copyCurrentBlock()
+{
+	copyBlock(mTrackEditorState.currentTrack);
+	showMessage(MessageInfo, "Copied block");
+}
+
+
+void TrackEditor::pasteCurrentBlock()
+{
+	pasteBlock(mTrackEditorState.currentTrack);
+	showMessage(MessageInfo, "Block pasted");
+}
+
+
+void TrackEditor::setEditSkip(int skip)
+{
+	mTrackEditorState.editSkip = skip;
+	showMessageV(MessageInfo, replacePreviousMessage, "Edit skip set to %d", skip);
+}
+
+
+void TrackEditor::setBlockStartToCurrentRow()
+{
+	setBlockStart(mTrackEditorState.currentRow);
+}
+
+
+void TrackEditor::setBlockEndToCurrentRow()
+{
+	setBlockEnd(mTrackEditorState.currentRow);
 }

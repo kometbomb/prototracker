@@ -19,6 +19,16 @@ protected:
 
 	int getColumnFlagsFromModifier(int mod) const;
 
+	void killCurrentTrack();
+	void findCurrentUnusedTrack();
+	void copyCurrentTrack();
+	void pasteCurrentTrack();
+	void copyCurrentBlock();
+	void pasteCurrentBlock();
+	void setEditSkip(int skip);
+	void setBlockStartToCurrentRow();
+	void setBlockEndToCurrentRow();
+
 protected:
 	virtual Pattern& getCurrentPattern(int track) = 0;
 	virtual PatternRow& getCurrentPatternRow() = 0;

@@ -2,6 +2,7 @@
 
 #include "Editor.h"
 #include <string>
+#include <vector>
 
 struct IPlayer;
 struct Song;
@@ -19,6 +20,8 @@ struct MessageDisplayer;
 struct TooltipManager;
 struct TooltipDisplayer;
 struct AudioDeviceSelector;
+struct CommandSelector;
+struct CommandOptionSelector;
 
 class MainEditor: public Editor
 {
@@ -34,6 +37,8 @@ class MainEditor: public Editor
 	TextEditor *macroNameEditor;
 	FileSelector *fileSelector;
 	AudioDeviceSelector *audioDeviceSelector;
+	CommandSelector *commandSelector;
+	CommandOptionSelector *commandOptionSelector;
 	MessageManager *mMessageManager;
 	MessageDisplayer *mMessageDisplayer;
 	TooltipManager *mTooltipManager;
@@ -41,17 +46,21 @@ class MainEditor: public Editor
 
 	int mDragStartX, mDragStartY;
 	bool mIsDragging;
+	const CommandDescriptor *mSelectedCommand;
 
 	enum
 	{
 		FileSelectionLoad,
 		FileSelectionSave,
 		AudioDeviceSelection,
+		CommandSelection,
+		CommandOptionSelection,
 	};
 
 	void displayLoadDialog();
 	void displaySaveDialog();
 	void displayAudioDeviceDialog();
+	void displayCommandPalette();
 
 	std::string mBase64Encoded;
 
@@ -60,6 +69,10 @@ class MainEditor: public Editor
 
 	void startDragging(int x, int y);
 	void stopDragging();
+	void togglePositionFollowing();
+
+protected:
+	virtual void onRequestCommandRegistration();
 
 public:
 	MainEditor(EditorState& editorState, IPlayer& player, PlayerState& playerState, Song& song, ISynth& synth, Mixer& mixer);
@@ -79,12 +92,19 @@ public:
 	void setMacro(int index);
 	void syncSongParameters(const Song& song);
 	void refreshAll();
+	void setPatternLength(int length);
+	void setOctave(int octave);
 
 	void playSong();
+	void playPattern();
 	void stopSong();
+	void muteTracks();
+	void toggleTrackMuting(int track);
 	void togglePlayStop();
+	void toggleEditMode();
 
 	void setAudioDevice(const char *device);
+	void displayCommandOptionDialog(const CommandDescriptor& command);
 
 	bool saveSong(const char *path);
 	bool loadSong(const char *path);
@@ -96,4 +116,5 @@ public:
 	void saveState();
 
 	bool loadElements(const Theme& theme);
+
 };
