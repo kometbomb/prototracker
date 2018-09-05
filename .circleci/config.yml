@@ -3,13 +3,16 @@ jobs:
   build:
     docker:
       - image: gcc:5
+    working_directory: /tmp
     steps:
       - run:
           name: Install deps
-          command: |
-            apt-get update
-            apt-get install -y libsdl2-dev libsdl2-image-dev
+          command: apt-get update && apt-get install -y libsdl2-dev libsdl2-image-dev
       - checkout
       - run:
           name: Build
           command: make linux
+      - store_artifacts:
+          path: /tmp/prototracker
+      - store_artifacts:
+          path: /tmp/assets
