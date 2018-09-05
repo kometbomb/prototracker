@@ -4,6 +4,9 @@ jobs:
     docker:
       - image: gcc:5
     steps:
+      - run:
+          name: Install deps
+          command: apt-get install sdl2 libsdl2-image-dev
       - checkout
       - run:
           name: Build
