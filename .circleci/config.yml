@@ -2,11 +2,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: debian:stretch
+      - image: gcc:5
     steps:
-      - run:
-          name: Install deps
-          command: apt-get install build-essential sdl2 libsdl2-image-dev
       - checkout
       - run:
           name: Build
