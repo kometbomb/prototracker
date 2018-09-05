@@ -6,7 +6,7 @@ jobs:
     steps:
       - run:
           name: Install deps
-          command: sudo apt-get install build-essential sdl2 libsdl2-image-dev
+          command: apt-get install build-essential sdl2 libsdl2-image-dev
       - checkout
       - run:
           name: Build
