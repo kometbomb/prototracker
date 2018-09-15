@@ -43,10 +43,19 @@ bool Mixer::runThread(const char *deviceName)
 	debug("Opening audio device %s", deviceName);
 
 	if (!initAudio(deviceName))
+	{
+		debug("Audio init failed");
 		return false;
+	}
 
 	mThreadRunning = true;
 	mThread = SDL_CreateThread(queueThread, "QueueThread", this);
+
+	if (!mThread)
+	{
+		debug("Thread was not created");
+		return false;
+	}
 
 	SDL_PauseAudioDevice(mDeviceId, 0);
 
