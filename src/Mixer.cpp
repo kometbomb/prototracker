@@ -22,9 +22,12 @@
 #endif
 
 Mixer::Mixer(IPlayer& player, ISynth& synth)
-	: mPlayer(player), mSynth(synth), mSampleRate(0), mThread(NULL), mAudioOpened(false), mBuffer(NULL),
+	: mPlayer(player), mSynth(synth), mSampleRate(0),  mAudioOpened(false), mBuffer(NULL),
 	mDeviceId(0)
 {
+#ifdef ENABLE_AUDIO_QUEUE
+	mThread = NULL;
+#endif
 	mConvert = static_cast<SDL_AudioCVT*>(SDL_malloc(sizeof(SDL_AudioCVT)));
 	buildDeviceList();
 }
@@ -45,8 +48,10 @@ bool Mixer::runThread(const char *deviceName)
 	if (!initAudio(deviceName))
 		return false;
 
+#ifdef ENABLE_AUDIO_QUEUE
 	mThreadRunning = true;
 	mThread = SDL_CreateThread(queueThread, "QueueThread", this);
+#endif
 
 	SDL_PauseAudioDevice(mDeviceId, 0);
 
@@ -79,8 +84,12 @@ bool Mixer::initAudio(const char *deviceName)
 	want.format = AUDIO_S16SYS;
 	want.channels = 2;
 	want.samples = 1024;
-	want.callback = NULL;
 	want.userdata = this;
+#ifdef ENABLE_AUDIO_QUEUE
+	want.callback = NULL;
+#else
+	want.callback = static_cast<SDL_AudioCallback>(audioCallback);
+#endif
 
 	if (mAudioOpened)
 		SDL_CloseAudio();
@@ -100,11 +109,17 @@ bool Mixer::initAudio(const char *deviceName)
 
 	mSampleRate = have.freq;
 	mSamples = 0;
-	mBufferSize = queueLengthTargetMs * mSampleRate / 1000;
 
-	debug("sampleRate = %d buffer = %d", mSampleRate, mBufferSize);
 
 	SDL_BuildAudioCVT(mConvert, want.format, want.channels, have.freq, have.format, have.channels, have.freq);
+
+#ifdef ENABLE_AUDIO_QUEUE
+	mBufferSize = queueLengthTargetMs * mSampleRate / 1000;
+#else
+	mBufferSize = have.samples;
+#endif
+
+	debug("sampleRate = %d buffer = %d", mSampleRate, mBufferSize);
 
 	if (mBuffer != NULL)
 		delete[] mBuffer;
@@ -121,12 +136,14 @@ bool Mixer::initAudio(const char *deviceName)
 
 void Mixer::deinitAudio()
 {
+#ifdef ENABLE_AUDIO_QUEUE
 	mThreadRunning = false;
 
 	if (mThread != NULL)
 	{
 		SDL_WaitThread(mThread, NULL);
 	}
+#endif
 
 	if (mAudioOpened)
 		SDL_CloseAudioDevice(mDeviceId);
@@ -141,6 +158,7 @@ void Mixer::deinitAudio()
 }
 
 
+#ifdef ENABLE_AUDIO_QUEUE
 int Mixer::queueThread(void *data)
 {
 	Mixer& mixer = *reinterpret_cast<Mixer*>(data);
@@ -190,6 +208,7 @@ int Mixer::queueThreadInner()
 
 	return 0;
 }
+#endif
 
 
 void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
@@ -265,7 +284,8 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 	}
 
 	mixer.mConvert->len = length * sizeof(Sample16);
-	mixer.mConvert->buf = stream;
+	memcpy(mixer.mBuffer, stream, std::min(mixer.mBufferSize, length) * sizeof(Sample16));
+	mixer.mConvert->buf = reinterpret_cast<Uint8*>(mixer.mBuffer);
 	SDL_ConvertAudio(mixer.mConvert);
 
 	player.lock();
@@ -296,12 +316,12 @@ int& Mixer::getSamples()
 	return mSamples;
 }
 
-
+#ifdef ENABLE_AUDIO_QUEUE
 bool Mixer::isThreadRunning() const
 {
 	return mThreadRunning;
 }
-
+#endif
 
 void Mixer::buildDeviceList()
 {

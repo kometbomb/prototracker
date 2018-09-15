@@ -143,7 +143,7 @@ void infinityAndBeyond(void *ctx)
 			{
 				context.editorState.audioDevice = "";
 				context.mainEditor.showMessageV(Editor::MessageInfo, "%s disconnected.",
-					context.mixer.getCurrentDeviceName());
+				context.mixer.getCurrentDeviceName());
 				context.mixer.stopThread();
 			}
 		}
