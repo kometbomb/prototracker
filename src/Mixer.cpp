@@ -54,13 +54,13 @@ bool Mixer::runThread(const char *deviceName)
 #ifdef ENABLE_AUDIO_QUEUE
 	mThreadRunning = true;
 	mThread = SDL_CreateThread(queueThread, "QueueThread", this);
-#endif
 
 	if (!mThread)
 	{
 		debug("Thread was not created");
 		return false;
 	}
+#endif
 
 	SDL_PauseAudioDevice(mDeviceId, 0);
 
