@@ -56,6 +56,30 @@ Context::~Context()
 }
 
 
+void initEditor(Context& context)
+{
+	// Emscripten needs an absolute path to filesystem root
+#ifdef __EMSCRIPTEN__
+	const char *gamepadPath = "/assets/gamecontrollerdb.txt";
+	const char *songPath = "/assets/dub.song";
+#else
+	const char *gamepadPath = "assets/gamecontrollerdb.txt";
+	const char *songPath = "assets/dub.song";
+#endif
+
+	context.gamepad.loadDefinitions(gamepadPath);
+	context.gamepad.initControllers();
+	context.ready = true;
+
+	if (!context.mainEditor.loadState())
+		context.mainEditor.loadSong(songPath);
+
+	// Try to use the device from the config or autodetect if not set
+
+	context.mainEditor.setAudioDevice(context.editorState.audioDevice.c_str());
+}
+
+
 void infinityAndBeyond(void *ctx)
 {
 	Context& context = *static_cast<Context*>(ctx);
@@ -82,12 +106,7 @@ void infinityAndBeyond(void *ctx)
 		}
 		else if (event.type == EVERYTHING_READY)
 		{
-			context.gamepad.loadDefinitions("/assets/gamecontrollerdb.txt");
-			context.gamepad.initControllers();
-
-			context.mainEditor.loadState();
-			context.ready = true;
-			context.mainEditor.setAudioDevice(context.editorState.audioDevice.c_str());
+			initEditor(context);
 			emAppReady();
 		}
 		else if (event.type == EVERYTHING_DONE)
@@ -127,6 +146,9 @@ void infinityAndBeyond(void *ctx)
 
 		}
 #if SDL_VERSION_ATLEAST(2,0,4)
+#ifndef __EMSCRIPTEN__
+		// TODO: Connection events mess up emscripten audio timing because this event happens
+		// before actual ready state.
 		else if (event.type == SDL_AUDIODEVICEADDED)
 		{
 			context.mainEditor.showMessageV(Editor::MessageInfo, "%s connected.",
@@ -143,10 +165,11 @@ void infinityAndBeyond(void *ctx)
 			{
 				context.editorState.audioDevice = "";
 				context.mainEditor.showMessageV(Editor::MessageInfo, "%s disconnected.",
-					context.mixer.getCurrentDeviceName());
+				context.mixer.getCurrentDeviceName());
 				context.mixer.stopThread();
 			}
 		}
+#endif
 #endif
 		else
 		{
@@ -220,22 +243,10 @@ extern "C" int main(int argc, char **argv)
 	emSyncFsAndStartup();
 	chdir("/persistent");
 
-	if (!context.mainEditor.loadState())
-		context.mainEditor.loadSong("/assets/dub.song");
-
 	emscripten_set_main_loop_arg(infinityAndBeyond, &context, -1, 1);
 
 #else
-	context.gamepad.loadDefinitions("assets/gamecontrollerdb.txt");
-	context.gamepad.initControllers();
-	context.ready = true;
-
-	if (!context.mainEditor.loadState())
-		context.mainEditor.loadSong("assets/dub.song");
-
-	// Try to use the device from the config or autodetect if not set
-
-	context.mainEditor.setAudioDevice(context.editorState.audioDevice.c_str());
+	initEditor(context);
 
 	while (!context.done)
 	{
