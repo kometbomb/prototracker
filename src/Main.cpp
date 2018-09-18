@@ -11,6 +11,7 @@
 #include "Emscripten.h"
 #include "Theme.h"
 #include "Context.h"
+#include "Debug.h"
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
@@ -111,8 +112,13 @@ void infinityAndBeyond(void *ctx)
 		}
 		else if (event.type == EVERYTHING_DONE)
 		{
-			emscripten_cancel_main_loop();
+			debug("Received shutdown event");
+			context.mainEditor.saveState();
 			context.done = true;
+			emscripten_cancel_main_loop();
+			context.mixer.stopThread();
+			delete &context;
+			exit(0);
 		}
 		else
 #endif
@@ -252,12 +258,13 @@ extern "C" int main(int argc, char **argv)
 	{
 		infinityAndBeyond(&context);
 	}
+#endif
 
 	context.mixer.stopThread();
 
-#endif
-
 	delete _context;
+
+	debug("Exiting...");
 
 	return 0;
 }

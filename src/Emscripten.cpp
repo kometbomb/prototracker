@@ -11,9 +11,12 @@ extern Context* _context;
 
 #include <emscripten.h>
 
+extern "C" {
+
 void emDeinit();
 
-extern "C" void emFilesSyncedShutdown()
+EMSCRIPTEN_KEEPALIVE
+void emFilesSyncedShutdown()
 {
 	SDL_Event event;
 	event.type = EVERYTHING_DONE;
@@ -21,22 +24,24 @@ extern "C" void emFilesSyncedShutdown()
 }
 
 
-extern "C" void emFilesSyncedStartup()
+EMSCRIPTEN_KEEPALIVE
+void emFilesSyncedStartup()
 {
 	SDL_Event event;
 	event.type = EVERYTHING_READY;
 	SDL_PushEvent(&event);
 }
 
+EMSCRIPTEN_KEEPALIVE
 void emSyncFsAndStartup()
 {
 	EM_ASM(
 		console.log("Mounting filesystem");
-		
+
 		FS.mkdir('/persistent');
 		FS.mkdir('/imported');
 		FS.mount(IDBFS, {}, '/persistent');
-		
+
 		FS.syncfs(true, function(err) {
             assert(!err);
 			console.log("Filesystem is loaded, starting up");
@@ -46,11 +51,12 @@ void emSyncFsAndStartup()
 }
 
 
+EMSCRIPTEN_KEEPALIVE
 void emSyncFs()
 {
 	EM_ASM(
 		console.log("Syncing filesystem");
-		
+
 		FS.syncfs(false, function(err) {
             assert(!err);
 			console.log("Filesystem synced");
@@ -59,6 +65,7 @@ void emSyncFs()
 }
 
 
+EMSCRIPTEN_KEEPALIVE
 void emSyncFsAndShutdown()
 {
 	EM_ASM(
@@ -72,13 +79,15 @@ void emSyncFsAndShutdown()
 }
 
 
+EMSCRIPTEN_KEEPALIVE
 const char * emOnBeforeUnload(int eventType, const void *reserved, void *userData)
 {
 	return "";
 }
 
 
-extern "C" void emOnFileImported()
+EMSCRIPTEN_KEEPALIVE
+void emOnFileImported()
 {
 	SDL_Event event;
 	event.type = SONG_IMPORTED;
@@ -86,7 +95,8 @@ extern "C" void emOnFileImported()
 }
 
 
-extern "C" void emExportFile()
+EMSCRIPTEN_KEEPALIVE
+void emExportFile()
 {
 	SDL_Event event;
 	event.type = EXPORT_SONG;
@@ -94,7 +104,8 @@ extern "C" void emExportFile()
 }
 
 
-extern "C" void emPlaySong()
+EMSCRIPTEN_KEEPALIVE
+void emPlaySong()
 {
 	SDL_Event event;
 	event.type = PLAY_SONG;
@@ -102,7 +113,8 @@ extern "C" void emPlaySong()
 }
 
 
-extern "C" void emNewSong()
+EMSCRIPTEN_KEEPALIVE
+void emNewSong()
 {
 	SDL_Event event;
 	event.type = NEW_SONG;
@@ -110,23 +122,24 @@ extern "C" void emNewSong()
 }
 
 
-extern "C" const char * emRequestSong()
+EMSCRIPTEN_KEEPALIVE
+const char * emRequestSong()
 {
 	return _context->mainEditor.getSongBase64().c_str();
 }
-	
-	
-extern "C" void emAppReady()
+
+
+EMSCRIPTEN_KEEPALIVE
+void emAppReady()
 {
 	emscripten_run_script("if (typeof appReady === \"function\") appReady();");
 }
 
+}
+
 #else
-	
+
 void emSyncFsAndShutdown() {}
 void emSyncFsAndStartup() {}
 
 #endif
-
-
-
