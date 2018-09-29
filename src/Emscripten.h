@@ -38,6 +38,7 @@ void emPlaySong();
 
 // Called by the app when ready and running (signals the host webpage we are ready to go)
 void emAppReady();
+void emAppShutdown();
 
 // Returns the current song as Base64
 const char * emRequestSong();

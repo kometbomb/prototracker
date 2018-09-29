@@ -16,6 +16,7 @@
 #include <cstdio>
 #include <unistd.h>
 #include <cstring>
+#include "App.h"
 
 Context* _context;
 
@@ -118,6 +119,7 @@ void infinityAndBeyond(void *ctx)
 			emscripten_cancel_main_loop();
 			context.mixer.stopThread();
 			delete &context;
+			emAppShutdown();
 			exit(0);
 		}
 		else
@@ -247,8 +249,6 @@ extern "C" int main(int argc, char **argv)
 
 #ifdef __EMSCRIPTEN__
 	emSyncFsAndStartup();
-	chdir("/persistent");
-
 	emscripten_set_main_loop_arg(infinityAndBeyond, &context, -1, 1);
 
 #else

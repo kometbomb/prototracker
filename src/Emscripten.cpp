@@ -2,7 +2,7 @@
 #include "SDL.h"
 #include "Context.h"
 #include <cstdlib>
-
+#include "App.h"
 
 
 #ifdef __EMSCRIPTEN__
@@ -35,19 +35,24 @@ void emFilesSyncedStartup()
 EMSCRIPTEN_KEEPALIVE
 void emSyncFsAndStartup()
 {
-	EM_ASM(
+	EM_ASM_({
+		var appName = UTF8ToString($0);
 		console.log("Mounting filesystem");
-
-		FS.mkdir('/persistent');
+		var path = '/libsdl';
+		FS.mkdir(path);
+		path+='/'+appName;
+		FS.mkdir(path);
+		path+='/'+appName;
+		FS.mkdir(path);
 		FS.mkdir('/imported');
-		FS.mount(IDBFS, {}, '/persistent');
+		FS.mount(IDBFS, {}, path);
 
 		FS.syncfs(true, function(err) {
             assert(!err);
 			console.log("Filesystem is loaded, starting up");
             Module.ccall('emFilesSyncedStartup', 'v');
 		});
-	);
+	}, APP_NAME);
 }
 
 
@@ -133,6 +138,12 @@ EMSCRIPTEN_KEEPALIVE
 void emAppReady()
 {
 	emscripten_run_script("if (typeof appReady === \"function\") appReady();");
+}
+
+EMSCRIPTEN_KEEPALIVE
+void emAppShutdown()
+{
+	emscripten_run_script("if (typeof appShutdown === \"function\") appShutdown();");
 }
 
 }
