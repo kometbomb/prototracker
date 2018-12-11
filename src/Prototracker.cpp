@@ -16,55 +16,88 @@
 #endif
 
 Prototracker::Prototracker()
-    : mReady(false)
+	: mReady(false)
 {
 
 }
 
 Prototracker::~Prototracker()
 {
+	for (auto extension : mExtensions)
+	{
+		delete extension;
+	}
 }
 
 bool Prototracker::init()
 {
-    mEditorState = new EditorState();
-  mSong = new Song();
-  mPlayer = new Player(*mSong);
-  mGamepad = new Gamepad();
-  mSynth = new Synth();
-  mMixer = new Mixer(*mPlayer, *mSynth);
-  mRenderer = new Renderer();
+	for (auto extension : mExtensions)
+	{
+		extension->init();
+	}
 
-  mMainEditor = new MainEditor(*mEditorState, *mPlayer, mPlayer->getPlayerState(), *mSong, *mSynth, *mMixer);
+	mEditorState = new EditorState();
+	mSong = new Song();
+	mPlayer = new Player(*mSong);
+	mGamepad = new Gamepad();
+	mSynth = NULL;
 
-  if (!initRenderer()) {
-    return false;
-  }
+	for (auto extension : mExtensions)
+	{
+		ISynth *synth = extension->registerSynth();
+
+		if (synth != NULL)
+		{
+			mSynth = synth;
+		}
+	}
+
+	// Use default synth
+
+	if (mSynth == NULL)
+	{
+		mSynth = new Synth();
+	}
+
+	mMixer = new Mixer(*mPlayer, *mSynth);
+	mRenderer = new Renderer();
+
+	for (auto extension : mExtensions)
+	{
+		extension->registerUIComponents(*mUIComponentFactory);
+		extension->registerSectionListeners(*mSong);
+	}
+
+	mMainEditor = new MainEditor(*mEditorState, *mPlayer, mPlayer->getPlayerState(), *mSong, *mSynth, *mMixer);
+
+	if (!initRenderer()) {
+		return false;
+	}
 
 #ifndef __EMSCRIPTEN__
-  initEditor();
+	initEditor();
 #endif
 
-  return true;
+	return true;
 }
 
 
 void Prototracker::deinit()
 {
-    mMixer->stopThread();
+	mMixer->stopThread();
 
-  delete mMainEditor;
-  delete mMixer;
-  delete mPlayer;
-  delete mSong;
-  delete mEditorState;
-  delete mGamepad;
-  delete mRenderer;
+	delete mMainEditor;
+	delete mMixer;
+	delete mPlayer;
+	delete mSong;
+	delete mEditorState;
+	delete mGamepad;
+	delete mRenderer;
 }
 
 bool Prototracker::initRenderer()
 {
-    Theme theme;
+	Theme theme;
 
 	if (!theme.load("assets/elements"))
 	{
@@ -85,13 +118,13 @@ bool Prototracker::initRenderer()
 	}
 
 	mPreviousTick = SDL_GetTicks();
-    return true;
+	return true;
 }
 
 
 void Prototracker::initEditor()
 {
-    // Emscripten needs an absolute path to filesystem root
+	// Emscripten needs an absolute path to filesystem root
 #ifdef __EMSCRIPTEN__
 	const char *gamepadPath = "/assets/gamecontrollerdb.txt";
 	const char *songPath = "/assets/dub.song";
@@ -118,7 +151,7 @@ void Prototracker::initEditor()
 
 bool Prototracker::handleEvents()
 {
-    bool done = false;
+	bool done = false;
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event))
@@ -257,11 +290,11 @@ bool Prototracker::handleEvents()
 #endif
 	}
 
-    return !done;
+	return !done;
 }
 
 
 std::string Prototracker::getSongBase64() const
 {
-    return mMainEditor->getSongBase64();
+	return mMainEditor->getSongBase64();
 }

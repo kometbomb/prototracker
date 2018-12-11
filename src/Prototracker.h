@@ -11,29 +11,33 @@ struct Mixer;
 struct MainEditor;
 struct Gamepad;
 struct Renderer;
+struct Extension;
 
 class Prototracker {
-  Renderer *mRenderer;
-  EditorState *mEditorState;
-  IPlayer *mPlayer;
-  Song *mSong;
-  ISynth *mSynth;
-  Mixer *mMixer;
-  MainEditor *mMainEditor;
-  Gamepad *mGamepad;
+	Renderer *mRenderer;
+	EditorState *mEditorState;
+	IPlayer *mPlayer;
+	Song *mSong;
+	ISynth *mSynth;
+	Mixer *mMixer;
+	MainEditor *mMainEditor;
+	Gamepad *mGamepad;
+	UIComponentFactory *mUIComponentFactory
 
-  Uint32 mPreviousTick;
-  bool mReady;
+	std::vector<Extension*> mExtensions;
 
-  void initEditor();
-  bool initRenderer();
+	Uint32 mPreviousTick;
+	bool mReady;
+
+	void initEditor();
+	bool initRenderer();
 
 public:
-    Prototracker();
-  ~Prototracker();
+	Prototracker();
+	~Prototracker();
 
-  bool init();
-  void deinit();
-  bool handleEvents();
-  std::string getSongBase64() const;
+	bool init();
+	void deinit();
+	bool handleEvents();
+	std::string getSongBase64() const;
 };
