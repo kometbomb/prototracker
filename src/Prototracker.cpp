@@ -16,7 +16,7 @@
 #endif
 
 Prototracker::Prototracker()
-    : mReady(false)
+	: mReady(false)
 {
 
 }
@@ -28,24 +28,24 @@ Prototracker::~Prototracker()
 bool Prototracker::init()
 {
     mEditorState = new EditorState();
-  mSong = new Song();
-  mPlayer = new Player(*mSong);
-  mGamepad = new Gamepad();
-  mSynth = new Synth();
-  mMixer = new Mixer(*mPlayer, *mSynth);
-  mRenderer = new Renderer();
+	mSong = new Song();
+	mPlayer = new Player(*mSong);
+	mGamepad = new Gamepad();
+	mSynth = new Synth();
+	mMixer = new Mixer(*mPlayer, *mSynth);
+	mRenderer = new Renderer();
 
-  mMainEditor = new MainEditor(*mEditorState, *mPlayer, mPlayer->getPlayerState(), *mSong, *mSynth, *mMixer);
+	mMainEditor = new MainEditor(*mEditorState, *mPlayer, mPlayer->getPlayerState(), *mSong, *mSynth, *mMixer);
 
-  if (!initRenderer()) {
-    return false;
-  }
+	if (!initRenderer()) {
+		return false;
+	}
 
 #ifndef __EMSCRIPTEN__
-  initEditor();
+  	initEditor();
 #endif
 
-  return true;
+  	return true;
 }
 
 
@@ -53,13 +53,14 @@ void Prototracker::deinit()
 {
     mMixer->stopThread();
 
-  delete mMainEditor;
-  delete mMixer;
-  delete mPlayer;
-  delete mSong;
-  delete mEditorState;
-  delete mGamepad;
-  delete mRenderer;
+	delete mMainEditor;
+	delete mMixer;
+	delete mPlayer;
+	delete mSong;
+	delete mEditorState;
+	delete mGamepad;
+	delete mRenderer;
+	delete mSynth;
 }
 
 bool Prototracker::initRenderer()
