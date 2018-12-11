@@ -21,6 +21,7 @@ public:
 		PatternLength,
 		OctaveNumber,
 		TouchRegion,
+        PatchEditor,
 		Unknown
 	};
 

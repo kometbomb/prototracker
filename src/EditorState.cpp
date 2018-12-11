@@ -43,6 +43,8 @@ FileSection * EditorState::pack()
 
 	state->writeString(audioDevice.c_str());
 
+    state->writeDword(patch);
+
 	return state;
 }
 
@@ -133,11 +135,17 @@ bool EditorState::unpack(const FileSection& section)
 	if (!tempAudioDevice)
 		return false;
 
+    int patchNr = section.readDword(offset);
+
+    if (patchNr == FileSection::invalidRead)
+		return false;
+
 	macro = macroNr;
 	octave = octaveNr;
 	editMode = editModeNr;
 	followPlayPosition = followNr;
 	audioDevice = tempAudioDevice;
+    patch = patchNr;
 
 	return true;
 }
@@ -200,7 +208,7 @@ bool TrackEditorState::unpack(const FileSection& section)
 	if (blockEndNr == FileSection::invalidRead)
 		return false;
 
-	currentRow = currentRowNr;
+    currentRow = currentRowNr;
 	currentTrack = currentTrackNr;
 	currentColumn = currentColumnNr;
 
@@ -223,6 +231,7 @@ void EditorState::reset()
 	followPlayPosition = true;
 
 	macro = 0;
+    patch = 0;
 	octave = 4;
 	editMode = 0;
 	audioDevice = "";

@@ -24,6 +24,7 @@ struct TrackEditorState
 struct EditorState
 {
 	Value macro;
+    Value patch;
 	Value octave;
 	Value editMode;
 

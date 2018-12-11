@@ -22,6 +22,7 @@ struct TooltipDisplayer;
 struct AudioDeviceSelector;
 struct CommandSelector;
 struct CommandOptionSelector;
+struct PatchManager;
 
 class MainEditor: public Editor
 {
@@ -43,6 +44,7 @@ class MainEditor: public Editor
 	MessageDisplayer *mMessageDisplayer;
 	TooltipManager *mTooltipManager;
 	TooltipDisplayer *mTooltipDisplayer;
+    PatchManager *mPatchManager;
 
 	int mDragStartX, mDragStartY;
 	bool mIsDragging;
@@ -117,4 +119,5 @@ public:
 
 	bool loadElements(const Theme& theme);
 
+    void registerPatchManager(PatchManager* patchManager);
 };

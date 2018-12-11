@@ -27,6 +27,9 @@ public:
 	// Note has been triggered
 	virtual void triggerNote() = 0;
 
+    // Patch has been changed
+	virtual void changePatch();
+
 	// Set oscillator frequency. 1.0 = 440 Hz.
 	virtual void setFrequency(float frequency) = 0;
 

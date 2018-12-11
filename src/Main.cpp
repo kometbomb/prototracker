@@ -26,9 +26,12 @@ Context* _context;
 
 Context::Context()
 	: ready(false), done(false), themeLoaded(false), song(), player(song), synth(), mixer(player, synth), editorState(),
-	mainEditor(editorState, player, player.getPlayerState(), song, synth, mixer)
+    patchManager(),
+	mainEditor(editorState, player, player.getPlayerState(), song, synth, mixer, patchManager)
 {
-	Theme theme;
+    mainEditor.setPatchManager(&patchManager);
+
+    Theme theme;
 
 	if (!theme.load("assets/elements"))
 	{
