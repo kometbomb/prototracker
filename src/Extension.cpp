@@ -18,12 +18,12 @@ void Extension::deinit()
 }
 
 
-void Extension::registerUIComponents(UIComponentFactory& factory)
+void Extension::registerUIComponents(UIComponentFactory& factory, EditorState& editorState)
 {
 }
 
 
-void Extension::registerFileSections(Song& song)
+void Extension::registerSectionListeners(Song& song)
 {
 
 }

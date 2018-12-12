@@ -2,7 +2,6 @@
 #include "Prototracker.h"
 #include "Mixer.h"
 #include "Song.h"
-#include "Synth.h"
 #include "Player.h"
 #include "EditorState.h"
 #include "Gamepad.h"
@@ -10,6 +9,8 @@
 #include "MainEditor.h"
 #include "Emscripten.h"
 #include "Debug.h"
+#include "Extension.h"
+#include "UIComponentFactory.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -41,6 +42,7 @@ bool Prototracker::init()
 	mPlayer = new Player(*mSong);
 	mGamepad = new Gamepad();
 	mSynth = NULL;
+	mUIComponentFactory = new UIComponentFactory();
 
 	for (auto extension : mExtensions)
 	{
@@ -49,6 +51,7 @@ bool Prototracker::init()
 		if (synth != NULL)
 		{
 			mSynth = synth;
+			break;
 		}
 	}
 
@@ -56,7 +59,7 @@ bool Prototracker::init()
 
 	if (mSynth == NULL)
 	{
-		mSynth = new Synth();
+		debug("No synth set");
 	}
 
 	mMixer = new Mixer(*mPlayer, *mSynth);
@@ -64,7 +67,7 @@ bool Prototracker::init()
 
 	for (auto extension : mExtensions)
 	{
-		extension->registerUIComponents(*mUIComponentFactory);
+		extension->registerUIComponents(*mUIComponentFactory, *mEditorState);
 		extension->registerSectionListeners(*mSong);
 	}
 
@@ -112,7 +115,7 @@ bool Prototracker::initRenderer()
 	SDL_Rect area = {0, 0, theme.getWidth(), theme.getHeight()};
 	mMainEditor->setArea(area);
 
-	if (!mMainEditor->loadElements(theme))
+	if (!mMainEditor->loadElements(theme, *mUIComponentFactory))
 	{
 		return false;
 	}
@@ -297,4 +300,10 @@ bool Prototracker::handleEvents()
 std::string Prototracker::getSongBase64() const
 {
 	return mMainEditor->getSongBase64();
+}
+
+
+void Prototracker::registerExtension(Extension *extension)
+{
+	mExtensions.push_back(extension);
 }

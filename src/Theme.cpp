@@ -225,6 +225,7 @@ bool Theme::loadDefinition(const std::string& path)
 		{
 			Element element;
 			element.type = Theme::Unknown;
+            strncpy(element.name, elementName, sizeof(element.name) - 1);
 
 			for (auto elementDef : elements)
 			{
@@ -235,16 +236,9 @@ bool Theme::loadDefinition(const std::string& path)
 				}
 			}
 
-			if (element.type != Theme::Unknown)
-			{
-				memcpy(element.parameters, parameters, sizeof(element.parameters));
-				memcpy(element.strParameters, strParameters, sizeof(element.strParameters));
-				mElement.push_back(element);
-			}
-			else
-			{
-				debug("Unknown element %s on line %d", elementName, lineCounter);
-			}
+			memcpy(element.parameters, parameters, sizeof(element.parameters));
+			memcpy(element.strParameters, strParameters, sizeof(element.strParameters));
+			mElement.push_back(element);
 		}
 		else
 		{

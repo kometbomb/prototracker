@@ -2,6 +2,7 @@
 
 #include "SDL.h"
 #include <string>
+#include <vector>
 
 struct EditorState;
 struct IPlayer;
@@ -12,6 +13,7 @@ struct MainEditor;
 struct Gamepad;
 struct Renderer;
 struct Extension;
+struct UIComponentFactory;
 
 class Prototracker {
 	Renderer *mRenderer;
@@ -22,7 +24,7 @@ class Prototracker {
 	Mixer *mMixer;
 	MainEditor *mMainEditor;
 	Gamepad *mGamepad;
-	UIComponentFactory *mUIComponentFactory
+	UIComponentFactory *mUIComponentFactory;
 
 	std::vector<Extension*> mExtensions;
 
@@ -35,6 +37,12 @@ class Prototracker {
 public:
 	Prototracker();
 	~Prototracker();
+
+	/**
+	 * Register extension, this class will destruct the passed extension object.
+	 */
+
+	void registerExtension(Extension *extension);
 
 	bool init();
 	void deinit();

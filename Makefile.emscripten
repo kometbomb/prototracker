@@ -5,14 +5,15 @@
 # command line.
 
 OUTPUT=prototracker
-SRC=src/*.cpp
+SRC=src/*.cpp src/Base/*.cpp
+SRC_H=src/*.h src/Base/*.h
 
-$(OUTPUT).html: $(SRC) src/*.h
+$(OUTPUT).html: $(SRC) $(SRC_H)
 	emcc -std=c++11 --preload-file assets -O3 -s NO_EXIT_RUNTIME=0 \
 		-s EXPORTED_FUNCTIONS='["_main"]' -s SDL2_IMAGE_FORMATS='["png"]' \
 		-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "FS"]' -DSCALE=2 -DSAMPLERATE=22050 \
 		-s ALLOW_MEMORY_GROWTH=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s BINARYEN_TRAP_MODE=clamp \
-		-s WASM=1 -s MODULARIZE=1 $(wildcard $(SRC)) -o $@ -s ASSERTIONS=1
+		-s WASM=1 -s MODULARIZE=0 $(wildcard $(SRC)) -o $@ -s ASSERTIONS=1
 
 clean:
 	rm $(OUTPUT).html $(OUTPUT).js $(OUTPUT).data $(OUTPUT).wasm

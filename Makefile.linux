@@ -1,5 +1,6 @@
 OUTPUT=prototracker
-SRC=src/*.cpp
+SRC=src/*.cpp src/Base/*.cpp
+SRC_H=src/*.h src/Base/*.h
 
-$(OUTPUT): $(SRC) src/*.h
+$(OUTPUT): $(SRC) $(SRC_H)
 	g++ -O3 -Wformat -std=c++11 -o $@ $(SRC) -lSDL2_image -lSDL2main `sdl2-config --cflags --libs` -s -DSCALE=2
