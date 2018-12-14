@@ -2,7 +2,7 @@
 #include "../UIComponentFactory.h"
 #include "WaveView.h"
 
-void BaseExtension::init()
+void BaseExtension::init(IPlayer& player, const Song& song)
 {
     mSynth = new Synth();
 }

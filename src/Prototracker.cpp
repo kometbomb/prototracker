@@ -32,17 +32,18 @@ Prototracker::~Prototracker()
 
 bool Prototracker::init()
 {
-	for (auto extension : mExtensions)
-	{
-		extension->init();
-	}
-
+	mGamepad = new Gamepad();
 	mEditorState = new EditorState();
 	mSong = new Song();
 	mPlayer = new Player(*mSong);
-	mGamepad = new Gamepad();
-	mSynth = NULL;
 	mUIComponentFactory = new UIComponentFactory();
+
+	for (auto extension : mExtensions)
+	{
+		extension->init(*mPlayer, *mSong);
+	}
+
+	mSynth = NULL;
 
 	for (auto extension : mExtensions)
 	{

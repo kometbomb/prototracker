@@ -4,6 +4,7 @@ struct ISynth;
 struct Song;
 struct UIComponentFactory;
 struct EditorState;
+struct IPlayer;
 
 class Extension
 {
@@ -14,7 +15,7 @@ public:
 	 * Extension should initialise everything in init()
 	 */
 
-	virtual void init();
+	virtual void init(IPlayer& player, const Song& song);
 
 	/**
 	 * Extension should deinitialise everything in deinit()

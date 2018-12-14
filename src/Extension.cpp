@@ -6,7 +6,7 @@ Extension::~Extension()
 
 }
 
-void Extension::init()
+void Extension::init(IPlayer& player, const Song& song)
 {
 
 }
