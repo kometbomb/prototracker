@@ -5,8 +5,8 @@
 # command line.
 
 OUTPUT=prototracker
-SRC=src/*.cpp src/Base/*.cpp
-SRC_H=src/*.h src/Base/*.h
+SRC=src/*.cpp src/BaseExtension/*.cpp
+SRC_H=src/*.h src/BaseExtension/*.h
 
 $(OUTPUT).html: $(SRC) $(SRC_H)
 	emcc -std=c++11 --preload-file assets -O3 -s NO_EXIT_RUNTIME=0 \

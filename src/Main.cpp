@@ -2,7 +2,7 @@
 #include "SDL_image.h"
 #include "Debug.h"
 #include "Prototracker.h"
-#include "Base/BaseExtension.h"
+#include "BaseExtension/BaseExtension.h"
 #include <stdlib.h>
 
 #ifdef __EMSCRIPTEN__
