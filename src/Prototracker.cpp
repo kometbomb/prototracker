@@ -27,7 +27,7 @@ Prototracker::~Prototracker()
 
 bool Prototracker::init()
 {
-    mEditorState = new EditorState();
+	mEditorState = new EditorState();
 	mSong = new Song();
 	mPlayer = new Player(*mSong);
 	mGamepad = new Gamepad();
@@ -51,7 +51,7 @@ bool Prototracker::init()
 
 void Prototracker::deinit()
 {
-    mMixer->stopThread();
+	mMixer->stopThread();
 
 	delete mMainEditor;
 	delete mMixer;
@@ -65,7 +65,7 @@ void Prototracker::deinit()
 
 bool Prototracker::initRenderer()
 {
-    Theme theme;
+	Theme theme;
 
 	if (!theme.load("assets/elements"))
 	{
@@ -86,7 +86,7 @@ bool Prototracker::initRenderer()
 	}
 
 	mPreviousTick = SDL_GetTicks();
-    return true;
+	return true;
 }
 
 
@@ -119,7 +119,7 @@ void Prototracker::initEditor()
 
 bool Prototracker::handleEvents()
 {
-    bool done = false;
+	bool done = false;
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event))
@@ -258,11 +258,11 @@ bool Prototracker::handleEvents()
 #endif
 	}
 
-    return !done;
+	return !done;
 }
 
 
 std::string Prototracker::getSongBase64() const
 {
-    return mMainEditor->getSongBase64();
+	return mMainEditor->getSongBase64();
 }
