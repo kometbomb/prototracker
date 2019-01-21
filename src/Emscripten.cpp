@@ -1,13 +1,13 @@
 #include "Emscripten.h"
 #include "SDL.h"
-#include "Context.h"
 #include <cstdlib>
 #include "App.h"
 
-
 #ifdef __EMSCRIPTEN__
 
-extern Context* _context;
+#include "Prototracker.h"
+
+extern Prototracker *g_prototracker;
 
 #include <emscripten.h>
 
@@ -130,7 +130,7 @@ void emNewSong()
 EMSCRIPTEN_KEEPALIVE
 const char * emRequestSong()
 {
-	return _context->mainEditor.getSongBase64().c_str();
+	return g_prototracker->getSongBase64().c_str();
 }
 
 
