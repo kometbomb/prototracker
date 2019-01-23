@@ -23,6 +23,7 @@ struct AudioDeviceSelector;
 struct CommandSelector;
 struct CommandOptionSelector;
 struct PatchManager;
+struct UIComponentFactory;
 
 class MainEditor: public Editor
 {
@@ -117,7 +118,7 @@ public:
 	bool loadState();
 	void saveState();
 
-	bool loadElements(const Theme& theme);
+	bool loadElements(const Theme& theme, const UIComponentFactory& componentFactory);
 
     void registerPatchManager(PatchManager* patchManager);
 };

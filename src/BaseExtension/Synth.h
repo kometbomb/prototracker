@@ -1,16 +1,16 @@
 #pragma once
 
-#include "ISynth.h"
+#include "../SynthBase.h"
 
 struct WaveStore;
 
-class Synth: public ISynth
+class Synth: public SynthBase
 {
 	WaveStore* mWaveStore;
-	
+
 public:
 	Synth();
 	virtual ~Synth();
-	
+
 	const WaveStore& getWaveStore() const;
 };

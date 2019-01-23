@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IOscillator.h"
+#include "../IOscillator.h"
 
 struct WaveStore;
 
@@ -11,12 +11,12 @@ struct WaveStore;
 class Oscillator: public IOscillator
 {
 	const WaveStore* mWaveStore;
-	
+
 	int mWave, mQueuedWave;
 	int mSpeed;
 	int mPosition;
 	int mVolume;
-	
+
 public:
 	static const int volumeResolution = 8192;
 	static const int oscillatorLength = 256;
@@ -24,14 +24,14 @@ public:
 
 	Oscillator();
 	virtual ~Oscillator();
-	
+
 	virtual void triggerNote();
 	virtual void handleTrackState(ITrackState& trackState);
 	void setWaveStore(const WaveStore& sampleStore);
 	void setPosition(int newPosition);
 	void setWave(int wave);
 	void queueWave(int wave);
-	
+
 	virtual void setFrequency(float frequency);
 	virtual void setVolume(int volume);
 	virtual void update(int numSamples);

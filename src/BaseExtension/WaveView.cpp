@@ -1,6 +1,6 @@
 #include "WaveView.h"
-#include "Renderer.h"
-#include "Color.h"
+#include "../Renderer.h"
+#include "../Color.h"
 #include "SDL.h"
 #include "Wave.h"
 #include "WaveStore.h"

@@ -2,11 +2,11 @@
 #include <math.h>
 #include <cstdio>
 #include "SDL.h"
-#include "Sample.h"
+#include "../Sample.h"
 #include "WaveStore.h"
-#include "SequenceRow.h"
+#include "../SequenceRow.h"
 #include "Wave.h"
-#include "TrackState.h"
+#include "../TrackState.h"
 
 Oscillator::Oscillator()
 	: IOscillator(), mWaveStore(NULL), mWave(0), mSpeed(0), mVolume(1.0), mPosition(0)
