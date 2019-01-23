@@ -6,7 +6,8 @@ Extension::~Extension()
 
 }
 
-void Extension::init(IPlayer& player, const Song& song)
+
+void Extension::init(Prototracker& prototracker, IPlayer& player, const Song& song)
 {
 
 }

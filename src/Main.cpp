@@ -31,7 +31,7 @@ extern "C" int main(int argc, char **argv)
 	atexit(IMG_Quit);
 
     Prototracker prototracker;
-    prototracker.registerExtension(new BaseExtension());
+    prototracker.loadExtension<BaseExtension>();
 
     if (!prototracker.init())
     {

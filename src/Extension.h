@@ -5,17 +5,19 @@ struct Song;
 struct UIComponentFactory;
 struct EditorState;
 struct IPlayer;
+struct Prototracker;
 
 class Extension
 {
 public:
 	virtual ~Extension();
 
+
 	/**
 	 * Extension should initialise everything in init()
 	 */
 
-	virtual void init(IPlayer& player, const Song& song);
+	virtual void init(Prototracker& prototracker, IPlayer& player, const Song& song);
 
 	/**
 	 * Extension should deinitialise everything in deinit()

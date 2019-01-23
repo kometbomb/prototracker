@@ -26,7 +26,7 @@ Prototracker::~Prototracker()
 {
 	for (auto extension : mExtensions)
 	{
-		delete extension;
+		delete extension.second;
 	}
 }
 
@@ -40,14 +40,14 @@ bool Prototracker::init()
 
 	for (auto extension : mExtensions)
 	{
-		extension->init(*mPlayer, *mSong);
+		extension.second->init(*this, *mPlayer, *mSong);
 	}
 
 	mSynth = NULL;
 
 	for (auto extension : mExtensions)
 	{
-		ISynth *synth = extension->registerSynth();
+		ISynth *synth = extension.second->registerSynth();
 
 		if (synth != NULL)
 		{
@@ -68,8 +68,8 @@ bool Prototracker::init()
 
 	for (auto extension : mExtensions)
 	{
-		extension->registerUIComponents(*mUIComponentFactory, *mEditorState);
-		extension->registerSectionListeners(*mSong);
+		extension.second->registerUIComponents(*mUIComponentFactory, *mEditorState);
+		extension.second->registerSectionListeners(*mSong);
 	}
 
 	mMainEditor = new MainEditor(*mEditorState, *mPlayer, mPlayer->getPlayerState(), *mSong, *mSynth, *mMixer);
@@ -301,10 +301,4 @@ bool Prototracker::handleEvents()
 std::string Prototracker::getSongBase64() const
 {
 	return mMainEditor->getSongBase64();
-}
-
-
-void Prototracker::registerExtension(Extension *extension)
-{
-	mExtensions.push_back(extension);
 }
