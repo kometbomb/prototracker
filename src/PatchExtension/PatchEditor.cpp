@@ -1,5 +1,5 @@
 #include "PatchEditor.h"
-#include "Renderer.h"
+#include "../Renderer.h"
 #include "PatchManager.h"
 #include "Patch.h"
 

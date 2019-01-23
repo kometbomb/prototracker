@@ -164,7 +164,6 @@ bool Theme::loadDefinition(const std::string& path)
 		{ ElementType::PatternLength, "PatternLength"},
 		{ ElementType::OctaveNumber, "OctaveNumber"},
 		{ ElementType::TouchRegion, "TouchRegion"},
-        { ElementType::PatchEditor, "PatchEditor"},
 	};
 
 	while (true)

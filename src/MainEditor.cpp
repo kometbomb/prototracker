@@ -34,7 +34,6 @@
 #include "MessageDisplayer.h"
 #include "TooltipManager.h"
 #include "TooltipDisplayer.h"
-#include "PatchEditor.h"
 #include "UIComponentFactory.h"
 #include "Debug.h"
 #include "App.h"
@@ -822,13 +821,6 @@ bool MainEditor::loadElements(const Theme& theme, const UIComponentFactory& comp
 			}
 			break;
 
-            case Theme::PatchEditor:
-            {
-                PatchEditor *editor = new PatchEditor(mEditorState, *mPatchManager);
-				addChild(editor, element.parameters[0], element.parameters[1], element.parameters[2], element.parameters[3]);
-            }
-            break;
-
 			case Theme::Unknown:
             {
                 Editor *component = componentFactory.createComponent(element.name, element);
@@ -1073,10 +1065,4 @@ void MainEditor::onRequestCommandRegistration()
 	registerCommand("Editor", "Decrease octave", [this]() { this->setOctave(mEditorState.octave - 1); }, SDLK_F1);
 	registerCommand("Editor", "Increase octave", [this]() { this->setOctave(mEditorState.octave + 1); }, SDLK_F2);
 	registerCommand("Editor", "Cycle focus", [this]() { this->cycleFocus(); }, SDLK_ESCAPE);
-}
-
-
-void MainEditor::registerPatchManager(PatchManager* patchManager)
-{
-    mPatchManager = patchManager;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GenericList.h"
+#include "../GenericList.h"
 
 struct EditorState;
 struct PatchManager;

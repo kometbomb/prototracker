@@ -22,7 +22,6 @@ struct TooltipDisplayer;
 struct AudioDeviceSelector;
 struct CommandSelector;
 struct CommandOptionSelector;
-struct PatchManager;
 struct UIComponentFactory;
 
 class MainEditor: public Editor
@@ -45,7 +44,6 @@ class MainEditor: public Editor
 	MessageDisplayer *mMessageDisplayer;
 	TooltipManager *mTooltipManager;
 	TooltipDisplayer *mTooltipDisplayer;
-    PatchManager *mPatchManager;
 
 	int mDragStartX, mDragStartY;
 	bool mIsDragging;
@@ -119,6 +117,4 @@ public:
 	void saveState();
 
 	bool loadElements(const Theme& theme, const UIComponentFactory& componentFactory);
-
-    void registerPatchManager(PatchManager* patchManager);
 };

@@ -1,6 +1,6 @@
 #include "PatchManager.h"
 #include "Patch.h"
-#include "FileSection.h"
+#include "../FileSection.h"
 #include <cstring>
 #include <algorithm>
 
