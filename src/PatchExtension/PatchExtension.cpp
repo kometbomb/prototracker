@@ -19,3 +19,9 @@ void PatchExtension::registerUIComponents(UIComponentFactory& factory, EditorSta
 {
     factory.registerComponent("PatchEditor", [&](const Theme::Element& element){ return new PatchEditor(editorState, *mPatchManager); });
 }
+
+
+PatchManager& PatchExtension::getPatchManager() const
+{
+    return *mPatchManager;
+}
