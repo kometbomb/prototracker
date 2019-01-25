@@ -14,7 +14,7 @@ The main `Makefile` needs to be updated to enable extensions. I.e. locate the fo
 
 ## Extension lifecycle
 
-  1. `Extension::Extension()` will be called when a new extension is loaded by `Prototracker::loadExtension<T>()` and if it was not already constructed by earlier loads.
+  1. `Extension::Extension()` will be called when a new extension is loaded by `Prototracker::loadExtension<Extension>()` and if it was not already constructed by earlier loads.
   2. `Extension::init()` will be called some time after `Prototracker::loadExtension<Extension>()` has been called. If you add a dependency in `Extension::init()`, it is ensured that it has been constructed but it is not ensured the init method for the extension has been called. You should only store the reference to the dependency here and use it later in the other lifecycle methods.
   3. `Extension::registerSynth()` will be called if an extension hasn't registered a synth yet - not a problem as only one extension should provide a synth.
   4. `Extension::registerUIComponents()` will be called.
