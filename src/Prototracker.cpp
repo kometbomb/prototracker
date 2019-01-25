@@ -56,11 +56,9 @@ bool Prototracker::init()
 		}
 	}
 
-	// Use default synth
-
 	if (mSynth == NULL)
 	{
-		debug("No synth set");
+		debug("No synth registered by any extension");
 	}
 
 	mMixer = new Mixer(*mPlayer, *mSynth);
