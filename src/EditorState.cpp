@@ -70,7 +70,7 @@ bool EditorState::unpack(const FileSection& section)
     #define EDITOR_STATE_VALUE(name) \
         name = section.readDword(offset); \
 	    if (name == FileSection::invalidRead) \
-		    return false; \
+		    return false;
 	EDITOR_STATE_VALUES
     #undef EDITOR_STATE_VALUE
 
