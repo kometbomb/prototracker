@@ -8,8 +8,6 @@ PatchManager::PatchManager()
 {
     mPatches = new Patch[maxPatches];
     mDescriptor = new PatchDescriptor();
-
-    mDescriptor->registerParam(0, PatchParamDesc::Integer, "Test", 0);
 }
 
 

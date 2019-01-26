@@ -24,7 +24,8 @@ struct TrackEditorState
 #define EDITOR_STATE_VALUES \
     EDITOR_STATE_VALUE(macro) \
     EDITOR_STATE_VALUE(octave) \
-    EDITOR_STATE_VALUE(editMode)
+    EDITOR_STATE_VALUE(editMode) \
+    EDITOR_STATE_VALUE(patch)
 
 struct EditorState
 {

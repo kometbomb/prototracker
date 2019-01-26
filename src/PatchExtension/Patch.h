@@ -7,19 +7,19 @@ struct PatchParamDesc
     };
 
     int paramId;
-    int defaultValue;
+    int defaultValue, maxValue, minValue;
     const char *paramName;
     ParamType paramType;
 
     PatchParamDesc();
-    PatchParamDesc(int id, ParamType type, const char *name, int defaultValue);
+    PatchParamDesc(int id, ParamType type, const char *name, int defaultValue, int minValue, int maxValue);
 };
 
 class PatchDescriptor
 {
 public:
     static const int maxPatchParams = 64;
-    bool registerParam(int id, PatchParamDesc::ParamType type, const char *name, int defaultValue);
+    bool registerParamInteger(int id, const char *name, int defaultValue, int minValue, int maxValue);
     int getNumParams() const;
     const PatchParamDesc& getParam(int paramIndex) const;
     int getParamIndex(int paramId) const;
