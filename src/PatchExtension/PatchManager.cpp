@@ -60,7 +60,7 @@ int PatchManager::getLastUsedPatch() const
 {
     const PatchDescriptor& descriptor = getDescriptor();
 
-    for (int i = maxPatches -1 ; i >= 0 ; --i)
+    for (int i = maxPatches - 1 ; i >= 0 ; --i)
     {
         const Patch& patch = getPatch(i);
 
@@ -112,7 +112,14 @@ bool PatchManager::readPatch(int index, const FileSection& section, int& offset)
 
     strncpy(patch.patchName, name, Patch::patchNameLength - 1);
 
-    for (int i = 0 ; i < PatchDescriptor::maxPatchParams ; ++i)
+    int numParams = section.readByte(offset);
+
+    if (numParams == FileSection::invalidRead)
+    {
+        return false;
+    }
+
+    for (int i = 0 ; i < std::min(numParams, PatchDescriptor::maxPatchParams) ; ++i)
     {
         int id = section.readDword(offset);
         if (id == FileSection::invalidRead) {
