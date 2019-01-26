@@ -62,11 +62,6 @@ bool EditorState::unpack(const FileSection& section)
 	if (version == FileSection::invalidRead)
 		return false;
 
-    unsigned int macroNr = section.readDword(offset);
-
-	if (macroNr == FileSection::invalidRead)
-		return false;
-
     #define EDITOR_STATE_VALUE(name) \
         name = section.readDword(offset); \
 	    if (name == FileSection::invalidRead) \
