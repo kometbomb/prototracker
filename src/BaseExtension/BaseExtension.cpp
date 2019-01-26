@@ -2,12 +2,10 @@
 #include "../UIComponentFactory.h"
 #include "WaveView.h"
 #include "../Prototracker.h"
-#include "../PatchExtension/PatchExtension.h"
 
 void BaseExtension::init(Prototracker& prototracker, IPlayer& player, const Song& song)
 {
     mSynth = new Synth();
-    prototracker.loadExtension<PatchExtension>();
 }
 
 
