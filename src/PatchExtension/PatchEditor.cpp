@@ -1,11 +1,14 @@
 #include "PatchEditor.h"
 #include "../Renderer.h"
+#include "../EditorState.h"
 #include "PatchManager.h"
 #include "Patch.h"
 
 PatchEditor::PatchEditor(EditorState& editorState, PatchManager& manager)
-    : GenericList(editorState), mPatchManager(manager), mEditedPatch(NULL)
+    : GenericList(editorState), mPatchManager(manager)
 {
+    editorState.patch.addListener(this);
+
     for (int i = 0 ; i < manager.getDescriptor().getNumParams() ; ++i)
     {
         addItem(new PatchParamItem(i));
@@ -25,7 +28,8 @@ void PatchEditor::renderItem(Renderer& renderer, const SDL_Rect& area, const Ite
 
 	int width = area.w / renderer.getFontWidth() - 10;
     const PatchDescriptor& descriptor = mPatchManager.getDescriptor();
-	renderer.renderTextV(area, color, "%*s %9d", -width, descriptor.getParam(paramItem.paramIndex).paramName, mEditedPatch->paramValue[paramItem.paramIndex]);
+    auto editedPatch = mPatchManager.getPatch(mEditorState.patch);
+	renderer.renderTextV(area, color, "%*s %9d", -width, descriptor.getParam(paramItem.paramIndex).paramName, editedPatch.paramValue[paramItem.paramIndex]);
 }
 
 
@@ -62,12 +66,14 @@ void PatchEditor::editParam(int delta)
 {
     auto selectedItem = static_cast<const PatchParamItem&>(getSelectedItem());
     auto paramDesc = mPatchManager.getDescriptor().getParam(selectedItem.paramIndex);
-    auto& value = mEditedPatch->paramValue[selectedItem.paramIndex];
+    auto editedPatch = mPatchManager.getPatch(mEditorState.patch);
+    auto& value = editedPatch.paramValue[selectedItem.paramIndex];
     value = std::max(paramDesc.minValue, std::min(paramDesc.maxValue, value + delta));
 }
 
 
-void PatchEditor::setPatch(Patch& patch)
+void PatchEditor::onRequestCommandRegistration()
 {
-    mEditedPatch = &patch;
+    registerCommand("Patch", "Next patch", [this]() { mEditorState.patch = std::min(mEditorState.patch + 1, PatchManager::maxPatches - 1); }, SDLK_KP_PLUS, KMOD_SHIFT);
+    registerCommand("Patch", "Previous patch", [this]() { mEditorState.patch = std::max(mEditorState.patch - 1, 0); }, SDLK_KP_MINUS, KMOD_SHIFT);
 }

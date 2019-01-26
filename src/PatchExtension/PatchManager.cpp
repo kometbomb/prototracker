@@ -60,9 +60,15 @@ int PatchManager::getLastUsedPatch() const
 {
     const PatchDescriptor& descriptor = getDescriptor();
 
-    for (int i = 0 ; i < maxPatches ; ++i)
+    for (int i = maxPatches -1 ; i >= 0 ; --i)
     {
         const Patch& patch = getPatch(i);
+
+        if (strlen(patch.patchName) > 0)
+        {
+            return i;
+        }
+
         for (int param = 0 ; param < descriptor.getNumParams() ; ++param)
         {
             if (patch.paramValue[i] != descriptor.getParam(param).defaultValue)
