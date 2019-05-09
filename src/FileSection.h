@@ -10,8 +10,10 @@ public:
 
 	/*
 	 * readByte() & readDword() return this if it failed
+	 *
+	 * NOTE: readFloat() returns NAN if it fails!
 	 */
-	static const int invalidRead = 0xffffffff;
+	static constexpr int invalidRead = 0xffffffff;
 
 private:
 	char mName[nameSize + 1];
@@ -47,12 +49,14 @@ public:
 	unsigned int readByte(int& offset) const;
 	int readSignedByte(int& offset) const;
 	unsigned int readDword(int& offset) const;
+	float readFloat(int& offset) const;
 	const char * readString(int& offset) const;
 	FileSection * readSection(int& offset) const;
 	bool readPattern(Pattern& pattern, int effectParamCount, int& offset) const;
 
 	void writeByte(unsigned int byte);
 	void writeDword(unsigned int dword);
+	void writeFloat(float value);
 	void writeString(const char *str);
 	void writeSection(FileSection& section);
 	void writePattern(Pattern& pattern);
