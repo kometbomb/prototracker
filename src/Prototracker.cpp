@@ -2,7 +2,6 @@
 #include "Prototracker.h"
 #include "Mixer.h"
 #include "Song.h"
-#include "Synth.h"
 #include "Player.h"
 #include "EditorState.h"
 #include "Gamepad.h"
@@ -10,6 +9,8 @@
 #include "MainEditor.h"
 #include "Emscripten.h"
 #include "Debug.h"
+#include "Extension.h"
+#include "UIComponentFactory.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -23,17 +24,51 @@ Prototracker::Prototracker()
 
 Prototracker::~Prototracker()
 {
+	for (auto extension : mExtensions)
+	{
+		delete extension.second;
+	}
 }
 
 bool Prototracker::init()
 {
+	mGamepad = new Gamepad();
 	mEditorState = new EditorState();
 	mSong = new Song();
 	mPlayer = new Player(*mSong);
-	mGamepad = new Gamepad();
-	mSynth = new Synth();
+	mUIComponentFactory = new UIComponentFactory();
+
+	for (auto extension : mExtensions)
+	{
+		extension.second->init(*this, *mPlayer, *mSong);
+	}
+
+	mSynth = NULL;
+
+	for (auto extension : mExtensions)
+	{
+		ISynth *synth = extension.second->registerSynth();
+
+		if (synth != NULL)
+		{
+			mSynth = synth;
+			break;
+		}
+	}
+
+	if (mSynth == NULL)
+	{
+		debug("No synth registered by any extension");
+	}
+
 	mMixer = new Mixer(*mPlayer, *mSynth);
 	mRenderer = new Renderer();
+
+	for (auto extension : mExtensions)
+	{
+		extension.second->registerUIComponents(*mUIComponentFactory, *mEditorState);
+		extension.second->registerSectionListeners(*mSong);
+	}
 
 	mMainEditor = new MainEditor(*mEditorState, *mPlayer, mPlayer->getPlayerState(), *mSong, *mSynth, *mMixer);
 
@@ -42,10 +77,10 @@ bool Prototracker::init()
 	}
 
 #ifndef __EMSCRIPTEN__
-  	initEditor();
+	initEditor();
 #endif
 
-  	return true;
+	return true;
 }
 
 
@@ -60,7 +95,6 @@ void Prototracker::deinit()
 	delete mEditorState;
 	delete mGamepad;
 	delete mRenderer;
-	delete mSynth;
 }
 
 bool Prototracker::initRenderer()
@@ -80,7 +114,7 @@ bool Prototracker::initRenderer()
 	SDL_Rect area = {0, 0, theme.getWidth(), theme.getHeight()};
 	mMainEditor->setArea(area);
 
-	if (!mMainEditor->loadElements(theme))
+	if (!mMainEditor->loadElements(theme, *mUIComponentFactory))
 	{
 		return false;
 	}
@@ -92,7 +126,7 @@ bool Prototracker::initRenderer()
 
 void Prototracker::initEditor()
 {
-    // Emscripten needs an absolute path to filesystem root
+	// Emscripten needs an absolute path to filesystem root
 #ifdef __EMSCRIPTEN__
 	const char *gamepadPath = "/assets/gamecontrollerdb.txt";
 	const char *songPath = "/assets/dub.song";

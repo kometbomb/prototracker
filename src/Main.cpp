@@ -2,6 +2,7 @@
 #include "SDL_image.h"
 #include "Debug.h"
 #include "Prototracker.h"
+#include "BaseExtension/BaseExtension.h"
 #include <stdlib.h>
 
 #ifdef __EMSCRIPTEN__
@@ -30,6 +31,7 @@ extern "C" int main(int argc, char **argv)
 	atexit(IMG_Quit);
 
     Prototracker prototracker;
+    prototracker.loadExtension<BaseExtension>();
 
     if (!prototracker.init())
     {
