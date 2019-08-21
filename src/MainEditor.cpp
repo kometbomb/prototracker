@@ -638,11 +638,7 @@ void MainEditor::displayAudioDeviceDialog()
 
 std::string MainEditor::getUserFile(const char *file) const
 {
-#ifndef __EMSCRIPTEN__
 	return std::string(SDL_GetPrefPath(APP_NAME, APP_NAME)) + file;
-#else
-	return std::string("/persistent/") + file;
-#endif
 }
 
 

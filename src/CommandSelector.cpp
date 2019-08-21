@@ -92,7 +92,7 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 		SDL_Rect textRect = renderer.getTextRect(keyName);
 		SDL_Rect shortcutArea = { area.x + area.w - textRect.w, area.y, textRect.w, textRect.h };
 		renderer.clearRect(shortcutArea, Theme::ColorType::CommandShortcutBackground);
-		renderer.renderTextV(shortcutArea, Theme::ColorType::CommandShortcut, keyName);
+		renderer.renderText(shortcutArea, Theme::ColorType::CommandShortcut, keyName);
 
 		if (commandItem.command.mod != 0)
 		{
@@ -113,7 +113,7 @@ void CommandSelector::renderItem(Renderer& renderer, const SDL_Rect& area, const
 					SDL_Rect textRect = renderer.getTextRect(keyName);
 					SDL_Rect modifierArea = { left - textRect.w - 4, area.y, textRect.w, textRect.h };
 					renderer.clearRect(modifierArea, Theme::ColorType::CommandShortcutBackground);
-					renderer.renderTextV(modifierArea, Theme::ColorType::CommandShortcut, keyName);
+					renderer.renderText(modifierArea, Theme::ColorType::CommandShortcut, keyName);
 					left = modifierArea.x;
 				}
 			}

@@ -22,9 +22,12 @@
 #endif
 
 Mixer::Mixer(IPlayer& player, ISynth& synth)
-	: mPlayer(player), mSynth(synth), mSampleRate(0), mThread(NULL), mAudioOpened(false), mBuffer(NULL),
+	: mPlayer(player), mSynth(synth), mSampleRate(0),  mAudioOpened(false), mBuffer(NULL),
 	mDeviceId(0)
 {
+#ifdef ENABLE_AUDIO_QUEUE
+	mThread = NULL;
+#endif
 	mConvert = static_cast<SDL_AudioCVT*>(SDL_malloc(sizeof(SDL_AudioCVT)));
 	buildDeviceList();
 }
@@ -43,10 +46,21 @@ bool Mixer::runThread(const char *deviceName)
 	debug("Opening audio device %s", deviceName);
 
 	if (!initAudio(deviceName))
+	{
+		debug("Audio init failed");
 		return false;
+	}
 
+#ifdef ENABLE_AUDIO_QUEUE
 	mThreadRunning = true;
 	mThread = SDL_CreateThread(queueThread, "QueueThread", this);
+
+	if (!mThread)
+	{
+		debug("Thread was not created");
+		return false;
+	}
+#endif
 
 	SDL_PauseAudioDevice(mDeviceId, 0);
 
@@ -79,8 +93,12 @@ bool Mixer::initAudio(const char *deviceName)
 	want.format = AUDIO_S16SYS;
 	want.channels = 2;
 	want.samples = 1024;
-	want.callback = NULL;
 	want.userdata = this;
+#ifdef ENABLE_AUDIO_QUEUE
+	want.callback = NULL;
+#else
+	want.callback = static_cast<SDL_AudioCallback>(audioCallback);
+#endif
 
 	if (mAudioOpened)
 		SDL_CloseAudio();
@@ -98,21 +116,26 @@ bool Mixer::initAudio(const char *deviceName)
 
 	mAudioOpened = true;
 
-	mSampleRate = have.freq;
 	mSamples = 0;
+	mSampleRate = have.freq;
+
+	// We will not convert the sample rate, the synth simply runs at a different rate if
+	// we don't get SAMPLERATE from the driver.
+
+	SDL_BuildAudioCVT(mConvert, want.format, want.channels, mSampleRate, have.format, have.channels, mSampleRate);
+
+#ifdef ENABLE_AUDIO_QUEUE
 	mBufferSize = queueLengthTargetMs * mSampleRate / 1000;
+#else
+	mBufferSize = have.samples;
+#endif
 
 	debug("sampleRate = %d buffer = %d", mSampleRate, mBufferSize);
-
-	SDL_BuildAudioCVT(mConvert, want.format, want.channels, have.freq, have.format, have.channels, have.freq);
 
 	if (mBuffer != NULL)
 		delete[] mBuffer;
 
 	mBuffer = new Sample16[mBufferSize * mConvert->len_mult];
-
-	//printf("Got %d Hz format=%d (wanted %d Hz/%d) buffer = %d\n", have.freq, have.format, want.freq, want.format, want.samples);
-
 	mSynth.setSampleRate(mSampleRate);
 
 	return true;
@@ -121,12 +144,15 @@ bool Mixer::initAudio(const char *deviceName)
 
 void Mixer::deinitAudio()
 {
+#ifdef ENABLE_AUDIO_QUEUE
 	mThreadRunning = false;
 
 	if (mThread != NULL)
 	{
 		SDL_WaitThread(mThread, NULL);
+    mThread = NULL;
 	}
+#endif
 
 	if (mAudioOpened)
 		SDL_CloseAudioDevice(mDeviceId);
@@ -141,6 +167,7 @@ void Mixer::deinitAudio()
 }
 
 
+#ifdef ENABLE_AUDIO_QUEUE
 int Mixer::queueThread(void *data)
 {
 	Mixer& mixer = *reinterpret_cast<Mixer*>(data);
@@ -190,6 +217,7 @@ int Mixer::queueThreadInner()
 
 	return 0;
 }
+#endif
 
 
 void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
@@ -197,12 +225,17 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 	Uint64 startTicks = SDL_GetPerformanceCounter();
 	Mixer& mixer = *static_cast<Mixer*>(userdata);
 	IPlayer& player = mixer.getPlayer();
-
-	Sample16 *data = reinterpret_cast<Sample16*>(stream);
+	Sample16 *data = mixer.mBuffer;
+#ifdef ENABLE_AUDIO_QUEUE
 	int length = len / sizeof(Sample16);
+#else
+	int length = mixer.mBufferSize;
+#endif
 	int chunk = mixer.getSampleRate() / player.getPlayerState().songRate;
 	float hzConversion = static_cast<float>(TUNING / 2) / (float)mixer.getSampleRate(); // 1.0 = 440 Hz
 	int samples = std::min(length, (chunk - mixer.getSamples() % chunk) % chunk);
+
+	// debug("chunk = %d (%d buffer %d rate %d)", chunk, mixer.getSampleRate(), length, player.getPlayerState().songRate);
 
 	/*
 	 * Render "leftovers" before the next sequence tick
@@ -265,8 +298,16 @@ void Mixer::audioCallback(void* userdata, unsigned char* stream, int len)
 	}
 
 	mixer.mConvert->len = length * sizeof(Sample16);
-	mixer.mConvert->buf = stream;
+	mixer.mConvert->buf = reinterpret_cast<Uint8*>(mixer.mBuffer);
 	SDL_ConvertAudio(mixer.mConvert);
+
+	// Audio queue uses the mBuffer member so no need to copy if that was passed as
+	// stream
+
+	if (static_cast<void*>(stream) != static_cast<void*>(mixer.mBuffer))
+	{
+		memcpy(stream, mixer.mBuffer, len);
+	}
 
 	player.lock();
 	player.getPlayerState().cpuUse = 100 * static_cast<float>(SDL_GetPerformanceCounter() - startTicks) / SDL_GetPerformanceFrequency() / (static_cast<float>(length) / mixer.getSampleRate());
@@ -296,12 +337,12 @@ int& Mixer::getSamples()
 	return mSamples;
 }
 
-
+#ifdef ENABLE_AUDIO_QUEUE
 bool Mixer::isThreadRunning() const
 {
 	return mThreadRunning;
 }
-
+#endif
 
 void Mixer::buildDeviceList()
 {

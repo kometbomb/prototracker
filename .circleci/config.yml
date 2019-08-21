@@ -2,17 +2,66 @@ version: 2
 jobs:
   build:
     docker:
-      - image: gcc:5
-    working_directory: /tmp
+      - image: minextu/sdl2-cross-platform
     steps:
-      - run:
-          name: Install deps
-          command: apt-get update && apt-get install -y libsdl2-dev libsdl2-image-dev
       - checkout
       - run:
-          name: Build
-          command: make linux
-      - store_artifacts:
-          path: /tmp/prototracker
-      - store_artifacts:
-          path: /tmp/assets
+          name: Init
+          command: |
+            echo 'export EXECNAME=${CIRCLE_PROJECT_REPONAME}' >> $BASH_ENV
+            echo 'export BASENAME=${CIRCLE_PROJECT_REPONAME}-$(git describe --tags --always | sed -e 's/^v//')' >> $BASH_ENV
+            mkdir artifacts
+      - run:
+          name: Build (Linux)
+          command: make linux OUTPUT=${EXECNAME}
+      - run:
+          name: Store binary
+          command: |
+            zip -r artifacts/${BASENAME}-linux.zip ${EXECNAME} assets
+            make -f Makefile.linux clean OUTPUT=${EXECNAME}
+      - run:
+          name: Build (Windows 32-bit)
+          command: |
+            PATH="/usr/i686-w64-mingw32/bin:$PATH"
+            make linux CC=i686-w64-mingw32-g++ OUTPUT=${EXECNAME}.exe
+      - run:
+          name: Store binary
+          command: |
+            zip -r artifacts/${BASENAME}-win32.zip ${EXECNAME}.exe assets
+            zip -j artifacts/${BASENAME}-win32.zip \
+              /usr/i686-w64-mingw32/bin/SDL2.dll \
+              /usr/i686-w64-mingw32/bin/SDL2.txt \
+              /usr/i686-w64-mingw32/bin/SDL2_image.dll \
+              /usr/i686-w64-mingw32/bin/libpng16-16.dll \
+              /usr/i686-w64-mingw32/bin/zlib1.dll
+            make -f Makefile.linux clean OUTPUT=${EXECNAME}.exe
+      - persist_to_workspace:
+          root: .
+          paths:
+              - artifacts
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            VERSION=$(git describe --tags --always)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build
+      - publish-github-release:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+$/
