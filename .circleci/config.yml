@@ -52,7 +52,8 @@ jobs:
           name: "Publish Release on GitHub"
           command: |
             VERSION=$(git describe --tags --always)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} \
+              -c ${CIRCLE_SHA1} ${VERSION} ./artifacts/
 
 workflows:
   version: 2
