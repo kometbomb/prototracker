@@ -1,11 +1,11 @@
 version: 2
 jobs:
-  build:
+  build-linux:
     docker:
       - image: minextu/sdl2-cross-platform
     steps:
       - checkout
-      - run:
+      - run: &init-steps
           name: Init
           command: |
             echo 'export EXECNAME=${CIRCLE_PROJECT_REPONAME}' >> $BASH_ENV
@@ -21,6 +21,16 @@ jobs:
             zip -j artifacts/${BASENAME}-linux.zip \
               LICENSE
             make -f Makefile.linux clean OUTPUT=${EXECNAME}
+      - persist_to_workspace:
+          root: .
+          paths:
+              - artifacts
+  build-win:
+    docker:
+      - image: minextu/sdl2-cross-platform
+    steps:
+      - checkout
+      - run: *init-steps
       - run:
           name: Build (Windows 32-bit)
           command: |
@@ -41,6 +51,37 @@ jobs:
           root: .
           paths:
               - artifacts
+  build-macos:
+    macos:
+      xcode: 10.2.1
+    steps:
+      - checkout
+      - run: *init-steps
+      - restore_cache:
+          keys:
+            - brew-cache
+      - run:
+          name: Install deps
+          command: brew install sdl2 sdl2_image zip
+      - save_cache:
+          key: brew-cache
+          paths:
+            - /usr/local/Homebrew
+      - run:
+          name: Build (MacOS)
+          command: make macos
+      - run:
+          name: Store binary
+          command: |
+            zip -r artifacts/${BASENAME}-macos.zip ${EXECNAME} assets
+            zip -j artifacts/${BASENAME}-macos.zip \
+              LICENSE
+      - persist_to_workspace:
+          root: .
+          paths:
+              - artifacts
+      - store_artifacts:
+          path: ./artifacts
   publish-github-release:
     docker:
       - image: cibuilds/github:0.10
@@ -59,21 +100,31 @@ workflows:
   version: 2
   test:
     jobs:
-      - build:
-          filters:
+      - build-linux:
+          filters: &build-filters
             branches:
               ignore: master
             tags:
               ignore: /.*/
+      - build-win:
+          filters: *build-filters
+      - build-macos:
+          filters: *build-filters
   build-and-release:
     jobs:
-      - build:
+      - build-linux:
           filters: &release-filters
             branches:
               ignore: /.*/
             tags:
               only: /^v\d+\.\d+\.\d+$/
+      - build-win:
+          filters: *release-filters
+      - build-macos:
+          filters: *release-filters
       - publish-github-release:
           requires:
-            - build
+            - build-linux
+            - build-win
+            - build-macos
           filters: *release-filters
