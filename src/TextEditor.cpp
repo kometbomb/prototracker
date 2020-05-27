@@ -1,7 +1,7 @@
 #include "TextEditor.h"
 #include "Renderer.h"
 #include "Color.h"
-#include <strings.h>
+#include <cstring>
 
 TextEditor::TextEditor(EditorState& editorState)
 	: Editor(editorState), mCursorPosition(0), mIsEditing(false), mAlwaysShowCursor(false), mSolidBackground(true)

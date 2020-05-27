@@ -1,7 +1,7 @@
 #include "Label.h"
 #include "Renderer.h"
 #include "Color.h"
-#include <strings.h>
+#include <cstring>
 #include <cstdarg>
 #include <cstdio>
 
@@ -44,7 +44,7 @@ void Label::setTextV(const char *text, ...)
     va_start(argptr, text);
     vsnprintf(mBuffer, maxTextLength, text, argptr);
     va_end(argptr);
-   
+
 	setDirty(true);
 }
 
@@ -58,8 +58,8 @@ bool Label::onEvent(SDL_Event& event)
 void Label::onDraw(Renderer& renderer, const SDL_Rect& area)
 {
 	setDirty(false);
-	
+
 	renderer.clearRect(area, mBackgroundColor);
-		
+
 	renderer.renderText(area, mTextColor, mBuffer);
 }
