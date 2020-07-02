@@ -35,7 +35,9 @@ jobs:
               /usr/i686-w64-mingw32/bin/SDL2.dll \
               /usr/i686-w64-mingw32/bin/SDL2_image.dll \
               /usr/i686-w64-mingw32/bin/libpng16-16.dll \
-              /usr/i686-w64-mingw32/bin/zlib1.dll
+              /usr/i686-w64-mingw32/bin/zlib1.dll \
+              /usr/lib/gcc/i686-w64-mingw32/6.3-win32/libgcc_s_sjlj-1.dll \
+              /usr/lib/gcc/i686-w64-mingw32/6.3-win32/libstdc++-6.dll
             make -f Makefile.linux clean OUTPUT=${EXECNAME}.exe
       - persist_to_workspace:
           root: .
