@@ -416,6 +416,9 @@ bool TrackEditor::onEvent(SDL_Event& event)
 								case PatternRow::Column::EffectParam2:
 									patternRow.getEffect(effectParam).setParamsFromByte(patternRow.getEffect(effectParam).getParamsAsByte() + (event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ? -1 : 1) & 255);
 									break;
+
+                default:
+                  break;
 							}
 						}
 
@@ -458,6 +461,9 @@ bool TrackEditor::onEvent(SDL_Event& event)
 									patternRow.getEffect(effectParam).setParamsFromByte(patternRow.getEffect(effectParam).getParamsAsByte() +
 										(event.cbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN ? -16 : 16) & 255);
 									break;
+
+                default:
+                  break;
 							}
 						}
 
@@ -500,6 +506,9 @@ bool TrackEditor::onEvent(SDL_Event& event)
 									emptyRow(false, PatternRow::FlagEffect);
 								}
 								break;
+
+              default:
+                  break;
 						}
 
 						break;
