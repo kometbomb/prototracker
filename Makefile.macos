@@ -1,0 +1,9 @@
+CC=g++
+OUTPUT=prototracker
+SRC=src/*.cpp
+
+$(OUTPUT): $(SRC) src/*.h
+	$(CC) -O3 -Wformat -std=c++11 -o $@ $(SRC) -lSDL2_image -lSDL2main `sdl2-config --cflags --libs` -s -DSCALE=2
+
+clean:
+	rm $(OUTPUT)

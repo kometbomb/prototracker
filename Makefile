@@ -1,5 +1,5 @@
 PLAT=none
-PLATS=mingw linux chip8 emscripten
+PLATS=mingw linux chip8 emscripten macos
 
 EXTENSIONS=BaseExtension PatchExtension
 

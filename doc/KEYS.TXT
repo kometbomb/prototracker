@@ -1,7 +1,7 @@
 CTRL/ALT + SHIFT + P    Display a list of misc GUI actions
 CTRL + O		Load song
 CTRL + S		Save song
-CTRL + P 		Export song
+CTRL + P 		Export song (copies song on clipboard / opens a binary url on web builds)
 CTRL + N 		Erase song (new song)
 F7				Save editor state (song and pattern positions etc.)
 ESCAPE			Cycle focus

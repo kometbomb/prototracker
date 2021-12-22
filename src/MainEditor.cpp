@@ -1037,7 +1037,7 @@ void MainEditor::onRequestCommandRegistration()
 	registerCommand("Song", "Save song", [this]() { this->displaySaveDialog(); }, SDLK_s, KMOD_CTRL);
 	registerCommand("Song", "Play song", [this]() { this->playSong(); }, SDLK_RCTRL);
 	registerCommand("Song", "Play and loop pattern", [this]() { this->playPattern(); }, SDLK_RSHIFT);
-	registerCommand("Song", "Stop song", [this]() { this->stopSong(); });
+	registerCommand("Song", "Stop song", [this]() { this->stopSong(); }, SDLK_F8);
 	registerCommand("Editor", "Mute all tracks", [this]() { this->muteTracks(); });
 	registerCommand("Editor", "Toggle track muting", [this](int value) {
 		this->toggleTrackMuting(value);

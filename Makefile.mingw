@@ -2,3 +2,6 @@ OUTPUT=prototracker.exe
 
 $(OUTPUT): $(SRC) $(SRC_H)
 	g++ -DSCALE=2 -O3 -Wformat -std=c++11 -o $@ $(SRC) -lmingw32 -lSDL2_image -lSDL2main -lSDL2 -Ic:/mingw/include/SDL2 -Ic:/tdm-gcc-32/include/SDL2 -s -DENABLE_AUDIO_QUEUE=1
+
+clean:
+	rm $(OUTPUT)
