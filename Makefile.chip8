@@ -4,9 +4,8 @@
 # to other optimizations. Fullscreen mode is forced.
 
 OUTPUT=prototracker
-SRC=src/*.cpp
 
-$(OUTPUT): $(SRC) src/*.h
+$(OUTPUT): $(SRC) $(SRC_H)
 	g++ -Wformat -s -std=c++11 -o $@ $(SRC) -lSDL2_image -lSDL2main `sdl2-config --cflags --libs` -march=armv7-a -mtune=cortex-a7 -ffast-math -Ofast -DSCALE=1 -DOVERSAMPLE=0 -DFULLSCREEN=1 -DSAMPLERATE=22050
 
 clean:

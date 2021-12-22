@@ -26,6 +26,7 @@ public:
 
 	struct Element
 	{
+        char name[32];
 		ElementType type;
 		int parameters[10];
 		char strParameters[10][50];

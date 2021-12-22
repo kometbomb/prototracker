@@ -21,11 +21,17 @@ struct TrackEditorState
 	bool unpack(const FileSection& section);
 };
 
+#define EDITOR_STATE_VALUES \
+    EDITOR_STATE_VALUE(macro) \
+    EDITOR_STATE_VALUE(octave) \
+    EDITOR_STATE_VALUE(editMode) \
+    EDITOR_STATE_VALUE(patch)
+
 struct EditorState
 {
-	Value macro;
-	Value octave;
-	Value editMode;
+    #define EDITOR_STATE_VALUE(name) Value name;
+	EDITOR_STATE_VALUES
+    #undef EDITOR_STATE_VALUE
 
 	TrackEditorState sequenceEditor;
 	TrackEditorState patternEditor;

@@ -1,6 +1,11 @@
 PLAT=none
 PLATS=mingw linux chip8 emscripten macos
 
+EXTENSIONS=BaseExtension PatchExtension
+
+export SRC=src/*.cpp $(foreach ext,$(EXTENSIONS),src/$(ext)/*.cpp)
+export SRC_H=src/*.h $(foreach ext,$(EXTENSIONS),src/$(ext)/*.h)
+
 all: $(PLAT)
 
 $(PLATS) clean:

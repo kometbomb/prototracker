@@ -34,6 +34,8 @@
 #include "MessageDisplayer.h"
 #include "TooltipManager.h"
 #include "TooltipDisplayer.h"
+#include "UIComponentFactory.h"
+#include "Debug.h"
 #include "App.h"
 #include "SDL.h"
 #include "Theme.h"
@@ -711,7 +713,7 @@ void MainEditor::saveState()
 }
 
 
-bool MainEditor::loadElements(const Theme& theme)
+bool MainEditor::loadElements(const Theme& theme, const UIComponentFactory& componentFactory)
 {
 	deleteChildren();
 
@@ -820,7 +822,20 @@ bool MainEditor::loadElements(const Theme& theme)
 			break;
 
 			case Theme::Unknown:
-				break;
+            {
+                Editor *component = componentFactory.createComponent(element.name, element);
+
+                if (component != NULL)
+                {
+                    addChild(component, element.parameters[0], element.parameters[1], element.parameters[2], element.parameters[3]);
+                }
+                else
+                {
+                    showMessageV(MessageError, "Unknown element %s", element.name);
+                    debug("Unknown element %s", element.name);
+                }
+            }
+			break;
 		}
 	}
 

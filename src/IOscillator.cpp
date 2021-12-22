@@ -27,3 +27,9 @@ void IOscillator::setEnabled(bool state)
 {
 	mIsEnabled = state;
 }
+
+
+void IOscillator::changePatch()
+{
+
+}

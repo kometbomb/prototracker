@@ -21,9 +21,12 @@ FileSection * EditorState::pack()
 {
 	FileSection * state = FileSection::createSection("STAT");
 	state->writeByte(0);
-	state->writeDword(macro);
-	state->writeDword(octave);
-	state->writeDword(editMode);
+
+    #define EDITOR_STATE_VALUE(name) \
+        state->writeDword(name);
+	EDITOR_STATE_VALUES
+    #undef EDITOR_STATE_VALUE
+
 	state->writeDword(followPlayPosition);
 
 	/*state->writeDword(copyBuffer.getLength());
@@ -59,20 +62,12 @@ bool EditorState::unpack(const FileSection& section)
 	if (version == FileSection::invalidRead)
 		return false;
 
-	unsigned int macroNr = section.readDword(offset);
-
-	if (macroNr == FileSection::invalidRead)
-		return false;
-
-	unsigned int octaveNr = section.readDword(offset);
-
-	if (octaveNr == FileSection::invalidRead)
-		return false;
-
-	unsigned int editModeNr = section.readDword(offset);
-
-	if (editModeNr == FileSection::invalidRead)
-		return false;
+    #define EDITOR_STATE_VALUE(name) \
+        name = section.readDword(offset); \
+	    if (name == FileSection::invalidRead) \
+		    return false;
+	EDITOR_STATE_VALUES
+    #undef EDITOR_STATE_VALUE
 
 	unsigned int followNr = section.readDword(offset);
 
@@ -133,9 +128,6 @@ bool EditorState::unpack(const FileSection& section)
 	if (!tempAudioDevice)
 		return false;
 
-	macro = macroNr;
-	octave = octaveNr;
-	editMode = editModeNr;
 	followPlayPosition = followNr;
 	audioDevice = tempAudioDevice;
 
@@ -200,7 +192,7 @@ bool TrackEditorState::unpack(const FileSection& section)
 	if (blockEndNr == FileSection::invalidRead)
 		return false;
 
-	currentRow = currentRowNr;
+    currentRow = currentRowNr;
 	currentTrack = currentTrackNr;
 	currentColumn = currentColumnNr;
 
@@ -222,8 +214,14 @@ void EditorState::reset()
 
 	followPlayPosition = true;
 
-	macro = 0;
+    // Default all editor state values to zero, override below if needed
+
+	#define EDITOR_STATE_VALUE(name) \
+        name = 0;
+	EDITOR_STATE_VALUES
+    #undef EDITOR_STATE_VALUE
+
+    // Override octave default
 	octave = 4;
-	editMode = 0;
 	audioDevice = "";
 }

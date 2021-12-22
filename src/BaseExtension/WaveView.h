@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Editor.h"
+#include "../Editor.h"
 
 struct WaveStore;
 
@@ -14,5 +14,3 @@ public:
 	virtual void onDraw(Renderer& renderer, const SDL_Rect& area);
 	virtual bool onEvent(SDL_Event& event);
 };
-
-
